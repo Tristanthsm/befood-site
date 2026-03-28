@@ -10,14 +10,14 @@ export function NotFoundView() {
           <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-muted)]">Erreur 404</p>
           <h1 className="font-display text-4xl text-[var(--color-ink)] sm:text-5xl">Page introuvable</h1>
           <p className="text-base leading-7 text-[var(--color-muted)]">
-            La page demandée n&apos;existe pas ou a été déplacée. Revenez à l&apos;accueil ou contactez le support si besoin.
+            La page demandée n&apos;existe pas ou a été déplacée. Revenez à l&apos;accueil ou contactez l&apos;aide si besoin.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <ButtonLink href="/" size="md">
               Retour à l&apos;accueil
             </ButtonLink>
-            <ButtonLink href="/support" variant="secondary" size="md">
-              Ouvrir le support
+            <ButtonLink href="/aide" variant="secondary" size="md">
+              Ouvrir l&apos;aide
             </ButtonLink>
           </div>
         </Card>

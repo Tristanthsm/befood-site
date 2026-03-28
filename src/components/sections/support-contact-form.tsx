@@ -7,10 +7,8 @@ type FormState = {
   lastName: string;
   email: string;
   phone: string;
-  subject: string;
-  appVersion: string;
+  accountId: string;
   message: string;
-  consent: boolean;
 };
 
 interface SupportContactFormProps {
@@ -22,10 +20,8 @@ const initialState: FormState = {
   lastName: "",
   email: "",
   phone: "",
-  subject: "",
-  appVersion: "",
+  accountId: "",
   message: "",
-  consent: false,
 };
 
 export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
@@ -36,24 +32,25 @@ export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
       formState.firstName.trim().length > 0
       && formState.lastName.trim().length > 0
       && formState.email.trim().length > 0
-      && formState.subject.trim().length > 0
       && formState.message.trim().length > 0
-      && formState.consent
     );
   }, [formState]);
 
   const mailtoHref = useMemo(() => {
+    const subject = "Demande d'aide BeFood";
     const lines = [
+      "Demande d'aide BeFood",
+      "",
       `Prénom: ${formState.firstName.trim() || "-"}`,
       `Nom: ${formState.lastName.trim() || "-"}`,
       `Email: ${formState.email.trim() || "-"}`,
       `Téléphone: ${formState.phone.trim() || "-"}`,
-      `Version de l'app: ${formState.appVersion.trim() || "-"}`,
+      `ID compte (optionnel): ${formState.accountId.trim() || "-"}`,
       "",
-      "Message:",
+      "Message",
       formState.message.trim() || "-",
     ];
-    const subject = formState.subject.trim() || "Demande support BeFood";
+
     return `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
   }, [formState, supportEmail]);
 
@@ -65,10 +62,10 @@ export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
     <section aria-labelledby="contact-form-title" className="rounded-3xl border border-[var(--color-border)] bg-white/90 p-5 sm:p-6">
       <div className="mb-5 space-y-2">
         <h2 id="contact-form-title" className="font-display text-3xl text-[var(--color-ink)] sm:text-4xl">
-          Contacter le support
+          Contacter l&apos;aide
         </h2>
         <p className="text-sm leading-6 text-[var(--color-muted)]">
-          Décrivez votre demande, nous préparons votre email avec toutes les informations utiles.
+          Donnez un maximum de contexte: cela réduit les allers-retours et accélère la résolution.
         </p>
       </div>
 
@@ -126,30 +123,17 @@ export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
           </label>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="space-y-2 text-sm font-medium text-[var(--color-ink)]">
-            Sujet
-            <input
-              type="text"
-              name="subject"
-              required
-              value={formState.subject}
-              onChange={(event) => setField("subject", event.target.value)}
-              className="h-11 w-full rounded-xl border border-[var(--color-border)] bg-white px-3 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
-            />
-          </label>
-          <label className="space-y-2 text-sm font-medium text-[var(--color-ink)]">
-            Version de l&apos;app (optionnel)
-            <input
-              type="text"
-              name="appVersion"
-              placeholder="Ex: iOS 18.4 · BeFood 1.2.0"
-              value={formState.appVersion}
-              onChange={(event) => setField("appVersion", event.target.value)}
-              className="h-11 w-full rounded-xl border border-[var(--color-border)] bg-white px-3 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
-            />
-          </label>
-        </div>
+        <label className="space-y-2 text-sm font-medium text-[var(--color-ink)]">
+          ID compte (optionnel)
+          <input
+            type="text"
+            name="accountId"
+            placeholder="Ex: UID / email principal"
+            value={formState.accountId}
+            onChange={(event) => setField("accountId", event.target.value)}
+            className="h-11 w-full rounded-xl border border-[var(--color-border)] bg-white px-3 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+          />
+        </label>
 
         <label className="space-y-2 text-sm font-medium text-[var(--color-ink)]">
           Message
@@ -157,21 +141,11 @@ export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
             name="message"
             required
             rows={6}
+            placeholder="Décrivez votre besoin ou votre problème avec le plus de contexte possible."
             value={formState.message}
             onChange={(event) => setField("message", event.target.value)}
             className="w-full rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
           />
-        </label>
-
-        <label className="flex items-start gap-2 text-sm leading-6 text-[var(--color-muted)]">
-          <input
-            type="checkbox"
-            name="consent"
-            checked={formState.consent}
-            onChange={(event) => setField("consent", event.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-[var(--color-border)] text-[var(--color-accent)] focus:ring-[var(--color-accent)]"
-          />
-          J&apos;accepte que ces informations soient utilisées pour traiter ma demande de support.
         </label>
 
         <div className="flex flex-wrap items-center gap-3">

@@ -18,7 +18,7 @@ export function HeroSection() {
 
           <div className="mt-6 flex flex-col items-center gap-3">
             <ButtonLink
-              href="/quiz"
+              href="/connexion"
               size="lg"
               className="bg-[var(--color-ink)] text-white hover:bg-black focus-visible:outline-[var(--color-ink)]"
             >

@@ -5,7 +5,7 @@ import { createPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Page introuvable",
-  description: "La page demandée est introuvable. Revenez à l'accueil de BeFood ou contactez le support.",
+  description: "La page demandée est introuvable. Revenez à l'accueil de BeFood ou contactez l'aide.",
   path: "/not-found",
   noIndex: true,
 });

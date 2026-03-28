@@ -32,9 +32,9 @@ export const trustItems: TrustItem[] = [
     description: "Un repas capturé devient une lecture nutritionnelle compréhensible et immédiatement exploitable.",
   },
   {
-    title: "Support et cadre de confiance",
-    description: "Support, confidentialité et conditions disponibles à tout moment pour une utilisation transparente.",
-    href: "/support",
+    title: "Aide et cadre de confiance",
+    description: "Aide, confidentialité et conditions disponibles à tout moment pour une utilisation transparente.",
+    href: "/aide",
   },
   {
     title: "Google Play en préparation",
@@ -253,8 +253,8 @@ export const homeFaqItems: FaqItem[] = [
     answer: "Oui, une page dédiée présente le parcours d'accès pour les coachs et professionnels de la nutrition.",
   },
   {
-    question: "Comment contacter le support ?",
-    answer: "La page Support du site centralise les réponses utiles et les informations de contact.",
+    question: "Comment contacter l'aide ?",
+    answer: "La page Aide du site centralise les réponses utiles et les informations de contact.",
   },
 ];
 

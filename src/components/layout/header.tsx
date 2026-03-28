@@ -32,7 +32,7 @@ export function Header() {
 
           <div className="hidden items-center md:flex">
             <Link
-              href="/quiz"
+              href="/connexion"
               className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_24px_-14px_rgba(16,185,129,0.95)] transition hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
             >
               Démarrer gratuitement
@@ -55,7 +55,7 @@ export function Header() {
                   </Link>
                 ))}
                 <Link
-                  href="/quiz"
+                  href="/connexion"
                   className="mt-1 rounded-xl bg-[var(--color-accent)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
                 >
                   Démarrer gratuitement

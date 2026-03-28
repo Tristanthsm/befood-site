@@ -22,7 +22,7 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 export default function CoachsPage() {
-  const requestAccessHref = siteConfig.coachRequestAccessUrl ?? "/support";
+  const requestAccessHref = siteConfig.coachRequestAccessUrl ?? "/aide";
   const signInHref = siteConfig.coachSignInUrl ?? "/connexion";
 
   return (

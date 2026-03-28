@@ -17,12 +17,12 @@ export function FinalCtaSection() {
               <p className="text-sm text-white/70">{content.finalCta.note}</p>
               <div className="flex flex-wrap gap-3">
                 <ButtonLink
-                  href="/support"
+                  href="/aide"
                   variant="ghost"
                   size="md"
                   className="border-white/30 text-white hover:bg-white/10 hover:text-white"
                 >
-                  Besoin d&apos;aide ? Ouvrir le support
+                  Besoin d&apos;aide ? Ouvrir l&apos;aide
                 </ButtonLink>
                 <ButtonLink
                   href="/pour-les-coachs"

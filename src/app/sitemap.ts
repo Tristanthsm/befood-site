@@ -11,6 +11,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: new URL(path, siteConfig.siteUrl).toString(),
     lastModified,
     changeFrequency: path === "/" ? "weekly" : "monthly",
-    priority: path === "/" ? 1 : path === "/support" || path === "/pour-les-coachs" ? 0.8 : 0.6,
+    priority: path === "/" ? 1 : path === "/aide" || path === "/pour-les-coachs" ? 0.8 : 0.6,
   }));
 }

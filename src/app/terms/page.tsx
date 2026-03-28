@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-
 import { JsonLd } from "@/components/seo/json-ld";
 import { LegalDocument } from "@/components/sections/legal-document";
 import { Container } from "@/components/ui/container";
@@ -18,21 +16,7 @@ export default function TermsPage() {
   return (
     <>
       <section className="py-16 sm:py-20">
-        <Container className="space-y-6">
-          <nav aria-label="Navigation légale" className="flex flex-wrap gap-3 text-sm">
-            <Link
-              href="/privacy"
-              className="font-medium text-[var(--color-accent-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-            >
-              Confidentialité
-            </Link>
-            <Link
-              href="/support"
-              className="font-medium text-[var(--color-accent-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-            >
-              Support
-            </Link>
-          </nav>
+        <Container>
           <LegalDocument document={content.termsContent} />
         </Container>
       </section>

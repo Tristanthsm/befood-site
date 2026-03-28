@@ -20,11 +20,11 @@ export const siteConfig: SiteConfig = {
   ],
   appStoreUrl: "https://apps.apple.com/fr/app/befood/id6757001850",
   googlePlayUrl: null,
-  supportEmail: "support@befood.fr",
-  contactEmail: "hello@befood.fr",
+  supportEmail: "contact@befood.fr",
+  contactEmail: "contact@befood.fr",
   privacyPath: "/privacy",
   termsPath: "/terms",
-  coachRequestAccessUrl: "/support",
+  coachRequestAccessUrl: "/aide",
   coachSignInUrl: null,
   socialLinks: [],
 };
@@ -32,7 +32,7 @@ export const siteConfig: SiteConfig = {
 export const mainNavigation: NavItem[] = [
   { label: "Comment ça marche", href: "/#comment-ca-marche" },
   { label: "Pour les coachs", href: "/pour-les-coachs" },
-  { label: "Support", href: "/support" },
+  { label: "Aide", href: "/aide" },
 ];
 
 const appStoreConfigured = siteConfig.appStoreUrl !== APP_STORE_URL_PLACEHOLDER;
@@ -53,12 +53,12 @@ export const storeLinks: { appStore: StoreLink; googlePlay: StoreLink } = {
 export const footerLinks: FooterLink[] = [
   { label: "Pour les coachs", href: "/pour-les-coachs" },
   { label: "Connexion", href: "/connexion" },
-  { label: "Support", href: "/support" },
+  { label: "Aide", href: "/aide" },
   { label: "Confidentialité", href: siteConfig.privacyPath },
   { label: "Conditions d'utilisation", href: siteConfig.termsPath },
 ];
 
-export const staticRoutes = ["/", "/quiz", "/pour-les-coachs", "/support", "/privacy", "/terms"];
+export const staticRoutes = ["/", "/quiz", "/pour-les-coachs", "/aide", "/privacy", "/terms"];
 
 export const defaultOgImage = {
   url: "/images/og/befood-og.svg",
