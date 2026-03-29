@@ -30,9 +30,9 @@ const appScreens = [
 // Ajuste simplement ces valeurs pour deplacer/agrandir rapidement.
 const fifthScreenTuning = {
   widthPx: 640,
-  offsetXPx: 18,
-  offsetYPx: 0,
-  scale: 1.08,
+  offsetXPx: -185,
+  offsetYPx: 10,
+  scale: 1.10
 };
 
 export function AppShowcaseSection() {
@@ -48,34 +48,34 @@ export function AppShowcaseSection() {
                 : undefined;
               const fifthImageStyle: CSSProperties | undefined = isFifth
                 ? {
-                    transform: `translate(${fifthScreenTuning.offsetXPx}px, ${fifthScreenTuning.offsetYPx}px) scale(${fifthScreenTuning.scale})`,
-                    transformOrigin: "bottom right",
-                  }
+                  transform: `translate(${fifthScreenTuning.offsetXPx}px, ${fifthScreenTuning.offsetYPx}px) scale(${fifthScreenTuning.scale})`,
+                  transformOrigin: "bottom right",
+                }
                 : undefined;
 
               return (
-              <figure
-                key={screen.src}
-                style={fifthFigureStyle}
-                className={[
-                  "relative shrink-0 overflow-visible",
-                  index === 2 ? "lg:-mt-6" : "",
-                  isFifth ? "ml-2" : "w-[168px] sm:w-[176px] lg:w-[184px]",
-                ].join(" ")}
-              >
-                <Image
-                  src={screen.src}
-                  alt={screen.alt}
-                  width={index === 4 ? 2752 : 1419}
-                  height={index === 4 ? 1536 : 2796}
-                  style={fifthImageStyle}
+                <figure
+                  key={screen.src}
+                  style={fifthFigureStyle}
                   className={[
-                    "relative z-10 h-auto w-full object-contain",
-                    isFifth ? "max-w-none" : "",
+                    "relative shrink-0 overflow-visible",
+                    index === 2 ? "lg:-mt-6" : "",
+                    isFifth ? "ml-2" : "w-[168px] sm:w-[176px] lg:w-[184px]",
                   ].join(" ")}
-                  priority={index < 2}
-                />
-              </figure>
+                >
+                  <Image
+                    src={screen.src}
+                    alt={screen.alt}
+                    width={index === 4 ? 2752 : 1419}
+                    height={index === 4 ? 1536 : 2796}
+                    style={fifthImageStyle}
+                    className={[
+                      "relative z-10 h-auto w-full object-contain",
+                      isFifth ? "max-w-none" : "",
+                    ].join(" ")}
+                    priority={index < 2}
+                  />
+                </figure>
               );
             })}
           </div>
