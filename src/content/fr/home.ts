@@ -206,16 +206,24 @@ export const coachingPoints: CoachingPoint[] = [
   },
 ];
 
-export const socialTitle = "Une motivation qui se partage";
+export const socialEyebrow = "Communauté BeFood";
+
+export const socialTitle = "Rester motivé ensemble, simplement";
+
+export const socialDescription = "Des idées de repas, du soutien utile et des progrès partagés sans pression.";
 
 export const socialItems: SocialItem[] = [
   {
     title: "Partager ses repas",
-    description: "Partagez repas, recettes et progrès pour rester motivé ensemble.",
+    description: "Postez vos repas et vos retours pour garder le cap ensemble.",
   },
   {
-    title: "Trouver de nouvelles idées",
-    description: "Inspirez-vous d'idées concrètes et d'échanges utiles au quotidien.",
+    title: "Trouver des idées utiles",
+    description: "Découvrez des recettes simples et praticables au quotidien.",
+  },
+  {
+    title: "Progresser sur la durée",
+    description: "Avancez avec une dynamique collective constructive et régulière.",
   },
 ];
 

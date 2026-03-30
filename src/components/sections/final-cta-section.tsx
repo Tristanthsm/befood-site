@@ -6,16 +6,13 @@ import { content } from "@/content";
 
 export function FinalCtaSection() {
   return (
-    <section className="py-16 sm:py-20">
+    <section id="telecharger-app" className="py-16 sm:py-20">
       <Container>
         <div className="overflow-hidden rounded-[2rem] border border-[color:rgb(11_34_52_/20%)] bg-[linear-gradient(145deg,var(--color-dark),#1b324f)] p-8 sm:p-12">
-          <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(19rem,22rem)] lg:items-start">
             <div className="space-y-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-accent-soft)]">Téléchargement</p>
               <h2 className="text-3xl font-extrabold leading-tight text-white sm:text-4xl">{content.finalCta.title}</h2>
-              <p className="max-w-3xl text-base leading-7 text-white/78 sm:text-lg">{content.finalCta.description}</p>
-              <StoreButtons className="[&_[data-store-placeholder]]:!border-white/30 [&_[data-store-placeholder]]:!bg-white/10 [&_[data-store-placeholder]]:!text-white/80" />
-              <p className="text-sm text-white/70">{content.finalCta.note}</p>
+              <p className="max-w-2xl text-base leading-7 text-white/78 sm:text-lg">{content.finalCta.description}</p>
               <div className="space-y-2 text-sm">
                 <p>
                   <Link
@@ -33,16 +30,20 @@ export function FinalCtaSection() {
                     Vous êtes coach ou expert ? Découvrir l&apos;espace dédié
                   </Link>
                 </p>
+                <p>
+                  <Link
+                    href="/guides"
+                    className="text-white/85 underline-offset-4 hover:text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent-soft)]"
+                  >
+                    Explorer les guides nutrition et habitudes
+                  </Link>
+                </p>
               </div>
             </div>
 
-            <div className="rounded-3xl border border-white/15 bg-white/5 p-6">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.13em] text-[var(--color-accent-soft)]">Ce que vous lancez</p>
-              <ul className="mt-4 space-y-3 text-sm leading-6 text-white/80">
-                <li className="rounded-xl border border-white/12 bg-white/6 px-4 py-3">Analyse photo IA en quelques secondes</li>
-                <li className="rounded-xl border border-white/12 bg-white/6 px-4 py-3">Repères nutritionnels lisibles et actionnables</li>
-                <li className="rounded-xl border border-white/12 bg-white/6 px-4 py-3">Suivi d&apos;habitudes progressif, sans culpabilité</li>
-              </ul>
+            <div className="space-y-4 lg:justify-self-end">
+              <StoreButtons className="flex-col items-stretch gap-3 [&>*]:w-full [&>*]:max-w-none [&_[data-store-placeholder]]:!border-white/30 [&_[data-store-placeholder]]:!bg-white/10 [&_[data-store-placeholder]]:!text-white/80" />
+              <p className="text-sm text-white/70">{content.finalCta.note}</p>
             </div>
           </div>
         </div>

@@ -1,11 +1,68 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  trailingSlash: false,
   images: {
     unoptimized: true,
   },
   turbopack: {
     root: process.cwd(),
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
+          },
+        ],
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: "/privacy",
+        destination: "/confidentialite",
+        permanent: true,
+      },
+      {
+        source: "/terms",
+        destination: "/conditions",
+        permanent: true,
+      },
+      {
+        source: "/support",
+        destination: "/aide",
+        permanent: true,
+      },
+      {
+        source: "/blog",
+        destination: "/guides",
+        permanent: true,
+      },
+      {
+        source: "/guide",
+        destination: "/guides",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "www.befood.fr",
+          },
+        ],
+        destination: "https://befood.fr/:path*",
+        permanent: true,
+      },
+    ];
   },
 };
 
