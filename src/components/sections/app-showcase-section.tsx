@@ -1,8 +1,5 @@
-"use client";
-
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { useState } from "react";
 
 import { Container } from "@/components/ui/container";
 
@@ -32,8 +29,8 @@ const appScreens = [
 // Reglages manuels du 5e visuel (telephone + mascotte)
 // Ajuste simplement ces valeurs pour deplacer/agrandir rapidement.
 const fifthScreenTuning = {
-  widthPx: 735,
-  offsetXPx: -155,
+  widthPx: 730,
+  offsetXPx: -222,
   offsetYPx: 15,
   scale: 1.28
 };
@@ -41,7 +38,7 @@ const fifthScreenTuning = {
 const regularScreenScale = 1.33;
 // Decalage horizontal des 4 premiers telephones uniquement.
 // Valeur negative = deplacer vers la gauche.
-const firstFourScreensOffsetXPx = -70;
+const firstFourScreensOffsetXPx: number = -70;
 
 // Reglage manuel de la rangee complete (les 5 ecrans d'un coup)
 // Augmente cette valeur pour deplacer a droite, diminue pour deplacer a gauche.
@@ -49,23 +46,13 @@ const screensRowOffsetXPx = 58;
 const screensRowOffsetYPx = 46;
 
 export function AppShowcaseSection() {
-  const [loadedScreens, setLoadedScreens] = useState<string[]>([]);
-  const allScreensLoaded = loadedScreens.length === appScreens.length;
-
-  const markScreenAsLoaded = (src: string) => {
-    setLoadedScreens((previous) => (previous.includes(src) ? previous : [...previous, src]));
-  };
-
   return (
     <section className="bg-[var(--color-background)] pb-12 pt-10 sm:pb-16 sm:pt-14">
       <Container>
         <div className="overflow-x-auto overflow-y-visible pb-3 lg:overflow-visible">
           <div
             style={{ transform: `translate(${screensRowOffsetXPx}px, ${screensRowOffsetYPx}px)` }}
-            className={[
-              "flex min-w-max items-end gap-11 transition-opacity duration-300 sm:gap-12",
-              allScreensLoaded ? "opacity-100" : "opacity-0",
-            ].join(" ")}
+            className="flex min-w-max items-end gap-11 sm:gap-12"
           >
             {appScreens.map((screen, index) => {
               const isFifth = index === 4;
@@ -111,7 +98,6 @@ export function AppShowcaseSection() {
                       isFifth ? "max-w-none" : "",
                     ].join(" ")}
                     priority
-                    onLoadingComplete={() => markScreenAsLoaded(screen.src)}
                   />
                 </figure>
               );
