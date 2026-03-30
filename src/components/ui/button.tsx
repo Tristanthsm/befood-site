@@ -18,6 +18,8 @@ interface ButtonLinkProps extends BaseButtonProps {
   href?: string | null;
   disabled?: boolean;
   ariaLabel?: string;
+  trackingId?: string;
+  trackingLocation?: string;
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
@@ -42,6 +44,8 @@ export function ButtonLink({
   href,
   disabled = false,
   ariaLabel,
+  trackingId,
+  trackingLocation,
 }: ButtonLinkProps) {
   const sharedClasses = cn(
     "inline-flex items-center justify-center rounded-full font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
@@ -67,6 +71,8 @@ export function ButtonLink({
         target="_blank"
         rel="noopener noreferrer"
         aria-label={ariaLabel}
+        data-cta-track={trackingId}
+        data-cta-location={trackingLocation}
       >
         {children}
       </a>
@@ -74,7 +80,13 @@ export function ButtonLink({
   }
 
   return (
-    <Link className={sharedClasses} href={href} aria-label={ariaLabel}>
+    <Link
+      className={sharedClasses}
+      href={href}
+      aria-label={ariaLabel}
+      data-cta-track={trackingId}
+      data-cta-location={trackingLocation}
+    >
       {children}
     </Link>
   );

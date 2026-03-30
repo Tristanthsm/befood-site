@@ -9,9 +9,16 @@ import { SocialAuthCard } from "@/components/auth/social-auth-card";
 interface StartFreeModalTriggerProps {
   className: string;
   children: ReactNode;
+  trackingId?: string;
+  trackingLocation?: string;
 }
 
-export function StartFreeModalTrigger({ className, children }: StartFreeModalTriggerProps) {
+export function StartFreeModalTrigger({
+  className,
+  children,
+  trackingId,
+  trackingLocation,
+}: StartFreeModalTriggerProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -38,7 +45,13 @@ export function StartFreeModalTrigger({ className, children }: StartFreeModalTri
 
   return (
     <>
-      <button type="button" className={className} onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        className={className}
+        onClick={() => setOpen(true)}
+        data-cta-track={trackingId}
+        data-cta-location={trackingLocation}
+      >
         {children}
       </button>
 
