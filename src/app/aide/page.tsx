@@ -9,6 +9,8 @@ import { content } from "@/content";
 import { createPageMetadata, getBreadcrumbJsonLd, getFaqJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = createPageMetadata({
   title: "Aide",
   description: "Aide BeFood: compte, abonnement, bug, confidentialité et contact de l'équipe.",

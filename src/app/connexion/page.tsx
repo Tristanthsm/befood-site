@@ -5,6 +5,8 @@ import { Container } from "@/components/ui/container";
 import { SocialAuthCard } from "@/components/auth/social-auth-card";
 import { createPageMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = createPageMetadata({
   title: "Connexion",
   description: "Page de connexion BeFood pour démarrer votre parcours ou retrouver votre compte.",

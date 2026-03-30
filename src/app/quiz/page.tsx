@@ -1,6 +1,8 @@
 import { QuizSection } from "@/components/sections/quiz-section";
 import { createPageMetadata } from "@/lib/seo";
 
+export const runtime = "edge";
+
 export const metadata = createPageMetadata({
   title: "Diagnostic nutrition rapide",
   description:

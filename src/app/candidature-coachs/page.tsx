@@ -7,6 +7,8 @@ import { Container } from "@/components/ui/container";
 import { createPageMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = createPageMetadata({
   title: "Candidature coachs et experts",
   description: "Formulaire de candidature BeFood pour coachs, experts et créateurs.",

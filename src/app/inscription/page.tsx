@@ -5,6 +5,8 @@ import { SocialAuthCard } from "@/components/auth/social-auth-card";
 import { Container } from "@/components/ui/container";
 import { createPageMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = createPageMetadata({
   title: "Inscription",
   description: "Créez votre compte BeFood avec Google.",

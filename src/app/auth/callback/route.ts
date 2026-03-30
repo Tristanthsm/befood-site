@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
+export const runtime = "edge";
+
 function getSafeNextPath(candidate: string | null): string {
   if (!candidate || !candidate.startsWith("/")) {
     return "/";

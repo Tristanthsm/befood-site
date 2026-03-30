@@ -5,6 +5,7 @@ import { HeroSection } from "@/components/sections/hero-section";
 import { HowItWorksSection } from "@/components/sections/how-it-works-section";
 import { createPageMetadata } from "@/lib/seo";
 
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata({

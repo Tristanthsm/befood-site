@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+export const runtime = "edge";
+
 interface ResolveLoginBody {
   identifier?: unknown;
 }
