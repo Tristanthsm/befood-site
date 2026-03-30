@@ -9,6 +9,8 @@ import { getMobileAppJsonLd, getOrganizationJsonLd, getWebsiteJsonLd } from "@/l
 
 import "./globals.css";
 
+export const runtime = "edge";
+
 const manrope = Manrope({
   variable: "--font-body",
   subsets: ["latin"],
