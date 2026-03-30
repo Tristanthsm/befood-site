@@ -2,16 +2,13 @@ import { NextResponse } from "next/server";
 
 export const runtime = "edge";
 
-type CoachApplicationPayload = {
+type SupportContactPayload = {
   firstName?: string;
   lastName?: string;
   email?: string;
   phone?: string;
-  profileType?: string;
-  activity?: string;
-  expertise?: string;
-  audience?: string;
-  motivation?: string;
+  accountId?: string;
+  message?: string;
 };
 
 function clean(value: unknown): string {
@@ -35,7 +32,7 @@ function isSameOrigin(request: Request): boolean {
 }
 
 function hasInvalidLength(values: string[]): boolean {
-  return values.some((value) => value.length > 2000);
+  return values.some((value) => value.length > 3000);
 }
 
 export async function POST(request: Request) {
@@ -43,8 +40,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Requête non autorisée." }, { status: 403 });
   }
 
-  const payload = await request.json().catch(() => null) as CoachApplicationPayload | null;
-
+  const payload = (await request.json().catch(() => null)) as SupportContactPayload | null;
   if (!payload) {
     return NextResponse.json({ message: "Payload invalide." }, { status: 400 });
   }
@@ -53,13 +49,10 @@ export async function POST(request: Request) {
   const lastName = clean(payload.lastName);
   const email = clean(payload.email);
   const phone = clean(payload.phone);
-  const profileType = clean(payload.profileType);
-  const activity = clean(payload.activity);
-  const expertise = clean(payload.expertise);
-  const audience = clean(payload.audience);
-  const motivation = clean(payload.motivation);
+  const accountId = clean(payload.accountId);
+  const message = clean(payload.message);
 
-  if (!firstName || !lastName || !email || !profileType || !activity || !motivation) {
+  if (!firstName || !lastName || !email || !message) {
     return NextResponse.json({ message: "Merci de compléter les champs obligatoires." }, { status: 400 });
   }
 
@@ -67,7 +60,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Adresse email invalide." }, { status: 400 });
   }
 
-  if (hasInvalidLength([firstName, lastName, email, phone, profileType, activity, expertise, audience, motivation])) {
+  if (hasInvalidLength([firstName, lastName, email, phone, accountId, message])) {
     return NextResponse.json({ message: "Contenu trop long." }, { status: 400 });
   }
 
@@ -79,24 +72,21 @@ export async function POST(request: Request) {
     );
   }
 
-  const toEmail = process.env.COACH_APPLICATION_TO_EMAIL ?? "contact@befood.fr";
-  const fromEmail = process.env.COACH_APPLICATION_FROM_EMAIL ?? "BeFood <contact@befood.fr>";
+  const toEmail = process.env.SUPPORT_TO_EMAIL ?? "contact@befood.fr";
+  const fromEmail = process.env.SUPPORT_FROM_EMAIL ?? "BeFood <contact@befood.fr>";
 
-  const subject = `Nouvelle candidature BeFood - ${firstName} ${lastName}`;
+  const subject = `Nouvelle demande d'aide BeFood - ${firstName} ${lastName}`;
   const lines = [
-    "Nouvelle candidature BeFood",
+    "Nouvelle demande d'aide BeFood",
     "",
     `Prénom: ${firstName}`,
     `Nom: ${lastName}`,
     `Email: ${email}`,
     `Téléphone: ${phone || "-"}`,
-    `Profil principal: ${profileType}`,
-    `Activité: ${activity}`,
-    `Diplôme / expertise: ${expertise || "-"}`,
-    `Audience: ${audience || "-"}`,
+    `ID compte: ${accountId || "-"}`,
     "",
-    "Motivation",
-    motivation,
+    "Message",
+    message,
     "",
     `Date: ${new Date().toISOString()}`,
   ];
@@ -125,7 +115,7 @@ export async function POST(request: Request) {
       resendMessage = "";
     }
 
-    console.error("[coach-application] resend error", {
+    console.error("[support-contact] resend error", {
       status: resendResponse.status,
       body: resendBody.slice(0, 300),
     });
@@ -146,5 +136,5 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ message: "Candidature envoyée." }, { status: 200 });
+  return NextResponse.json({ message: "Demande envoyée." }, { status: 200 });
 }

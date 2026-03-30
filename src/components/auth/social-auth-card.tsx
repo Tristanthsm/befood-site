@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import type { Provider } from "@supabase/supabase-js";
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
-type PendingAction = "google" | "apple" | "password" | "reset" | null;
+type PendingAction = "google" | "password" | "reset" | null;
 
 interface SocialAuthCardProps {
   mode: "signin" | "signup";
+  onSwitchMode?: (mode: "signin" | "signup") => void;
 }
 
 function GoogleIcon() {
@@ -20,14 +20,6 @@ function GoogleIcon() {
       <path fill="#34A853" d="M3.6 7.6 6.8 10A6 6 0 0 1 12 6c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.5 14.6 2.5 12 2.5A9.5 9.5 0 0 0 3.6 7.6Z" />
       <path fill="#4285F4" d="M12 21.5c2.5 0 4.7-.8 6.3-2.4l-2.9-2.3c-.8.6-1.9 1.2-3.4 1.2A6 6 0 0 1 6.8 14l-3.1 2.4A9.5 9.5 0 0 0 12 21.5Z" />
       <path fill="#FBBC05" d="M3.6 16.4A9.5 9.5 0 0 1 2.5 12c0-1.5.4-2.9 1.1-4.4L6.8 10a6.1 6.1 0 0 0 0 4l-3.2 2.4Z" />
-    </svg>
-  );
-}
-
-function AppleIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
-      <path d="M16.6 12.7c0-2.2 1.8-3.3 1.9-3.4-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.8 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.3-1.7 2.9-.4 7.2 1.2 9.5.8 1.1 1.7 2.4 2.9 2.3 1.1 0 1.6-.7 3-.7 1.4 0 1.8.7 3 .7 1.3 0 2-.9 2.8-2.1.9-1.3 1.2-2.6 1.3-2.6-.1 0-2.2-.8-2.2-4.2ZM14.2 6c.6-.8 1-1.9.9-3-.9 0-2 .6-2.6 1.4-.6.7-1.1 1.9-1 3 1 .1 2-.5 2.7-1.4Z" />
     </svg>
   );
 }
@@ -56,12 +48,39 @@ function getCallbackRedirect(): string {
   return `${window.location.origin}/auth/callback`;
 }
 
-export function SocialAuthCard({ mode }: SocialAuthCardProps) {
+function isEmailLike(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+async function resolveEmailForLogin(identifier: string): Promise<string> {
+  const trimmedIdentifier = identifier.trim();
+  if (isEmailLike(trimmedIdentifier)) {
+    return trimmedIdentifier;
+  }
+
+  const response = await fetch("/api/auth/resolve-login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ identifier: trimmedIdentifier }),
+  });
+
+  const payload = (await response.json()) as { email?: string; message?: string };
+
+  if (!response.ok || !payload.email) {
+    throw new Error(payload.message ?? "Identifiant introuvable.");
+  }
+
+  return payload.email;
+}
+
+export function SocialAuthCard({ mode, onSwitchMode }: SocialAuthCardProps) {
   const [callbackError, setCallbackError] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
+  const [loginIdentifier, setLoginIdentifier] = useState("");
   const [password, setPassword] = useState("");
 
   const callbackErrorMessage = useMemo(() => mapCallbackError(callbackError), [callbackError]);
@@ -78,15 +97,15 @@ export function SocialAuthCard({ mode }: SocialAuthCardProps) {
     }
   }, [callbackErrorMessage]);
 
-  async function handleOAuthSignIn(provider: Provider) {
+  async function handleGoogleSignIn() {
     setErrorMessage(null);
     setSuccessMessage(null);
-    setPendingAction(provider === "google" ? "google" : "apple");
+    setPendingAction("google");
 
     try {
       const supabase = getSupabaseBrowserClient();
       const { error } = await supabase.auth.signInWithOAuth({
-        provider,
+        provider: "google",
         options: {
           redirectTo: getCallbackRedirect(),
         },
@@ -95,8 +114,8 @@ export function SocialAuthCard({ mode }: SocialAuthCardProps) {
       if (error) {
         setErrorMessage(error.message);
       }
-    } catch {
-      setErrorMessage("Configuration Supabase manquante côté site.");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Erreur de connexion.");
     } finally {
       setPendingAction(null);
     }
@@ -109,9 +128,10 @@ export function SocialAuthCard({ mode }: SocialAuthCardProps) {
     setPendingAction("password");
 
     try {
+      const resolvedEmail = await resolveEmailForLogin(loginIdentifier);
       const supabase = getSupabaseBrowserClient();
       const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: resolvedEmail,
         password,
       });
 
@@ -132,8 +152,13 @@ export function SocialAuthCard({ mode }: SocialAuthCardProps) {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    if (!email.trim()) {
-      setErrorMessage("Renseigne l'identifiant e-mail pour réinitialiser le mot de passe.");
+    if (!loginIdentifier.trim()) {
+      setErrorMessage("Renseigne ton e-mail pour réinitialiser le mot de passe.");
+      return;
+    }
+
+    if (!isEmailLike(loginIdentifier.trim())) {
+      setErrorMessage("La réinitialisation du mot de passe nécessite un e-mail.");
       return;
     }
 
@@ -141,7 +166,7 @@ export function SocialAuthCard({ mode }: SocialAuthCardProps) {
 
     try {
       const supabase = getSupabaseBrowserClient();
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      const { error } = await supabase.auth.resetPasswordForEmail(loginIdentifier.trim(), {
         redirectTo: getCallbackRedirect(),
       });
 
@@ -169,29 +194,20 @@ export function SocialAuthCard({ mode }: SocialAuthCardProps) {
         <h1 className="font-display text-4xl text-[var(--color-ink)]">{isSignup ? "Créer un compte" : "Connexion"}</h1>
         <p className="text-sm text-[var(--color-muted)]">
           {isSignup
-            ? "Rejoignez BeFood en un clic avec votre compte Google ou Apple."
-            : "Accédez à votre espace BeFood avec Google/Apple ou avec votre identifiant coach."}
+            ? "Rejoignez BeFood en un clic avec votre compte Google."
+            : "Accédez à votre espace BeFood avec Google ou avec votre identifiant coach."}
         </p>
       </div>
 
       <div className="mt-6 space-y-3">
         <button
           type="button"
-          onClick={() => handleOAuthSignIn("google")}
+          onClick={handleGoogleSignIn}
           disabled={isBusy}
           className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--color-border)] bg-white px-4 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-panel)] disabled:cursor-not-allowed disabled:opacity-70"
         >
           <GoogleIcon />
           {pendingAction === "google" ? "Connexion..." : `${isSignup ? "Créer un compte" : "Continuer"} avec Google`}
-        </button>
-        <button
-          type="button"
-          onClick={() => handleOAuthSignIn("apple")}
-          disabled={isBusy}
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-[var(--color-border)] bg-white px-4 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-panel)] disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          <AppleIcon />
-          {pendingAction === "apple" ? "Connexion..." : `${isSignup ? "Créer un compte" : "Continuer"} avec Apple`}
         </button>
       </div>
 
@@ -207,15 +223,15 @@ export function SocialAuthCard({ mode }: SocialAuthCardProps) {
 
           <form className="space-y-3" onSubmit={handlePasswordSignIn}>
             <label className="block space-y-1 text-sm font-medium text-[var(--color-ink)]">
-              Identifiant e-mail
+              Identifiant ou e-mail
               <input
-                type="email"
-                name="email"
-                autoComplete="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
+                type="text"
+                name="login_identifier"
+                autoComplete="username"
+                value={loginIdentifier}
+                onChange={(event) => setLoginIdentifier(event.target.value)}
                 className="h-12 w-full rounded-full border border-[var(--color-border)] bg-white px-4 text-sm outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
-                placeholder="coach@befood.fr"
+                placeholder="identifiant ou email"
                 required
               />
             </label>
@@ -267,12 +283,22 @@ export function SocialAuthCard({ mode }: SocialAuthCardProps) {
 
       <div className="mt-5 text-center text-sm text-[var(--color-muted)]">
         {isSignup ? "Vous avez déjà un compte ?" : "Pas encore de compte ?"}{" "}
-        <Link
-          href={isSignup ? "/connexion" : "/inscription"}
-          className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline"
-        >
-          {isSignup ? "Se connecter" : "Créer un compte"}
-        </Link>
+        {onSwitchMode ? (
+          <button
+            type="button"
+            onClick={() => onSwitchMode(isSignup ? "signin" : "signup")}
+            className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline"
+          >
+            {isSignup ? "Se connecter" : "Créer un compte"}
+          </button>
+        ) : (
+          <Link
+            href={isSignup ? "/connexion" : "/inscription"}
+            className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline"
+          >
+            {isSignup ? "Se connecter" : "Créer un compte"}
+          </Link>
+        )}
       </div>
 
       <p className="mt-5 text-center text-xs leading-5 text-[var(--color-muted)]">

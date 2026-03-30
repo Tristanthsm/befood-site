@@ -7,7 +7,7 @@ import { createPageMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Inscription",
-  description: "Créez votre compte BeFood avec Google ou Apple.",
+  description: "Créez votre compte BeFood avec Google.",
   path: "/inscription",
   noIndex: true,
 });

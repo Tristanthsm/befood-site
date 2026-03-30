@@ -1,10 +1,38 @@
 import Link from "next/link";
 
 import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
+import { AccountDropdown } from "@/components/layout/account-dropdown";
 import { HeaderShell } from "@/components/layout/header-shell";
 import { mainNavigation } from "@/lib/site-config";
+import { getCoachAccountSummary } from "@/lib/supabase/coach-account";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-export function Header() {
+function toProviderLabel(appMetadata: unknown): string {
+  if (!appMetadata || typeof appMetadata !== "object") {
+    return "Non défini";
+  }
+
+  const providers = (appMetadata as { providers?: unknown }).providers;
+  if (!Array.isArray(providers) || providers.length === 0) {
+    return "Non défini";
+  }
+
+  return providers
+    .map((provider) => String(provider))
+    .join(", ")
+    .replace("google", "Google")
+    .replace("apple", "Apple")
+    .replace("email", "E-mail");
+}
+
+export async function Header() {
+  const supabase = await getSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const coachAccount = user ? await getCoachAccountSummary(user.id) : null;
+  const providerLabel = user ? toProviderLabel(user.app_metadata) : "Non défini";
+
   return (
     <HeaderShell>
       <div className="mx-auto grid max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-4 py-2">
@@ -36,20 +64,22 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center justify-self-end gap-2 md:flex">
-          <Link
-            href="/connexion"
-            className="inline-flex items-center rounded-full border border-[var(--color-border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-panel)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-          >
-            Se connecter
-          </Link>
-          <StartFreeModalTrigger
-            trackingId="start_free"
-            trackingLocation="header_desktop"
-            className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_24px_-14px_rgba(16,185,129,0.95)] transition hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-          >
-            Démarrer gratuitement
-          </StartFreeModalTrigger>
+        <div className="hidden items-center justify-self-end md:flex">
+          {user ? (
+            <AccountDropdown
+              email={user.email ?? "Aucun e-mail"}
+              providerLabel={providerLabel}
+              showCoachLink={Boolean(coachAccount)}
+            />
+          ) : (
+            <StartFreeModalTrigger
+              trackingId="start_free"
+              trackingLocation="header_desktop"
+              className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_24px_-14px_rgba(16,185,129,0.95)] transition hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+            >
+              Démarrer gratuitement
+            </StartFreeModalTrigger>
+          )}
         </div>
 
         <details className="group relative justify-self-end md:hidden">
@@ -67,19 +97,32 @@ export function Header() {
                   {item.label}
                 </Link>
               ))}
-              <Link
-                href="/connexion"
-                className="mt-1 rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
-              >
-                Se connecter
-              </Link>
-              <StartFreeModalTrigger
-                trackingId="start_free"
-                trackingLocation="header_mobile"
-                className="rounded-xl bg-[var(--color-accent)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-              >
-                Démarrer gratuitement
-              </StartFreeModalTrigger>
+              {user ? (
+                <>
+                  <Link
+                    href="/profil"
+                    className="mt-1 rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
+                  >
+                    Mon profil
+                  </Link>
+                  {coachAccount ? (
+                    <Link
+                      href="/espace-coach"
+                      className="rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
+                    >
+                      Mon espace coach
+                    </Link>
+                  ) : null}
+                </>
+              ) : (
+                <StartFreeModalTrigger
+                  trackingId="start_free"
+                  trackingLocation="header_mobile"
+                  className="mt-1 rounded-xl bg-[var(--color-accent)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                >
+                  Démarrer gratuitement
+                </StartFreeModalTrigger>
+              )}
             </nav>
           </div>
         </details>

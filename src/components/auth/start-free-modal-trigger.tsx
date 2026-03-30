@@ -20,6 +20,12 @@ export function StartFreeModalTrigger({
   trackingLocation,
 }: StartFreeModalTriggerProps) {
   const [open, setOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"signup" | "signin">("signup");
+
+  const closeModal = () => {
+    setOpen(false);
+    setAuthMode("signup");
+  };
 
   useEffect(() => {
     if (!open) {
@@ -31,7 +37,7 @@ export function StartFreeModalTrigger({
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setOpen(false);
+        closeModal();
       }
     };
 
@@ -62,18 +68,18 @@ export function StartFreeModalTrigger({
                 type="button"
                 aria-label="Fermer la fenêtre de connexion"
                 className="absolute inset-0 bg-black/45 backdrop-blur-[1px]"
-                onClick={() => setOpen(false)}
+                onClick={closeModal}
               />
               <div className="relative w-full max-w-lg">
                 <button
                   type="button"
                   aria-label="Fermer"
                   className="absolute right-3 top-3 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-xl leading-none text-[var(--color-ink)] shadow-sm ring-1 ring-[var(--color-border)] hover:bg-white"
-                  onClick={() => setOpen(false)}
+                  onClick={closeModal}
                 >
                   ×
                 </button>
-                <SocialAuthCard mode="signup" />
+                <SocialAuthCard mode={authMode} onSwitchMode={setAuthMode} />
               </div>
             </div>,
             document.body,

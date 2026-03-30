@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { type FormEvent, useMemo, useState } from "react";
 
 type FormState = {
   firstName: string;
@@ -15,6 +15,8 @@ interface SupportContactFormProps {
   supportEmail: string;
 }
 
+type SubmissionState = "idle" | "submitting" | "success" | "error";
+
 const initialState: FormState = {
   firstName: "",
   lastName: "",
@@ -26,6 +28,8 @@ const initialState: FormState = {
 
 export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
   const [formState, setFormState] = useState<FormState>(initialState);
+  const [submissionState, setSubmissionState] = useState<SubmissionState>("idle");
+  const [submissionMessage, setSubmissionMessage] = useState("");
 
   const canSubmit = useMemo(() => {
     return (
@@ -36,26 +40,42 @@ export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
     );
   }, [formState]);
 
-  const mailtoHref = useMemo(() => {
-    const subject = "Demande d'aide BeFood";
-    const lines = [
-      "Demande d'aide BeFood",
-      "",
-      `Prénom: ${formState.firstName.trim() || "-"}`,
-      `Nom: ${formState.lastName.trim() || "-"}`,
-      `Email: ${formState.email.trim() || "-"}`,
-      `Téléphone: ${formState.phone.trim() || "-"}`,
-      `ID compte (optionnel): ${formState.accountId.trim() || "-"}`,
-      "",
-      "Message",
-      formState.message.trim() || "-",
-    ];
-
-    return `mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
-  }, [formState, supportEmail]);
-
   function setField<K extends keyof FormState>(key: K, value: FormState[K]) {
     setFormState((previous) => ({ ...previous, [key]: value }));
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!canSubmit || submissionState === "submitting") {
+      return;
+    }
+
+    setSubmissionState("submitting");
+    setSubmissionMessage("");
+
+    try {
+      const response = await fetch("/api/support-contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formState),
+      });
+
+      const payload = (await response.json().catch(() => null)) as { message?: string } | null;
+      if (!response.ok) {
+        throw new Error(payload?.message || "Envoi impossible pour le moment.");
+      }
+
+      setSubmissionState("success");
+      setSubmissionMessage("Demande envoyée. L'équipe BeFood vous répondra sous 48h ouvrées.");
+      setFormState(initialState);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Envoi impossible pour le moment.";
+      setSubmissionState("error");
+      setSubmissionMessage(message);
+    }
   }
 
   return (
@@ -69,7 +89,7 @@ export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
         </p>
       </div>
 
-      <form className="space-y-4" onSubmit={(event) => event.preventDefault()}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="space-y-2 text-sm font-medium text-[var(--color-ink)]">
             Prénom
@@ -149,24 +169,29 @@ export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
         </label>
 
         <div className="flex flex-wrap items-center gap-3">
-          <a
-            href={canSubmit ? mailtoHref : "#"}
+          <button
+            type="submit"
             className={`inline-flex min-h-11 items-center justify-center rounded-full px-5 text-sm font-semibold transition ${
-              canSubmit
+              canSubmit && submissionState !== "submitting"
                 ? "bg-[var(--color-accent)] text-white hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
                 : "cursor-not-allowed bg-[var(--color-border)] text-[var(--color-muted)]"
             }`}
-            aria-disabled={!canSubmit}
-            onClick={(event) => {
-              if (!canSubmit) {
-                event.preventDefault();
-              }
-            }}
+            disabled={!canSubmit || submissionState === "submitting"}
           >
-            Préparer l&apos;e-mail
-          </a>
+            {submissionState === "submitting" ? "Envoi en cours..." : "Envoyer la demande"}
+          </button>
           <p className="text-xs text-[var(--color-muted)]">Adresse de destination: {supportEmail}</p>
         </div>
+
+        {submissionMessage ? (
+          <p
+            className={`text-sm ${
+              submissionState === "success" ? "text-[var(--color-accent-strong)]" : "text-red-600"
+            }`}
+          >
+            {submissionMessage}
+          </p>
+        ) : null}
       </form>
     </section>
   );
