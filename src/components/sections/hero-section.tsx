@@ -1,8 +1,16 @@
 import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
 import { Container } from "@/components/ui/container";
+import { StoreButtons } from "@/components/ui/store-buttons";
 import { content } from "@/content";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-export function HeroSection() {
+export async function HeroSection() {
+  const supabase = await getSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isAuthenticated = Boolean(user);
+
   return (
     <section className="bg-[var(--color-background)] pb-6 pt-8 sm:pb-10 sm:pt-12">
       <Container>
@@ -15,11 +23,14 @@ export function HeroSection() {
           </p>
 
           <div className="mt-6 flex flex-col items-center gap-3">
-            <StartFreeModalTrigger
-              className="inline-flex h-12 items-center justify-center rounded-full px-6 text-base font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-[var(--color-ink)] text-white hover:bg-black focus-visible:outline-[var(--color-ink)]"
-            >
-              Démarrer gratuitement
-            </StartFreeModalTrigger>
+            {!isAuthenticated ? (
+              <StartFreeModalTrigger
+                className="inline-flex h-12 items-center justify-center rounded-full px-6 text-base font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-[var(--color-ink)] text-white hover:bg-black focus-visible:outline-[var(--color-ink)]"
+              >
+                Démarrer gratuitement
+              </StartFreeModalTrigger>
+            ) : null}
+            <StoreButtons compact />
           </div>
         </div>
       </Container>

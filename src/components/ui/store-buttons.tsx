@@ -13,7 +13,7 @@ function AppleIcon({ className }: { className?: string }) {
     <svg viewBox="0 0 24 24" aria-hidden className={cn("h-5 w-5", className)}>
       <path
         fill="currentColor"
-        d="M16.69 12.9c.03 3.21 2.82 4.28 2.85 4.29-.02.07-.44 1.53-1.44 3.03-.87 1.3-1.77 2.6-3.2 2.62-1.4.03-1.85-.83-3.46-.83s-2.1.8-3.43.85c-1.38.05-2.43-1.38-3.31-2.67-1.8-2.61-3.17-7.39-1.33-10.59.91-1.58 2.55-2.58 4.34-2.61 1.36-.03 2.64.92 3.46.92.81 0 2.33-1.14 3.93-.97.67.03 2.55.27 3.76 2.04-.1.06-2.24 1.31-2.22 3.92Zm-2.24-6.72c.73-.89 1.22-2.12 1.09-3.35-1.06.04-2.34.71-3.11 1.6-.67.78-1.27 2.03-1.11 3.22 1.18.09 2.4-.6 3.13-1.47Z"
+        d="M16.6 12.7c0-2.2 1.8-3.3 1.9-3.4-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.8-3.5.8-.8 0-1.9-.8-3.1-.8-1.6 0-3.1.9-3.9 2.3-1.7 2.9-.4 7.2 1.2 9.5.8 1.1 1.7 2.4 2.9 2.3 1.1 0 1.6-.7 3-.7 1.4 0 1.8.7 3 .7 1.3 0 2-.9 2.8-2.1.9-1.3 1.2-2.6 1.3-2.6-.1 0-2.2-.8-2.2-4.2ZM14.2 6c.6-.8 1-1.9.9-3-.9 0-2 .6-2.6 1.4-.6.7-1.1 1.9-1 3 1 .1 2-.5 2.7-1.4Z"
       />
     </svg>
   );
@@ -30,65 +30,78 @@ function PlayIcon({ className }: { className?: string }) {
   );
 }
 
-function StoreLabel({ top, bottom }: { top: string; bottom: string }) {
-  return (
-    <span className="flex flex-col items-start leading-tight">
-      <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/70">{top}</span>
-      <span className="text-sm font-semibold text-white">{bottom}</span>
-    </span>
-  );
-}
-
 export function StoreButtons({ className, compact = false }: StoreButtonsProps) {
+  const baseTileClass =
+    "h-14 w-[17.5rem] items-center justify-between rounded-full border border-[#d9e0e8] bg-white px-4 text-left shadow-none";
+  const badgeClass =
+    "h-7 shrink-0 rounded-full border border-[var(--color-border)] bg-transparent px-3 text-[11px] font-semibold text-[var(--color-muted)]";
+  const leftGroupClass = "flex items-center gap-2";
+  const labelClass = "flex flex-col items-start leading-tight";
+  const topTextClass = "text-[10px] font-semibold uppercase tracking-[0.12em] text-[#516173]";
+  const bottomTextClass = "text-sm font-semibold text-[#0b1118]";
+
   return (
     <div className={cn("flex flex-wrap items-center gap-3", className)}>
       {storeLinks.appStore.status === "live" ? (
         <ButtonLink
           href={storeLinks.appStore.url}
           size={compact ? "md" : "lg"}
-          className="min-h-14 min-w-[14.5rem] items-center justify-start gap-2 rounded-2xl border border-[#d9e0e8] bg-white px-5 py-3 text-left shadow-none hover:bg-[#f4f7fa]"
+          className={cn(baseTileClass, "hover:bg-[#f4f7fa]")}
           ariaLabel="Télécharger BeFood sur l'App Store"
         >
-          <AppleIcon className="text-[#0b1118]" />
-          <span className="flex flex-col items-start leading-tight">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#516173]">Disponible sur</span>
-            <span className="text-sm font-semibold text-[#0b1118]">App Store</span>
+          <span className={leftGroupClass}>
+            <AppleIcon className="text-[#0b1118]" />
+            <span className={labelClass}>
+              <span className={topTextClass}>Disponible sur</span>
+              <span className={bottomTextClass}>App Store</span>
+            </span>
           </span>
+          <Badge className={badgeClass}>Disponible</Badge>
         </ButtonLink>
       ) : (
         <div
           data-store-placeholder
-          className="inline-flex min-h-14 min-w-[14.5rem] items-center gap-2 rounded-2xl border border-dashed border-[#d9e0e8] bg-white px-5 py-3 text-sm font-medium text-[#0b1118]/80"
+          className={cn("inline-flex", baseTileClass)}
         >
-          <AppleIcon className="text-[#0b1118]" />
-          <span className="flex flex-col items-start leading-tight">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#516173]">Disponible sur</span>
-            <span className="text-sm font-semibold text-[#0b1118]">App Store</span>
+          <span className={leftGroupClass}>
+            <AppleIcon className="text-[#0b1118]" />
+            <span className={labelClass}>
+              <span className={topTextClass}>Disponible sur</span>
+              <span className={bottomTextClass}>App Store</span>
+            </span>
           </span>
-          <Badge className="ml-1 bg-[var(--color-accent-soft)] text-[var(--color-accent-strong)]">Bientôt</Badge>
+          <Badge className={badgeClass}>Pas encore disponible</Badge>
         </div>
       )}
       {storeLinks.googlePlay.status === "live" ? (
         <ButtonLink
           href={storeLinks.googlePlay.url}
-          variant="secondary"
-          size={compact ? "md" : "md"}
-          className="min-h-12 min-w-[12.5rem] items-center justify-start gap-2 rounded-2xl border border-[#1f2937] bg-[#0b1118] px-4 py-2.5 text-left text-white shadow-none ring-0 hover:bg-[#131c27] hover:text-white"
+          size={compact ? "md" : "lg"}
+          className={cn(baseTileClass, "hover:bg-[#f4f7fa]")}
           ariaLabel="Télécharger BeFood sur Google Play"
         >
-          <PlayIcon />
-          <StoreLabel top="Disponible sur" bottom="Google Play" />
+          <span className={leftGroupClass}>
+            <PlayIcon className="text-[#0b1118]" />
+            <span className={labelClass}>
+              <span className={topTextClass}>Disponible sur</span>
+              <span className={bottomTextClass}>Google Play</span>
+            </span>
+          </span>
+          <Badge className={badgeClass}>Disponible</Badge>
         </ButtonLink>
       ) : (
         <div
           data-store-placeholder
-          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[var(--color-border)] bg-[color:rgb(245_249_248)] px-4 py-2 text-sm text-[var(--color-muted)]"
+          className={cn("inline-flex", baseTileClass)}
         >
-          <PlayIcon className="h-4 w-4" />
-          <span className="font-medium text-[var(--color-muted)]">Google Play</span>
-          <Badge className="ml-1 border border-[var(--color-border)] bg-transparent text-[var(--color-muted)]">
-            Bientôt disponible
-          </Badge>
+          <span className={leftGroupClass}>
+            <PlayIcon className="text-[#0b1118]" />
+            <span className={labelClass}>
+              <span className={topTextClass}>Disponible sur</span>
+              <span className={bottomTextClass}>Google Play</span>
+            </span>
+          </span>
+          <Badge className={badgeClass}>Pas encore disponible</Badge>
         </div>
       )}
     </div>
