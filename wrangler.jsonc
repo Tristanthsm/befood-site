@@ -3,5 +3,9 @@
   "name": "befood-site-git",
   "compatibility_date": "2026-03-30",
   "compatibility_flags": ["nodejs_compat"],
-  "pages_build_output_dir": ".vercel/output/static"
+  "pages_build_output_dir": ".vercel/output/static",
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://auth.befood.fr",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqdmhkY2FpamllbnR6c2FtcWthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5ODY3MzAsImV4cCI6MjA3OTU2MjczMH0.1Bmm9jxgCpksI0U7w1YDVEVsWSlK1Jnng4B60Fy08Kg"
+  }
 }
