@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import type { FaqItem } from "@/lib/types";
-import { defaultOgImage, siteConfig } from "@/lib/site-config";
+import { brandAssets, defaultOgImage, siteConfig } from "@/lib/site-config";
 
 interface PageMetadataInput {
   title: string;
@@ -67,6 +67,7 @@ export function getOrganizationJsonLd() {
     "@type": "Organization",
     name: siteConfig.name,
     url: siteConfig.siteUrl,
+    logo: createCanonicalUrl(brandAssets.logo),
     email: siteConfig.contactEmail,
   };
 }

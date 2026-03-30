@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import type { CSSProperties } from "react";
+import { useState } from "react";
 
 import { Container } from "@/components/ui/container";
 
@@ -29,18 +32,41 @@ const appScreens = [
 // Reglages manuels du 5e visuel (telephone + mascotte)
 // Ajuste simplement ces valeurs pour deplacer/agrandir rapidement.
 const fifthScreenTuning = {
-  widthPx: 640,
-  offsetXPx: -185,
-  offsetYPx: 10,
-  scale: 1.10
+  widthPx: 735,
+  offsetXPx: -155,
+  offsetYPx: 15,
+  scale: 1.28
 };
 
+const regularScreenScale = 1.33;
+// Decalage horizontal des 4 premiers telephones uniquement.
+// Valeur negative = deplacer vers la gauche.
+const firstFourScreensOffsetXPx = -70;
+
+// Reglage manuel de la rangee complete (les 5 ecrans d'un coup)
+// Augmente cette valeur pour deplacer a droite, diminue pour deplacer a gauche.
+const screensRowOffsetXPx = 58;
+const screensRowOffsetYPx = 46;
+
 export function AppShowcaseSection() {
+  const [loadedScreens, setLoadedScreens] = useState<string[]>([]);
+  const allScreensLoaded = loadedScreens.length === appScreens.length;
+
+  const markScreenAsLoaded = (src: string) => {
+    setLoadedScreens((previous) => (previous.includes(src) ? previous : [...previous, src]));
+  };
+
   return (
-    <section className="bg-[var(--color-background)] pb-12 sm:pb-16">
+    <section className="bg-[var(--color-background)] pb-12 pt-10 sm:pb-16 sm:pt-14">
       <Container>
         <div className="overflow-x-auto overflow-y-visible pb-3 lg:overflow-visible">
-          <div className="flex min-w-max items-end gap-4">
+          <div
+            style={{ transform: `translate(${screensRowOffsetXPx}px, ${screensRowOffsetYPx}px)` }}
+            className={[
+              "flex min-w-max items-end gap-11 transition-opacity duration-300 sm:gap-12",
+              allScreensLoaded ? "opacity-100" : "opacity-0",
+            ].join(" ")}
+          >
             {appScreens.map((screen, index) => {
               const isFifth = index === 4;
               const fifthFigureStyle: CSSProperties | undefined = isFifth
@@ -52,11 +78,22 @@ export function AppShowcaseSection() {
                   transformOrigin: "bottom right",
                 }
                 : undefined;
+              const regularImageStyle: CSSProperties | undefined = !isFifth
+                ? {
+                  transform: `scale(${regularScreenScale})`,
+                  transformOrigin: "bottom center",
+                }
+                : undefined;
+              const regularFigureStyle: CSSProperties | undefined = !isFifth && firstFourScreensOffsetXPx !== 0
+                ? {
+                  transform: `translateX(${firstFourScreensOffsetXPx}px)`,
+                }
+                : undefined;
 
               return (
                 <figure
                   key={screen.src}
-                  style={fifthFigureStyle}
+                  style={isFifth ? fifthFigureStyle : regularFigureStyle}
                   className={[
                     "relative shrink-0 overflow-visible",
                     index === 2 ? "lg:-mt-6" : "",
@@ -68,12 +105,13 @@ export function AppShowcaseSection() {
                     alt={screen.alt}
                     width={index === 4 ? 2752 : 1419}
                     height={index === 4 ? 1536 : 2796}
-                    style={fifthImageStyle}
+                    style={isFifth ? fifthImageStyle : regularImageStyle}
                     className={[
                       "relative z-10 h-auto w-full object-contain",
                       isFifth ? "max-w-none" : "",
                     ].join(" ")}
-                    priority={index < 2}
+                    priority
+                    onLoadingComplete={() => markScreenAsLoaded(screen.src)}
                   />
                 </figure>
               );

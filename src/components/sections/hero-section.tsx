@@ -1,6 +1,4 @@
-import Link from "next/link";
-
-import { ButtonLink } from "@/components/ui/button";
+import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
 import { Container } from "@/components/ui/container";
 import { content } from "@/content";
 
@@ -17,24 +15,11 @@ export function HeroSection() {
           </p>
 
           <div className="mt-6 flex flex-col items-center gap-3">
-            <ButtonLink
-              href="/connexion"
-              size="lg"
-              className="bg-[var(--color-ink)] text-white hover:bg-black focus-visible:outline-[var(--color-ink)]"
+            <StartFreeModalTrigger
+              className="inline-flex h-12 items-center justify-center rounded-full px-6 text-base font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-[var(--color-ink)] text-white hover:bg-black focus-visible:outline-[var(--color-ink)]"
             >
               Démarrer gratuitement
-            </ButtonLink>
-            <p className="text-sm text-[color:rgb(70_95_110)]">Obtenez votre programme personnalisé en quelques minutes.</p>
-          </div>
-
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-[color:rgb(54_79_95)]">
-            <p>{content.heroContent.reassurance}</p>
-            <Link
-              href="/pour-les-coachs"
-              className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-            >
-              Espace coachs et pros
-            </Link>
+            </StartFreeModalTrigger>
           </div>
         </div>
       </Container>

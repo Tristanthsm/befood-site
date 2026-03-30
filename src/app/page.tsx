@@ -1,15 +1,11 @@
 import { AppShowcaseSection } from "@/components/sections/app-showcase-section";
 import { CommunitySection } from "@/components/sections/community-section";
-import { CoachingSection } from "@/components/sections/coaching-section";
-import { FeaturesSection } from "@/components/sections/features-section";
 import { FinalCtaSection } from "@/components/sections/final-cta-section";
 import { HeroSection } from "@/components/sections/hero-section";
-import { HomeFaqSection } from "@/components/sections/home-faq-section";
 import { HowItWorksSection } from "@/components/sections/how-it-works-section";
-import { TrustSection } from "@/components/sections/trust-section";
-import { JsonLd } from "@/components/seo/json-ld";
-import { content } from "@/content";
-import { createPageMetadata, getFaqJsonLd } from "@/lib/seo";
+import { createPageMetadata } from "@/lib/seo";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = createPageMetadata({
   title: "Application nutrition iOS: analyse photo repas et habitudes",
@@ -30,14 +26,9 @@ export default function HomePage() {
     <>
       <HeroSection />
       <AppShowcaseSection />
-      <TrustSection />
       <HowItWorksSection />
-      <FeaturesSection />
-      <CoachingSection />
       <CommunitySection />
-      <HomeFaqSection />
       <FinalCtaSection />
-      <JsonLd data={getFaqJsonLd(content.homeFaqItems)} />
     </>
   );
 }

@@ -117,11 +117,6 @@ export interface FaqItem {
   answer: string;
 }
 
-export interface CoachUseCase {
-  title: string;
-  description: string;
-}
-
 export interface AccessCard {
   title: string;
   description: string;
@@ -130,21 +125,19 @@ export interface AccessCard {
 }
 
 export interface CoachPageContent {
+  heroBadge: string;
   heroTitle: string;
   heroDescription: string;
-  heroBadge: string;
-  heroCoachImpactTitle: string;
-  heroCoachImpactPoints: string[];
-  heroClientImpactTitle: string;
-  heroClientImpactPoints: string[];
-  valueTitle: string;
-  valueItems: FeatureItem[];
-  useCasesTitle: string;
-  useCases: CoachUseCase[];
-  processTitle: string;
-  processSteps: StepItem[];
-  faqTitle: string;
-  faqItems: FaqItem[];
+  heroUserLensTitle: string;
+  heroUserLensDescription: string;
+  heroProfileLensTitle: string;
+  heroProfileLensDescription: string;
+  ecosystemTitle: string;
+  ecosystemDescription: string;
+  ecosystemItems: FeatureItem[];
+  eligibilityTitle: string;
+  eligibilityDescription: string;
+  eligibilityItems: FeatureItem[];
   finalCta: CtaBlock;
 }
 

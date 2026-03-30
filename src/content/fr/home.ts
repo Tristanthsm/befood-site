@@ -13,32 +13,27 @@ import type {
 
 export const heroContent: HeroContent = {
   badge: "",
-  title: "Photo, analyse, guidance: BeFood vous aide à mieux manger sur la durée.",
+  title: "Comprenez vos repas. Construisez de meilleures habitudes.",
   description:
-    "Prenez un repas en photo, recevez une analyse nutritionnelle compréhensible, puis avancez avec une couche de coach IA qui vous guide vers de meilleures habitudes.",
+    "Une photo, des repères clairs, puis un accompagnement personnalisé pour mieux manger dans la durée.",
   reassurance:
     "Approche bien-être et éducation nutritionnelle. BeFood n'est pas un service médical et ne fournit pas de diagnostic.",
 };
 
-export const trustTitle = "Clair, utile et déjà actionnable";
+export const trustTitle = "Comprendre. Être accompagné. Progresser.";
 
 export const trustItems: TrustItem[] = [
   {
-    title: "Disponible sur iPhone",
-    description: "Téléchargement direct via l'App Store avec une expérience pensée mobile-first.",
+    title: "Des repères enfin lisibles",
+    description: "Photo d'un repas, repères clairs en quelques secondes.",
   },
   {
-    title: "Analyse photo IA",
-    description: "Un repas capturé devient une lecture nutritionnelle compréhensible et immédiatement exploitable.",
+    title: "Un coach adapté à vos objectifs",
+    description: "Un accompagnement qui suit votre objectif et votre rythme.",
   },
   {
-    title: "Aide et cadre de confiance",
-    description: "Aide, confidentialité et conditions disponibles à tout moment pour une utilisation transparente.",
-    href: "/aide",
-  },
-  {
-    title: "Google Play en préparation",
-    description: "La version Android n'est pas encore ouverte. Le lancement sera annoncé officiellement.",
+    title: "Une progression qui tient dans le temps",
+    description: "Une dynamique collective pour rester régulier dans la durée.",
   },
 ];
 
@@ -153,7 +148,7 @@ export const quizContent: QuizContent = {
   disclaimer: "Ce diagnostic est informatif et ne remplace pas un avis médical personnalisé.",
 };
 
-export const featuresTitle = "BeFood, plus qu'un simple tracker";
+export const featuresTitle = "Une lecture plus utile que le simple tracking";
 
 export const featureItems: FeatureItem[] = [
   {
@@ -174,24 +169,24 @@ export const featureItems: FeatureItem[] = [
   },
 ];
 
-export const differentiationTitle = "Pourquoi BeFood est différent";
+export const differentiationTitle = "Une lecture plus utile que le simple tracking";
 
 export const differentiators: Differentiator[] = [
   {
-    title: "Plus qu'un compteur de calories",
-    description: "BeFood vous aide à interpréter les repas plutôt qu'à accumuler des chiffres isolés.",
-  },
-  {
-    title: "Compréhension avant restriction",
-    description: "Le but est d'éclairer vos choix, pas d'imposer une logique punitive ou rigide.",
+    title: "Comprendre avant restreindre",
+    description: "L'objectif est de guider vos choix, pas d'imposer une logique punitive.",
   },
   {
     title: "Habitudes avant obsession",
-    description: "L'expérience favorise la constance et les décisions utiles semaine après semaine.",
+    description: "La constance et les ajustements utiles comptent plus que la perfection quotidienne.",
+  },
+  {
+    title: "Repères avant chiffres isolés",
+    description: "Vous comprenez le repas dans son ensemble, pas uniquement des totaux.",
   },
 ];
 
-export const coachingTitle = "Un accompagnement nutritionnel intelligent";
+export const coachingTitle = "Un accompagnement qui aide vraiment";
 
 export const coachingDescription =
   "BeFood ajoute une couche de guidance pour interpréter vos repas, prendre de meilleures décisions et garder le cap sans culpabilité.";
@@ -199,32 +194,28 @@ export const coachingDescription =
 export const coachingPoints: CoachingPoint[] = [
   {
     title: "Des retours contextualisés",
-    description: "Chaque analyse devient une recommandation simple à appliquer dans votre contexte réel.",
+    description: "Chaque analyse devient une recommandation concrète à appliquer dans votre contexte réel.",
   },
   {
-    title: "Un cadre non culpabilisant",
+    title: "Un ton non culpabilisant",
     description: "Le ton reste constructif, même quand une semaine est imparfaite.",
   },
   {
-    title: "Décisions plus claires dans la durée",
+    title: "Des décisions plus claires au quotidien",
     description: "Vous savez quoi ajuster au prochain repas sans repartir de zéro.",
   },
 ];
 
-export const socialTitle = "Une dynamique sociale qui motive";
+export const socialTitle = "Une motivation qui se partage";
 
 export const socialItems: SocialItem[] = [
   {
     title: "Partager ses repas",
-    description: "Montrez vos idées de repas pour nourrir des échanges utiles et concrets.",
+    description: "Partagez repas, recettes et progrès pour rester motivé ensemble.",
   },
   {
-    title: "Trouver de nouvelles inspirations",
-    description: "Découvrez des idées simples pour garder une alimentation variée au quotidien.",
-  },
-  {
-    title: "Rester engagé sur le long terme",
-    description: "La dimension collective soutient la motivation sans esprit de comparaison toxique.",
+    title: "Trouver de nouvelles idées",
+    description: "Inspirez-vous d'idées concrètes et d'échanges utiles au quotidien.",
   },
 ];
 
@@ -259,8 +250,8 @@ export const homeFaqItems: FaqItem[] = [
 ];
 
 export const finalCta: CtaBlock = {
-  title: "Passez à une lecture plus intelligente de vos repas",
+  title: "Téléchargez BeFood et commencez simplement",
   description:
-    "Téléchargez BeFood sur iPhone pour analyser vos repas, clarifier vos choix nutritionnels et construire des habitudes durables.",
+    "Analysez vos repas, obtenez des repères clairs et installez de meilleures habitudes au quotidien.",
   note: "Version iOS disponible dès maintenant. Google Play arrive bientôt.",
 };

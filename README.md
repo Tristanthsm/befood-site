@@ -1,6 +1,6 @@
 # BeFood Site
 
-Site marketing/support de **BeFood** (application iOS) en architecture statique-first.
+Site marketing/support de **BeFood** (application iOS) en architecture Next.js server.
 
 ## Stack
 
@@ -13,32 +13,32 @@ Site marketing/support de **BeFood** (application iOS) en architecture statique-
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
 Ouvrir [http://localhost:3000](http://localhost:3000).
+
+Variables requises dans `.env.local`:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
+
+Utiliser les mêmes valeurs que l'application mobile pour partager les utilisateurs/profils.
 
 ## Vérification
 
 ```bash
 npm run lint
 npm run build
-```
-
-Prévisualiser l'export statique:
-
-```bash
 npm run start
 ```
 
 ## Déploiement
 
-Le projet exporte en statique (`next.config.ts` -> `output: "export"`).
-
-Cloudflare Pages:
-- Framework preset: `None`
-- Build command: `npm run build`
-- Build output directory: `out`
+Le projet fonctionne en mode serveur Next.js.
 
 ## Structure
 
@@ -86,13 +86,12 @@ public/
 - URL de demande d'accès coach (`coachRequestAccessUrl`) si vous remplacez le parcours support.
 - URL de connexion coach (`coachSignInUrl`) quand l'accès authentifié est réellement disponible.
 - Canal support final (si différent du support in-app).
-- Asset OG final: `public/images/og/befood-og.svg`.
-- Icône finale: `src/app/icon.svg`.
+- Asset OG final: `public/images/og/befood-og.png`.
+- Assets logo/icônes: `public/images/brand/`, `src/app/icon.png`, `src/app/apple-icon.png`, `src/app/favicon.ico`.
 
 ## Hors scope volontaire
 
-- Auth web produit
-- Connexion backend/Supabase côté site
+- Auth web complète (guard server + parcours complet connexion)
 - CMS / blog engine
 - Dashboard admin
 - Analytics actives

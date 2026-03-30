@@ -24,14 +24,14 @@ export const siteConfig: SiteConfig = {
   contactEmail: "contact@befood.fr",
   privacyPath: "/privacy",
   termsPath: "/terms",
-  coachRequestAccessUrl: "/aide",
+  coachRequestAccessUrl: "/candidature-coachs",
   coachSignInUrl: null,
   socialLinks: [],
 };
 
 export const mainNavigation: NavItem[] = [
   { label: "Comment ça marche", href: "/#comment-ca-marche" },
-  { label: "Pour les coachs", href: "/pour-les-coachs" },
+  { label: "Coachs & experts", href: "/pour-les-coachs" },
   { label: "Aide", href: "/aide" },
 ];
 
@@ -51,7 +51,7 @@ export const storeLinks: { appStore: StoreLink; googlePlay: StoreLink } = {
 };
 
 export const footerLinks: FooterLink[] = [
-  { label: "Pour les coachs", href: "/pour-les-coachs" },
+  { label: "Coachs & experts", href: "/pour-les-coachs" },
   { label: "Connexion", href: "/connexion" },
   { label: "Aide", href: "/aide" },
   { label: "Confidentialité", href: siteConfig.privacyPath },
@@ -61,8 +61,13 @@ export const footerLinks: FooterLink[] = [
 export const staticRoutes = ["/", "/quiz", "/pour-les-coachs", "/aide", "/privacy", "/terms"];
 
 export const defaultOgImage = {
-  url: "/images/og/befood-og.svg",
+  url: "/images/og/befood-og.png",
   width: 1200,
   height: 630,
   alt: "BeFood - Comprendre ses repas avec l'IA",
+} as const;
+
+export const brandAssets = {
+  logo: "/images/brand/befood-logo.png",
+  icon: "/images/brand/befood-icon-1024.png",
 } as const;

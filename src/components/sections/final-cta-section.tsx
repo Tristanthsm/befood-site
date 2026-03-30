@@ -1,4 +1,5 @@
-import { ButtonLink } from "@/components/ui/button";
+import Link from "next/link";
+
 import { Container } from "@/components/ui/container";
 import { StoreButtons } from "@/components/ui/store-buttons";
 import { content } from "@/content";
@@ -15,23 +16,23 @@ export function FinalCtaSection() {
               <p className="max-w-3xl text-base leading-7 text-white/78 sm:text-lg">{content.finalCta.description}</p>
               <StoreButtons className="[&_[data-store-placeholder]]:!border-white/30 [&_[data-store-placeholder]]:!bg-white/10 [&_[data-store-placeholder]]:!text-white/80" />
               <p className="text-sm text-white/70">{content.finalCta.note}</p>
-              <div className="flex flex-wrap gap-3">
-                <ButtonLink
-                  href="/aide"
-                  variant="ghost"
-                  size="md"
-                  className="border-white/30 text-white hover:bg-white/10 hover:text-white"
-                >
-                  Besoin d&apos;aide ? Ouvrir l&apos;aide
-                </ButtonLink>
-                <ButtonLink
-                  href="/pour-les-coachs"
-                  variant="ghost"
-                  size="md"
-                  className="border-white/30 text-white hover:bg-white/10 hover:text-white"
-                >
-                  Vous êtes coach ? Accéder au parcours pro
-                </ButtonLink>
+              <div className="space-y-2 text-sm">
+                <p>
+                  <Link
+                    href="/aide"
+                    className="text-white/85 underline-offset-4 hover:text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent-soft)]"
+                  >
+                    Besoin d&apos;aide ? Ouvrir l&apos;aide
+                  </Link>
+                </p>
+                <p>
+                  <Link
+                    href="/pour-les-coachs"
+                    className="text-white/85 underline-offset-4 hover:text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent-soft)]"
+                  >
+                    Vous êtes coach ou expert ? Découvrir l&apos;espace dédié
+                  </Link>
+                </p>
               </div>
             </div>
 

@@ -1,90 +1,61 @@
 import type { AccessCard, CoachPageContent } from "@/lib/types";
 
 export const coachPageContent: CoachPageContent = {
-  heroBadge: "Espace professionnels",
-  heroTitle: "Développez un accompagnement nutritionnel qui tient entre les séances",
+  heroBadge: "Écosystème coachs & experts BeFood",
+  heroTitle: "Qu'est-ce qu'un coach BeFood ?",
   heroDescription:
-    "BeFood transforme les repas du quotidien en décisions actionnables. Vous structurez mieux votre suivi, vos clients appliquent plus facilement, et la progression devient visible semaine après semaine.",
-  heroCoachImpactTitle: "Ce que ça change pour les coachs",
-  heroCoachImpactPoints: [
-    "Moins de flou entre deux séances, plus de matière utile à analyser.",
-    "Des retours plus concrets pour personnaliser vos recommandations.",
-    "Un suivi continu qui renforce votre valeur d'accompagnement.",
-  ],
-  heroClientImpactTitle: "Ce que ça change pour les personnes accompagnées",
-  heroClientImpactPoints: [
-    "Des repères clairs au quotidien, sans surcharge ni culpabilité.",
-    "Une meilleure compréhension de leurs choix alimentaires réels.",
-    "Plus de régularité grâce à des micro-ajustements simples.",
-  ],
-  valueTitle: "Pourquoi les coachs adoptent BeFood",
-  valueItems: [
+    "Un coach BeFood est un profil sélectionné qui rend l'accompagnement plus incarné dans l'app : repères concrets, compréhension des repas et progression durable.",
+  heroUserLensTitle: "Pour les utilisateurs",
+  heroUserLensDescription:
+    "Retrouvez des profils que vous appréciez, gardez un cadre vivant entre deux séances et avancez avec plus de continuité.",
+  heroProfileLensTitle: "Pour les coachs, créateurs et experts",
+  heroProfileLensDescription:
+    "BeFood ouvre une place réelle dans l'expérience produit aux profils retenus, avec une intégration pensée pour le quotidien utilisateur.",
+  ecosystemTitle: "Pourquoi cela change l'expérience BeFood",
+  ecosystemDescription:
+    "BeFood n'ajoute pas des coachs en périphérie. Les profils sélectionnés font partie du produit pour aider les utilisateurs à mieux comprendre leurs habitudes et rester engagés dans le temps.",
+  ecosystemItems: [
     {
-      title: "Transformer le savoir en actions",
-      description: "Vos recommandations deviennent des gestes concrets appliqués repas après repas.",
+      title: "Un accompagnement plus incarné",
+      description:
+        "L'utilisateur peut s'appuyer sur des profils reconnus plutôt que sur un parcours anonyme et impersonnel.",
     },
     {
-      title: "Mieux piloter la progression",
-      description: "Vous visualisez les tendances réelles et ajustez rapidement avant que la motivation chute.",
+      title: "Des repères qui restent concrets",
+      description:
+        "Conseils, interprétation et actions du quotidien restent alignés, même entre deux points de suivi.",
     },
     {
-      title: "Renforcer la relation coach-client",
-      description: "Le suivi reste vivant entre les séances, ce qui améliore l'adhésion et la confiance.",
-    },
-  ],
-  useCasesTitle: "Cas d'usage concrets",
-  useCases: [
-    {
-      title: "Suivi nutritionnel premium",
-      description: "Exploiter les repas capturés pour détecter rapidement les blocages et prioriser les bons ajustements.",
-    },
-    {
-      title: "Parcours anti-abandon",
-      description: "Mettre en place un cadre simple pour éviter le cycle \"je recommence\" et sécuriser la constance.",
-    },
-    {
-      title: "Accompagnement hybride efficace",
-      description: "Combiner vos séances et un soutien quotidien via l'app iOS pour garder l'élan.",
+      title: "Une continuité de progression",
+      description:
+        "Moins de ruptures, plus de régularité: la progression devient plus lisible et plus durable.",
     },
   ],
-  processTitle: "Comment démarrer",
-  processSteps: [
+  eligibilityTitle: "Qui peut rejoindre BeFood ?",
+  eligibilityDescription:
+    "L'intégration n'est jamais automatique. BeFood sélectionne les profils selon leur cohérence, leur qualité d'accompagnement et la valeur apportée à l'expérience utilisateur.",
+  eligibilityItems: [
     {
-      title: "1. Demander un accès professionnel",
-      description: "Vous nous partagez votre profil et votre contexte d'accompagnement.",
+      title: "Coachs et praticiens",
+      description:
+        "Vous accompagnez déjà des personnes avec une pratique structurée et une méthode applicable au quotidien.",
     },
     {
-      title: "2. Validation et onboarding",
-      description: "L'équipe BeFood confirme l'accès puis vous guide sur la prise en main.",
+      title: "Experts spécialisés",
+      description:
+        "Vous avez un diplôme reconnu, une spécialisation claire ou une expertise solide dans votre domaine.",
     },
     {
-      title: "3. Lancer vos premiers suivis",
-      description: "Vous utilisez BeFood comme extension de votre relation coach-client.",
-    },
-  ],
-  faqTitle: "FAQ pros",
-  faqItems: [
-    {
-      question: "BeFood remplace-t-elle un suivi humain ?",
-      answer:
-        "Non. BeFood complète votre accompagnement en apportant de la clarté entre les échanges, sans remplacer votre expertise.",
-    },
-    {
-      question: "Puis-je accéder à un espace web coach dès maintenant ?",
-      answer:
-        "L'accès web est progressif. La page Connexion vous indique si vous pouvez vous connecter directement ou demander un accès.",
-    },
-    {
-      question: "Faut-il déjà utiliser l'app pour candidater ?",
-      answer:
-        "Non. Vous pouvez d'abord demander un accès professionnel, puis nous vous guidons vers le bon parcours.",
+      title: "Créateurs avec audience engagée",
+      description:
+        "Vous produisez des contenus utiles et fédérez une audience qualifiée autour de la nutrition et du bien-être.",
     },
   ],
   finalCta: {
-    title: "Rejoignez le parcours pro BeFood",
+    title: "Présentez votre profil à BeFood",
     description:
-      "Présentez votre activité et votre besoin. L'équipe BeFood revient vers vous avec le bon mode d'accès.",
-    note: "Accès coach sur validation. BeFood ne se substitue pas à un avis médical.",
+      "Vous avez une expertise, une pratique d'accompagnement ou une audience engagée ? BeFood étudie chaque candidature avec attention pour intégrer des profils cohérents avec son expérience utilisateur.",
+    note: "Chaque candidature est étudiée avec attention avant validation. Si votre profil est retenu, l'équipe BeFood vous guide dans la bonne intégration.",
   },
 };
 
@@ -105,8 +76,8 @@ export const connexionCards: AccessCard[] = [
   {
     title: "Coachs et professionnels",
     description:
-      "Si vous avez déjà un accès validé, utilisez votre lien de connexion. Sinon, démarrez par une demande d'accès.",
-    ctaLabel: "Demander un accès",
+      "Si vous avez déjà un accès validé, utilisez votre lien de connexion. Sinon, candidatez pour présenter votre profil.",
+    ctaLabel: "Candidater pour rejoindre BeFood",
     ctaHref: null,
   },
 ];

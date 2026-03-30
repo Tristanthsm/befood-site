@@ -62,10 +62,10 @@ export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
     <section aria-labelledby="contact-form-title" className="rounded-3xl border border-[var(--color-border)] bg-white/90 p-5 sm:p-6">
       <div className="mb-5 space-y-2">
         <h2 id="contact-form-title" className="font-display text-3xl text-[var(--color-ink)] sm:text-4xl">
-          Contacter l&apos;aide
+          Contacter l&apos;équipe BeFood
         </h2>
         <p className="text-sm leading-6 text-[var(--color-muted)]">
-          Donnez un maximum de contexte: cela réduit les allers-retours et accélère la résolution.
+          Si vous n&apos;avez pas trouvé votre réponse, envoyez-nous votre demande avec un maximum de contexte pour accélérer la résolution.
         </p>
       </div>
 
@@ -128,7 +128,7 @@ export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
           <input
             type="text"
             name="accountId"
-            placeholder="Ex: UID / email principal"
+            placeholder="Ex: identifiant / email principal"
             value={formState.accountId}
             onChange={(event) => setField("accountId", event.target.value)}
             className="h-11 w-full rounded-xl border border-[var(--color-border)] bg-white px-3 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
@@ -163,7 +163,7 @@ export function SupportContactForm({ supportEmail }: SupportContactFormProps) {
               }
             }}
           >
-            Préparer l&apos;email
+            Préparer l&apos;e-mail
           </a>
           <p className="text-xs text-[var(--color-muted)]">Adresse de destination: {supportEmail}</p>
         </div>

@@ -1,42 +1,56 @@
 import type { SupportContent } from "@/lib/types";
 
 export const supportContent: SupportContent = {
-  title: "Aide BeFood",
+  title: "Besoin d'aide ?",
   description:
-    "Une question sur votre compte, votre abonnement ou votre expérience ? Notre équipe vous répond avec une aide claire et orientée solution.",
+    "Compte, abonnement, bug, confidentialité ou suppression de compte : trouvez rapidement la bonne réponse ou contactez l'équipe BeFood.",
   responseTime: "Nous répondons généralement sous 48h ouvrées.",
-  contactHint: "Canal principal: contact@befood.fr",
   faqTitle: "Questions fréquentes",
   faqItems: [
     {
-      question: "Comment fonctionne l'analyse des repas ?",
+      question: "Je n'arrive pas à me connecter à mon compte",
       answer:
-        "Ajoutez un repas et BeFood transforme cette information en repères simples pour vous aider à mieux comprendre vos choix au quotidien.",
+        "Vérifiez d'abord votre adresse email, puis lancez la réinitialisation du mot de passe. Si le problème continue, contactez l'équipe avec l'email utilisé pour votre compte.",
     },
     {
-      question: "Quels bénéfices concrets apporte BeFood ?",
+      question: "Comment gérer ou annuler mon abonnement Premium ?",
       answer:
-        "BeFood vous aide à progresser sans complexité: retours lisibles, recommandations actionnables et suivi régulier de vos habitudes.",
+        "La gestion de l'abonnement se fait depuis le store utilisé lors de la souscription. Ouvrez votre compte store pour annuler, modifier ou vérifier le renouvellement.",
     },
     {
-      question: "Comment gérer mon abonnement premium ?",
+      question: "Supprimer mon compte annule-t-il aussi mon abonnement ?",
       answer:
-        "La gestion de l'abonnement se fait depuis le store utilisé lors de la souscription (renouvellement, annulation et facturation).",
+        "Non. La suppression du compte ou de l'app n'annule pas automatiquement l'abonnement. L'annulation doit être faite dans le store de paiement.",
     },
     {
-      question: "Comment signaler un bug ?",
+      question: "Comment supprimer mon compte et mes données ?",
       answer:
-        "Envoyez un message détaillé via le formulaire d'aide: ce que vous faisiez, le résultat obtenu et, si possible, l'identifiant de compte.",
+        "Vous pouvez demander la suppression depuis l'app. Si vous n'y avez plus accès, contactez l'équipe via le formulaire d'aide avec votre email de compte.",
     },
     {
-      question: "Comment demander la suppression de mon compte ?",
+      question: "Comment signaler un bug ou un problème dans l'app ?",
       answer:
-        "Vous pouvez demander la suppression du compte et des données via le formulaire d'aide ou depuis les options prévues dans l'application.",
+        "Décrivez précisément le contexte: action effectuée, comportement observé et moment du problème. Ajoutez votre identifiant de compte si possible.",
     },
     {
-      question: "Où trouver les informations légales et de confidentialité ?",
+      question: "L'analyse des repas ne fonctionne pas comme prévu : que faire ?",
       answer:
-        "Les pages Confidentialité et Conditions d'utilisation sont disponibles en bas de page à tout moment.",
+        "Refaites un essai avec une photo nette ou une description plus complète. Si le résultat reste incohérent, envoyez un exemple via le formulaire d'aide.",
+    },
+    {
+      question: "Je n'ai pas accès à Premium après paiement : que faire ?",
+      answer:
+        "Vérifiez d'abord le compte store utilisé au paiement. Si l'accès n'est toujours pas actif, contactez l'équipe avec le reçu ou la date d'achat.",
+    },
+    {
+      question: "Où trouver la politique de confidentialité et les conditions d'utilisation ?",
+      answer:
+        "Les deux documents sont accessibles depuis le footer du site: Politique de confidentialité et Conditions d'utilisation.",
+    },
+    {
+      question: "Comment contacter l'équipe BeFood ?",
+      answer:
+        "Utilisez le formulaire en bas de cette page. Donnez le plus de contexte possible pour accélérer le traitement de votre demande.",
     },
   ],
 };

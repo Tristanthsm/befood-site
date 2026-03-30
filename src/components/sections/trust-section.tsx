@@ -6,12 +6,18 @@ import { content } from "@/content";
 export function TrustSection() {
   return (
     <section className="py-8 sm:py-10">
-      <Container className="space-y-6">
-        <header className="max-w-3xl space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Repères de confiance</p>
+      <Container className="space-y-5">
+        <header className="max-w-4xl space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Comprendre, puis progresser</p>
           <h2 className="text-2xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-3xl">{content.trustTitle}</h2>
+          <Link
+            href="/#coaching"
+            className="inline-flex items-center rounded-full border border-[var(--color-border-strong)] bg-white px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+          >
+            Découvrir l&apos;accompagnement coach
+          </Link>
         </header>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-3">
           {content.trustItems.map((item) => (
             <article
               key={item.title}
@@ -30,30 +36,6 @@ export function TrustSection() {
             </article>
           ))}
         </div>
-        <p className="text-sm text-[var(--color-muted)]">
-          Informations officielles:
-          {" "}
-          <Link
-            href="/aide"
-            className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-          >
-            Aide
-          </Link>
-          {" · "}
-          <Link
-            href="/privacy"
-            className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-          >
-            Confidentialité
-          </Link>
-          {" · "}
-          <Link
-            href="/terms"
-            className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-          >
-            Conditions
-          </Link>
-        </p>
       </Container>
     </section>
   );

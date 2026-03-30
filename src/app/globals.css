@@ -58,6 +58,24 @@ body {
   box-shadow: var(--shadow-card);
 }
 
+@keyframes how-it-works-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.how-it-works-marquee {
+  animation: how-it-works-marquee 22s linear infinite;
+  will-change: transform;
+}
+
+.how-it-works-marquee:hover {
+  animation-play-state: paused;
+}
+
 ::selection {
   background: rgba(47, 122, 79, 0.18);
   color: var(--color-ink);
@@ -71,5 +89,9 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .how-it-works-marquee {
+    animation: none;
   }
 }
