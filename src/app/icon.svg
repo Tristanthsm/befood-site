@@ -1,0 +1,21 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="befoodBg" x1="256" y1="56" x2="256" y2="456" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#000000" />
+      <stop offset="0.62" stop-color="#02160F" />
+      <stop offset="1" stop-color="#2E9A4A" />
+    </linearGradient>
+  </defs>
+  <rect x="56" y="56" width="400" height="400" rx="108" fill="url(#befoodBg)" />
+  <text
+    x="256"
+    y="343"
+    text-anchor="middle"
+    font-size="294"
+    font-weight="800"
+    font-family="Arial, sans-serif"
+    fill="#F5F5F5"
+  >
+    B
+  </text>
+</svg>

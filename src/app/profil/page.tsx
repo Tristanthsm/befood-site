@@ -7,6 +7,8 @@ import { createPageMetadata } from "@/lib/seo";
 import { getCoachAccountSummary } from "@/lib/supabase/coach-account";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
+export const runtime = "edge";
+
 function formatDate(value: string | null | undefined): string {
   if (!value) {
     return "Non disponible";
