@@ -1,92 +1,9 @@
 import Link from "next/link";
-import type { User } from "@supabase/supabase-js";
 
 import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
-import { AccountDropdown } from "@/components/layout/account-dropdown";
 import { HeaderShell } from "@/components/layout/header-shell";
 import { mainNavigation } from "@/lib/site-config";
-import type { CoachAccountSummary } from "@/lib/supabase/coach-account";
-import { getCoachAccountSummary } from "@/lib/supabase/coach-account";
-import { hasSupabaseEnv } from "@/lib/supabase/env";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
-
-function toProviderLabel(user: User): string {
-  const providers = user.app_metadata?.providers;
-  if (Array.isArray(providers) && providers.length > 0) {
-    return providers
-      .map((provider) => String(provider))
-      .join(", ")
-      .replace("google", "Google")
-      .replace("apple", "Apple")
-      .replace("email", "E-mail");
-  }
-
-  return "Non défini";
-}
-
-function AccountMenu({
-  user,
-  coachAccount,
-  mobile = false,
-}: {
-  user: User;
-  coachAccount: CoachAccountSummary | null;
-  mobile?: boolean;
-}) {
-  const email = user.email ?? "Aucun e-mail";
-  const providerLabel = toProviderLabel(user);
-
-  if (mobile) {
-    return (
-      <div className="mt-2 space-y-2 rounded-xl border border-[var(--color-border)] bg-white p-3">
-        <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Compte</p>
-          <p className="truncate text-sm font-semibold text-[var(--color-ink)]">{email}</p>
-          <p className="text-xs text-[var(--color-muted)]">Connexion: {providerLabel}</p>
-        </div>
-        <Link
-          href="/profil"
-          className="block rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
-        >
-          Mon profil
-        </Link>
-        {coachAccount ? (
-          <Link
-            href="/espace-coach"
-            className="block rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
-          >
-            Mon espace coach
-          </Link>
-        ) : null}
-      </div>
-    );
-  }
-
-  return (
-    <AccountDropdown email={email} providerLabel={providerLabel} showCoachLink={Boolean(coachAccount)} />
-  );
-}
-
-export async function Header() {
-  let user: User | null = null;
-  let coachAccount: CoachAccountSummary | null = null;
-
-  if (hasSupabaseEnv()) {
-    try {
-      const supabase = await getSupabaseServerClient();
-      const {
-        data: { user: currentUser },
-      } = await supabase.auth.getUser();
-
-      user = currentUser ?? null;
-      coachAccount = user ? await getCoachAccountSummary(user.id) : null;
-    } catch {
-      user = null;
-      coachAccount = null;
-    }
-  }
-
-  const isAuthenticated = Boolean(user);
+export function Header() {
 
   return (
     <HeaderShell>
@@ -117,15 +34,11 @@ export async function Header() {
           </nav>
 
           <div className="hidden items-center md:flex">
-            {isAuthenticated && user ? (
-              <AccountMenu user={user} coachAccount={coachAccount} />
-            ) : (
-              <StartFreeModalTrigger
-                className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_24px_-14px_rgba(16,185,129,0.95)] transition hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-              >
-                Démarrer gratuitement
-              </StartFreeModalTrigger>
-            )}
+            <StartFreeModalTrigger
+              className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_24px_-14px_rgba(16,185,129,0.95)] transition hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+            >
+              Démarrer gratuitement
+            </StartFreeModalTrigger>
           </div>
 
           <details className="group relative md:hidden">
@@ -143,15 +56,11 @@ export async function Header() {
                     {item.label}
                   </Link>
                 ))}
-                {isAuthenticated && user ? (
-                  <AccountMenu user={user} coachAccount={coachAccount} mobile />
-                ) : (
-                  <StartFreeModalTrigger
-                    className="mt-1 rounded-xl bg-[var(--color-accent)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-                  >
-                    Démarrer gratuitement
-                  </StartFreeModalTrigger>
-                )}
+                <StartFreeModalTrigger
+                  className="mt-1 rounded-xl bg-[var(--color-accent)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                >
+                  Démarrer gratuitement
+                </StartFreeModalTrigger>
               </nav>
             </div>
           </details>
