@@ -2,13 +2,24 @@ import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigge
 import { Container } from "@/components/ui/container";
 import { StoreButtons } from "@/components/ui/store-buttons";
 import { content } from "@/content";
+import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function HeroSection() {
-  const supabase = await getSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+
+  if (hasSupabaseEnv()) {
+    try {
+      const supabase = await getSupabaseServerClient();
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
+      user = currentUser ?? null;
+    } catch {
+      user = null;
+    }
+  }
+
   const isAuthenticated = Boolean(user);
 
   return (

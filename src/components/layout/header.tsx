@@ -7,6 +7,7 @@ import { HeaderShell } from "@/components/layout/header-shell";
 import { mainNavigation } from "@/lib/site-config";
 import type { CoachAccountSummary } from "@/lib/supabase/coach-account";
 import { getCoachAccountSummary } from "@/lib/supabase/coach-account";
+import { hasSupabaseEnv } from "@/lib/supabase/env";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 function toProviderLabel(user: User): string {
@@ -67,12 +68,24 @@ function AccountMenu({
 }
 
 export async function Header() {
-  const supabase = await getSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user: User | null = null;
+  let coachAccount: CoachAccountSummary | null = null;
 
-  const coachAccount = user ? await getCoachAccountSummary(user.id) : null;
+  if (hasSupabaseEnv()) {
+    try {
+      const supabase = await getSupabaseServerClient();
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser();
+
+      user = currentUser ?? null;
+      coachAccount = user ? await getCoachAccountSummary(user.id) : null;
+    } catch {
+      user = null;
+      coachAccount = null;
+    }
+  }
+
   const isAuthenticated = Boolean(user);
 
   return (
