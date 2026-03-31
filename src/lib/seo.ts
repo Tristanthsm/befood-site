@@ -11,6 +11,14 @@ interface PageMetadataInput {
   keywords?: string[];
 }
 
+interface ArticleJsonLdInput {
+  title: string;
+  description: string;
+  path: string;
+  datePublished: string;
+  dateModified: string;
+}
+
 export function createCanonicalUrl(path: string): string {
   return new URL(path, siteConfig.siteUrl).toString();
 }
@@ -77,16 +85,18 @@ export function getWebsiteJsonLd() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: siteConfig.name,
+    alternateName: siteConfig.alternateName,
     url: siteConfig.siteUrl,
     inLanguage: "fr-FR",
   };
 }
 
-export function getMobileAppJsonLd() {
+export function getSoftwareApplicationJsonLd(path = "/app") {
   return {
     "@context": "https://schema.org",
-    "@type": "MobileApplication",
+    "@type": "SoftwareApplication",
     name: siteConfig.name,
+    url: createCanonicalUrl(path),
     operatingSystem: "iOS",
     applicationCategory: "HealthApplication",
     offers: {
@@ -97,6 +107,10 @@ export function getMobileAppJsonLd() {
     downloadUrl: siteConfig.appStoreUrl,
     description: siteConfig.defaultDescription,
   };
+}
+
+export function getMobileAppJsonLd() {
+  return getSoftwareApplicationJsonLd();
 }
 
 export function getFaqJsonLd(faqItems: FaqItem[]) {
@@ -124,5 +138,39 @@ export function getBreadcrumbJsonLd(items: Array<{ name: string; path: string }>
       name: item.name,
       item: createCanonicalUrl(item.path),
     })),
+  };
+}
+
+export function getArticleJsonLd({
+  title,
+  description,
+  path,
+  datePublished,
+  dateModified,
+}: ArticleJsonLdInput) {
+  const canonical = createCanonicalUrl(path);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    inLanguage: "fr-FR",
+    datePublished,
+    dateModified,
+    mainEntityOfPage: canonical,
+    author: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      url: siteConfig.siteUrl,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      logo: {
+        "@type": "ImageObject",
+        url: createCanonicalUrl(brandAssets.icon),
+      },
+    },
   };
 }
