@@ -6,11 +6,12 @@ import type { FormEvent } from "react";
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
-type PendingAction = "google" | "password" | "reset" | null;
+type PendingAction = "google" | "password" | null;
 
 interface SocialAuthCardProps {
   mode: "signin" | "signup";
   onSwitchMode?: (mode: "signin" | "signup") => void;
+  onNavigate?: () => void;
 }
 
 function GoogleIcon() {
@@ -44,8 +45,22 @@ function mapCallbackError(rawError: string | null): string | null {
   return "Une erreur de connexion est survenue.";
 }
 
+function getCanonicalOrigin(): string {
+  const explicitOrigin = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicitOrigin && /^https?:\/\//.test(explicitOrigin)) {
+    return explicitOrigin.replace(/\/+$/, "");
+  }
+
+  const currentOrigin = window.location.origin;
+  if (window.location.hostname === "befood.fr") {
+    return currentOrigin.replace("://befood.fr", "://www.befood.fr");
+  }
+
+  return currentOrigin;
+}
+
 function getCallbackRedirect(): string {
-  return `${window.location.origin}/auth/callback`;
+  return `${getCanonicalOrigin()}/auth/callback`;
 }
 
 function isEmailLike(value: string): boolean {
@@ -75,7 +90,7 @@ async function resolveEmailForLogin(identifier: string): Promise<string> {
   return payload.email;
 }
 
-export function SocialAuthCard({ mode, onSwitchMode }: SocialAuthCardProps) {
+export function SocialAuthCard({ mode, onSwitchMode, onNavigate }: SocialAuthCardProps) {
   const [callbackError, setCallbackError] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<PendingAction>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -141,41 +156,6 @@ export function SocialAuthCard({ mode, onSwitchMode }: SocialAuthCardProps) {
       }
 
       window.location.assign("/");
-    } catch {
-      setErrorMessage("Configuration Supabase manquante côté site.");
-    } finally {
-      setPendingAction(null);
-    }
-  }
-
-  async function handlePasswordReset() {
-    setErrorMessage(null);
-    setSuccessMessage(null);
-
-    if (!loginIdentifier.trim()) {
-      setErrorMessage("Renseigne ton e-mail pour réinitialiser le mot de passe.");
-      return;
-    }
-
-    if (!isEmailLike(loginIdentifier.trim())) {
-      setErrorMessage("La réinitialisation du mot de passe nécessite un e-mail.");
-      return;
-    }
-
-    setPendingAction("reset");
-
-    try {
-      const supabase = getSupabaseBrowserClient();
-      const { error } = await supabase.auth.resetPasswordForEmail(loginIdentifier.trim(), {
-        redirectTo: getCallbackRedirect(),
-      });
-
-      if (error) {
-        setErrorMessage(error.message);
-        return;
-      }
-
-      setSuccessMessage("Lien de réinitialisation envoyé. Vérifie ta boîte e-mail.");
     } catch {
       setErrorMessage("Configuration Supabase manquante côté site.");
     } finally {
@@ -249,17 +229,6 @@ export function SocialAuthCard({ mode, onSwitchMode }: SocialAuthCardProps) {
               />
             </label>
 
-            <div className="pt-1 text-right">
-              <button
-                type="button"
-                onClick={handlePasswordReset}
-                disabled={isBusy}
-                className="text-sm font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {pendingAction === "reset" ? "Envoi..." : "Mot de passe oublié ?"}
-              </button>
-            </div>
-
             <button
               type="submit"
               disabled={isBusy}
@@ -305,6 +274,7 @@ export function SocialAuthCard({ mode, onSwitchMode }: SocialAuthCardProps) {
         En continuant, vous acceptez nos{" "}
         <Link
           href="/terms"
+          onClick={onNavigate}
           className="font-semibold text-[var(--color-accent-strong)] underline-offset-3 hover:underline"
         >
           Conditions d&apos;utilisation
@@ -312,6 +282,7 @@ export function SocialAuthCard({ mode, onSwitchMode }: SocialAuthCardProps) {
         {" "}et notre{" "}
         <Link
           href="/privacy"
+          onClick={onNavigate}
           className="font-semibold text-[var(--color-accent-strong)] underline-offset-3 hover:underline"
         >
           Politique de confidentialité

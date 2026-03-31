@@ -27,13 +27,13 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/privacy",
-        destination: "/confidentialite",
+        source: "/confidentialite",
+        destination: "/privacy",
         permanent: true,
       },
       {
-        source: "/terms",
-        destination: "/conditions",
+        source: "/conditions",
+        destination: "/terms",
         permanent: true,
       },
       {
@@ -49,17 +49,6 @@ const nextConfig: NextConfig = {
       {
         source: "/guide",
         destination: "/guides",
-        permanent: true,
-      },
-      {
-        source: "/:path*",
-        has: [
-          {
-            type: "host",
-            value: "www.befood.fr",
-          },
-        ],
-        destination: "https://befood.fr/:path*",
         permanent: true,
       },
     ];
