@@ -127,97 +127,111 @@ export default async function CoachDashboardPage() {
   const totals7 = sumDaily(last7Days);
 
   return (
-    <section className="py-12 sm:py-16">
-      <Container className="max-w-5xl">
-        <div className="rounded-3xl border border-[var(--color-border)] bg-white/95 p-6 shadow-[0_30px_90px_-46px_rgba(10,24,39,0.45)] sm:p-8">
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-accent-strong)]">Espace coach</p>
-            <h1 className="font-display text-3xl text-[var(--color-ink)]">Dashboard acquisition</h1>
-            <p className="text-sm text-[var(--color-muted)]">
-              Vue simple de ton funnel web-to-app avec les données fiables disponibles aujourd&apos;hui.
-            </p>
-          </div>
+    <section className="relative overflow-hidden py-12 sm:py-16">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-28 top-6 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.18)_0%,rgba(16,185,129,0.06)_52%,rgba(16,185,129,0)_74%)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(56,189,248,0.16)_0%,rgba(56,189,248,0.06)_52%,rgba(56,189,248,0)_74%)]"
+      />
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Nom affiché</p>
-              <p className="mt-1 text-sm font-semibold text-[var(--color-ink)]">{coach.businessName}</p>
+      <Container className="relative max-w-6xl">
+        <div className="rounded-[2rem] border border-[var(--color-border)] bg-white/96 p-6 shadow-[0_38px_90px_-52px_rgba(10,24,39,0.55)] sm:p-8">
+          <div className="grid gap-3 lg:grid-cols-[1.6fr_1fr]">
+            <div className="rounded-2xl border border-[var(--color-border)] bg-[linear-gradient(145deg,rgba(255,255,255,0.96),rgba(236,250,245,0.8))] p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-accent-strong)]">Espace coach</p>
+              <h1 className="mt-1 font-display text-3xl leading-tight text-[var(--color-ink)] sm:text-4xl">Cockpit acquisition</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--color-muted)]">
+                Vue opérationnelle de votre tunnel web-to-app: trafic coach, passage /join, clics App Store et signaux
+                d&apos;acquisition déjà confirmés côté backend.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="inline-flex rounded-full border border-[var(--color-border)] bg-white px-3 py-1 text-xs font-semibold text-[var(--color-ink)]">
+                  Coach: {coach.businessName}
+                </span>
+                <span className="inline-flex rounded-full border border-[var(--color-border)] bg-white px-3 py-1 text-xs font-semibold text-[var(--color-ink)]">
+                  Code: {coach.inviteCode ?? "Non défini"}
+                </span>
+              </div>
             </div>
-            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Code coach</p>
-              <p className="mt-1 text-sm font-semibold text-[var(--color-ink)]">{coach.inviteCode ?? "Non défini"}</p>
-            </div>
-          </div>
 
-          <div className="mt-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Période affichée</p>
-            <p className="mt-1 text-sm font-semibold text-[var(--color-ink)]">
-              {formatDate(acquisition.rangeFrom)} au {formatDate(acquisition.rangeTo)}
-            </p>
+            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Période observée</p>
+              <p className="mt-1 text-sm font-semibold text-[var(--color-ink)]">
+                {formatDate(acquisition.rangeFrom)} au {formatDate(acquisition.rangeTo)}
+              </p>
+              <p className="mt-3 text-xs text-[var(--color-muted)]">
+                Données affichées: trafic web et acquisitions connues backend. Attribution finale post-install et revenus
+                restent hors scope de cette phase.
+              </p>
+            </div>
           </div>
 
           <div className="mt-6">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">KPI principaux</p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4">
                 <p className="text-xs text-[var(--color-muted)]">Sessions /join</p>
-                <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">{acquisition.kpi.joinSessions}</p>
+                <p className="mt-1 text-3xl font-bold leading-none text-[var(--color-ink)]">{acquisition.kpi.joinSessions}</p>
               </div>
               <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4">
                 <p className="text-xs text-[var(--color-muted)]">Clics App Store</p>
-                <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">{acquisition.kpi.appStoreClicks}</p>
+                <p className="mt-1 text-3xl font-bold leading-none text-[var(--color-ink)]">{acquisition.kpi.appStoreClicks}</p>
               </div>
               <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4">
                 <p className="text-xs text-[var(--color-muted)]">Acquisitions connues</p>
-                <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">{acquisition.kpi.acquisitionsCoach}</p>
+                <p className="mt-1 text-3xl font-bold leading-none text-[var(--color-ink)]">{acquisition.kpi.acquisitionsCoach}</p>
               </div>
               <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4">
                 <p className="text-xs text-[var(--color-muted)]">Liens coach actifs</p>
-                <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">{acquisition.kpi.activeLinkedUsers}</p>
+                <p className="mt-1 text-3xl font-bold leading-none text-[var(--color-ink)]">{acquisition.kpi.activeLinkedUsers}</p>
               </div>
             </div>
           </div>
 
           <div className="mt-6">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Funnel coach</p>
-            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="mt-3 grid gap-3 lg:grid-cols-5">
               <div className="rounded-2xl border border-[var(--color-border)] bg-white p-4">
                 <p className="text-xs text-[var(--color-muted)]">Trafic coach</p>
-                <p className="mt-1 text-lg font-bold text-[var(--color-ink)]">{acquisition.funnel.trafficCoach}</p>
+                <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">{acquisition.funnel.trafficCoach}</p>
               </div>
               <div className="rounded-2xl border border-[var(--color-border)] bg-white p-4">
                 <p className="text-xs text-[var(--color-muted)]">Sessions /join</p>
-                <p className="mt-1 text-lg font-bold text-[var(--color-ink)]">{acquisition.funnel.joinSessions}</p>
+                <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">{acquisition.funnel.joinSessions}</p>
               </div>
               <div className="rounded-2xl border border-[var(--color-border)] bg-white p-4">
                 <p className="text-xs text-[var(--color-muted)]">Store clicks</p>
-                <p className="mt-1 text-lg font-bold text-[var(--color-ink)]">{acquisition.funnel.storeClicks}</p>
+                <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">{acquisition.funnel.storeClicks}</p>
               </div>
               <div className="rounded-2xl border border-[var(--color-border)] bg-white p-4">
                 <p className="text-xs text-[var(--color-muted)]">Acquisitions backend</p>
-                <p className="mt-1 text-lg font-bold text-[var(--color-ink)]">{acquisition.funnel.acquisitionsKnownBackend}</p>
+                <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">{acquisition.funnel.acquisitionsKnownBackend}</p>
               </div>
               <div className="rounded-2xl border border-[var(--color-border)] bg-white p-4">
                 <p className="text-xs text-[var(--color-muted)]">Liens actifs</p>
-                <p className="mt-1 text-lg font-bold text-[var(--color-ink)]">{acquisition.funnel.activeCoachLinks}</p>
+                <p className="mt-1 text-2xl font-bold text-[var(--color-ink)]">{acquisition.funnel.activeCoachLinks}</p>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <div className="mt-6 grid gap-3 xl:grid-cols-[1fr_1.2fr]">
             <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-4">
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Vue temporelle (7 jours)</p>
               <p className="mt-1 text-sm text-[var(--color-ink)]">
                 {totals7.joinSessions} sessions /join et {totals7.appStoreClicks} clics App Store
               </p>
-              <div className="mt-3 space-y-1.5">
+              <div className="mt-3 space-y-2">
                 {last7Days.length > 0 ? (
                   last7Days.map((point) => (
-                    <div key={point.day} className="flex items-center justify-between text-xs text-[var(--color-ink)]">
-                      <span>{formatDayLabel(point.day)}</span>
-                      <span>
-                        {point.joinSessions} /join · {point.appStoreClicks} store
-                      </span>
+                    <div key={point.day} className="rounded-xl border border-[var(--color-border)] bg-white px-3 py-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-[var(--color-ink)]">{formatDayLabel(point.day)}</span>
+                        <span className="text-[var(--color-muted)]">{point.joinSessions} /join</span>
+                      </div>
+                      <div className="mt-1 text-[11px] text-[var(--color-muted)]">{point.appStoreClicks} clics App Store</div>
                     </div>
                   ))
                 ) : (
@@ -232,15 +246,25 @@ export default async function CoachDashboardPage() {
                 {recentEvents.length > 0 ? (
                   recentEvents.map((event) => (
                     <div key={`${event.occurredAt}-${event.sessionStatus ?? "na"}`} className="rounded-xl border border-[var(--color-border)] bg-white p-3">
-                      <p className="text-xs font-semibold text-[var(--color-ink)]">{formatDateTime(event.occurredAt)}</p>
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="text-xs font-semibold text-[var(--color-ink)]">{formatDateTime(event.occurredAt)}</p>
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                            event.storeClicked
+                              ? "bg-emerald-50 text-emerald-800"
+                              : "bg-slate-100 text-slate-700"
+                          }`}
+                        >
+                          {event.storeClicked ? "Store cliqué" : "Store non cliqué"}
+                        </span>
+                      </div>
                       <p className="mt-1 text-xs text-[var(--color-muted)]">
                         {event.utmSource ? `utm_source=${event.utmSource}` : "utm_source non renseigné"}
                         {event.utmMedium ? ` · utm_medium=${event.utmMedium}` : ""}
                         {event.ref ? ` · ref=${event.ref}` : ""}
                       </p>
                       <p className="mt-1 text-xs text-[var(--color-muted)]">
-                        Store: {event.storeClicked ? "oui" : "non"} · Session: {event.sessionStatus ?? "n/a"} · Reconciliation:{" "}
-                        {event.reconciliationStatus ?? "n/a"}
+                        Session: {event.sessionStatus ?? "n/a"} · Reconciliation: {event.reconciliationStatus ?? "n/a"}
                       </p>
                     </div>
                   ))
@@ -250,11 +274,6 @@ export default async function CoachDashboardPage() {
               </div>
             </div>
           </div>
-
-          <p className="mt-5 text-xs text-[var(--color-muted)]">
-            Données affichées: trafic web et acquisitions connues backend. Attribution finale post-install et revenus
-            restent hors scope de cette phase.
-          </p>
         </div>
       </Container>
     </section>
