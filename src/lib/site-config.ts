@@ -1,9 +1,12 @@
-import type { FooterLink, NavItem, SiteConfig, StoreLink } from "@/lib/types";
+import type { FooterLink, NavItem, SeoRouteConfig, SiteConfig, StoreLink } from "@/lib/types";
 
 export const APP_STORE_URL_PLACEHOLDER = "https://apps.apple.com/app/id0000000000";
 
+const defaultLastModified = "2026-03-31";
+
 export const siteConfig: SiteConfig = {
   name: "BeFood",
+  alternateName: "BeFood Nutrition",
   siteUrl: "https://befood.fr",
   defaultLocale: "fr",
   titleTemplate: "%s | BeFood",
@@ -22,17 +25,16 @@ export const siteConfig: SiteConfig = {
   googlePlayUrl: null,
   supportEmail: "contact@befood.fr",
   contactEmail: "contact@befood.fr",
-  privacyPath: "/privacy",
-  termsPath: "/terms",
+  privacyPath: "/confidentialite",
+  termsPath: "/conditions",
   coachRequestAccessUrl: "/candidature-coachs",
   coachSignInUrl: null,
   socialLinks: [],
 };
 
 export const mainNavigation: NavItem[] = [
-  { label: "Comment ça marche", href: "/#comment-ca-marche" },
-  { label: "Coachs & experts", href: "/pour-les-coachs" },
-  { label: "Aide", href: "/aide" },
+  { label: "Comment ça marche", href: "/comment-ca-marche" },
+  { label: "Guides", href: "/guides" },
 ];
 
 const appStoreConfigured = siteConfig.appStoreUrl !== APP_STORE_URL_PLACEHOLDER;
@@ -51,14 +53,99 @@ export const storeLinks: { appStore: StoreLink; googlePlay: StoreLink } = {
 };
 
 export const footerLinks: FooterLink[] = [
-  { label: "Coachs & experts", href: "/pour-les-coachs" },
-  { label: "Connexion", href: "/connexion" },
+  { label: "Application", href: "/app" },
+  { label: "Comment ça marche", href: "/comment-ca-marche" },
+  { label: "Guides", href: "/guides" },
+  { label: "Pour les coachs", href: "/pour-les-coachs" },
+  { label: "Pour les créateurs", href: "/pour-les-createurs" },
+  { label: "Méthodologie", href: "/methodologie" },
+  { label: "À propos", href: "/a-propos" },
+  { label: "Contact", href: "/contact" },
   { label: "Aide", href: "/aide" },
   { label: "Confidentialité", href: siteConfig.privacyPath },
   { label: "Conditions d'utilisation", href: siteConfig.termsPath },
 ];
 
-export const staticRoutes = ["/", "/quiz", "/pour-les-coachs", "/aide", "/privacy", "/terms"];
+export const indexableStaticRoutes: SeoRouteConfig[] = [
+  {
+    path: "/",
+    changeFrequency: "weekly",
+    priority: 1,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/app",
+    changeFrequency: "monthly",
+    priority: 0.9,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/comment-ca-marche",
+    changeFrequency: "monthly",
+    priority: 0.9,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/pour-les-coachs",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/pour-les-createurs",
+    changeFrequency: "monthly",
+    priority: 0.8,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/guides",
+    changeFrequency: "weekly",
+    priority: 0.85,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/a-propos",
+    changeFrequency: "monthly",
+    priority: 0.7,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/contact",
+    changeFrequency: "monthly",
+    priority: 0.65,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/methodologie",
+    changeFrequency: "monthly",
+    priority: 0.7,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/aide",
+    changeFrequency: "monthly",
+    priority: 0.6,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/confidentialite",
+    changeFrequency: "yearly",
+    priority: 0.3,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/conditions",
+    changeFrequency: "yearly",
+    priority: 0.3,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/quiz",
+    changeFrequency: "monthly",
+    priority: 0.5,
+    lastModified: defaultLastModified,
+  },
+];
 
 export const defaultOgImage = {
   url: "/images/og/befood-og.png",

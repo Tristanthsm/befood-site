@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { JsonLd } from "@/components/seo/json-ld";
 import { Container } from "@/components/ui/container";
@@ -6,8 +7,6 @@ import { LiquidMetalButtonLink } from "@/components/ui/liquid-metal-button-link"
 import { content } from "@/content";
 import { createPageMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
-
-export const runtime = "edge";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Coachs & experts dans l'expérience BeFood",
@@ -111,6 +110,13 @@ export default function CoachsPage() {
             <div className="mt-5">
               <LiquidMetalButtonLink href={requestAccessHref} label="Candidater pour BeFood" />
             </div>
+            <p className="mt-4 text-sm text-white/75">
+              Vous créez du contenu ?{" "}
+              <Link href="/pour-les-createurs" className="font-semibold text-[var(--color-accent-soft)] underline-offset-4 hover:underline">
+                Voir la page créateurs
+              </Link>
+              .
+            </p>
           </section>
         </Container>
       </section>

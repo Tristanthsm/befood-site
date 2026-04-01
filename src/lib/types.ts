@@ -23,6 +23,7 @@ export interface SocialLink {
 
 export interface SiteConfig {
   name: string;
+  alternateName?: string;
   siteUrl: string;
   defaultLocale: string;
   titleTemplate: string;
@@ -37,6 +38,13 @@ export interface SiteConfig {
   coachRequestAccessUrl: string | null;
   coachSignInUrl: string | null;
   socialLinks: SocialLink[];
+}
+
+export interface SeoRouteConfig {
+  path: string;
+  changeFrequency: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+  priority: number;
+  lastModified: string;
 }
 
 export interface HeroContent {

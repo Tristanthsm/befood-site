@@ -134,7 +134,7 @@ export const termsContent: LegalDocument = {
     {
       heading: "13. Données personnelles",
       paragraphs: [
-        "Les conditions dans lesquelles BeFood collecte, utilise et protège les données personnelles sont décrites dans la Politique de confidentialité, accessible à l’adresse /privacy.",
+        "Les conditions dans lesquelles BeFood collecte, utilise et protège les données personnelles sont décrites dans la Politique de confidentialité, accessible à l’adresse /confidentialite.",
       ],
     },
     {
@@ -323,7 +323,7 @@ export const privacyContent: LegalDocument = {
     },
     {
       heading: "15. Conditions d’utilisation",
-      paragraphs: ["Les règles relatives à l’utilisation de BeFood sont décrites dans nos Conditions d’utilisation, accessibles à l’adresse : /terms."],
+      paragraphs: ["Les règles relatives à l’utilisation de BeFood sont décrites dans nos Conditions d’utilisation, accessibles à l’adresse : /conditions."],
     },
   ],
 };

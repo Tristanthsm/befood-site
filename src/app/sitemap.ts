@@ -1,16 +1,24 @@
 import type { MetadataRoute } from "next";
 
-import { siteConfig, staticRoutes } from "@/lib/site-config";
+import { guidePages } from "@/content/fr/guides";
+import { indexableStaticRoutes, siteConfig } from "@/lib/site-config";
 
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
-
-  return staticRoutes.map((path) => ({
-    url: new URL(path, siteConfig.siteUrl).toString(),
-    lastModified,
-    changeFrequency: path === "/" ? "weekly" : "monthly",
-    priority: path === "/" ? 1 : path === "/aide" || path === "/pour-les-coachs" ? 0.8 : 0.6,
+  const staticEntries: MetadataRoute.Sitemap = indexableStaticRoutes.map((route) => ({
+    url: new URL(route.path, siteConfig.siteUrl).toString(),
+    lastModified: route.lastModified,
+    changeFrequency: route.changeFrequency,
+    priority: route.priority,
   }));
+
+  const guideEntries: MetadataRoute.Sitemap = guidePages.map((guide) => ({
+    url: new URL(`/guide/${guide.slug}`, siteConfig.siteUrl).toString(),
+    lastModified: guide.updatedAt,
+    changeFrequency: "monthly",
+    priority: 0.75,
+  }));
+
+  return [...staticEntries, ...guideEntries];
 }

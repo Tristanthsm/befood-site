@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
 import { Container } from "@/components/ui/container";
 import { StoreButtons } from "@/components/ui/store-buttons";
 import { content } from "@/content";
@@ -24,10 +25,10 @@ export function FinalCtaSection() {
                 </p>
                 <p>
                   <Link
-                    href="/pour-les-coachs"
+                    href="/methodologie"
                     className="text-white/85 underline-offset-4 hover:text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent-soft)]"
                   >
-                    Vous êtes coach ou expert ? Découvrir l&apos;espace dédié
+                    Comprendre la méthode BeFood
                   </Link>
                 </p>
                 <p>
@@ -42,6 +43,13 @@ export function FinalCtaSection() {
             </div>
 
             <div className="space-y-4 lg:justify-self-end">
+              <StartFreeModalTrigger
+                trackingId="start_free"
+                trackingLocation="final_cta"
+                className="inline-flex w-full items-center justify-center rounded-full bg-[var(--color-accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-accent-strong)]"
+              >
+                Démarrer gratuitement
+              </StartFreeModalTrigger>
               <StoreButtons className="flex-col items-stretch gap-3 [&>*]:w-full [&>*]:max-w-none [&_[data-store-placeholder]]:!border-white/30 [&_[data-store-placeholder]]:!bg-white/10 [&_[data-store-placeholder]]:!text-white/80" />
               <p className="text-sm text-white/70">{content.finalCta.note}</p>
             </div>

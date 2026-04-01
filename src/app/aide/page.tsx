@@ -9,8 +9,6 @@ import { content } from "@/content";
 import { createPageMetadata, getBreadcrumbJsonLd, getFaqJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 
-export const runtime = "edge";
-
 export const metadata: Metadata = createPageMetadata({
   title: "Aide",
   description: "Aide BeFood: compte, abonnement, bug, confidentialité et contact de l'équipe.",
@@ -66,11 +64,11 @@ export default function AidePage() {
                 <h2 className="text-xl font-semibold text-[var(--color-ink)]">Confidentialité et données</h2>
                 <p className="text-sm leading-6 text-[var(--color-muted)]">
                   Consultez la{" "}
-                  <Link href="/privacy" className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline">
+                  <Link href="/confidentialite" className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline">
                     Politique de confidentialité
                   </Link>
                   {" "}et les{" "}
-                  <Link href="/terms" className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline">
+                  <Link href="/conditions" className="font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline">
                     Conditions d&apos;utilisation
                   </Link>
                   .
