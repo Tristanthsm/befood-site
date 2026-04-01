@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 import { SocialAuthCard } from "@/components/auth/social-auth-card";
 
@@ -23,7 +23,6 @@ export function StartFreeModalTrigger({
   const [open, setOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signup" | "signin">("signup");
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const closeModal = () => {
     setOpen(false);
@@ -60,7 +59,7 @@ export function StartFreeModalTrigger({
     closeModal();
     // Close modal on route changes to avoid stale overlays.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, searchParams?.toString()]);
+  }, [pathname]);
 
   return (
     <>
