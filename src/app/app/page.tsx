@@ -63,12 +63,14 @@ export default function AppPage() {
                   iOS disponible
                 </span>
                 <AndroidWaitlistTrigger
-                  className="rounded-full border border-white/18 bg-white/10 px-3 py-1 text-white/80 transition hover:bg-white/20"
+                  className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full border border-emerald-200/75 bg-white/95 px-4 py-1.5 text-[13px] font-semibold text-emerald-900 shadow-[0_10px_22px_-16px_rgba(16,185,129,0.95)] transition duration-200 hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-white hover:text-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-200"
                   source="app_page_badge"
                   trackingId="join_android_waitlist_open"
                   trackingLocation="app_page_platform_badges"
                 >
-                  Google Play: acces prioritaire
+                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  Android: rejoindre la liste d&apos;attente
+                  <span aria-hidden className="text-sm leading-none">→</span>
                 </AndroidWaitlistTrigger>
               </div>
             </div>

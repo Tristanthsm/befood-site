@@ -112,20 +112,24 @@ export function StoreButtons({ className, compact = false }: StoreButtonsProps) 
         </ButtonLink>
       ) : (
         <AndroidWaitlistTrigger
-          className={cn("inline-flex", baseTileClass, "border-[#c7d0da] bg-[#e3e8ee] text-left")}
+          className={cn(
+            "inline-flex cursor-pointer transition duration-200 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]",
+            baseTileClass,
+            "border-[#95cdb8] bg-[linear-gradient(135deg,#eef8f3_0%,#e3f4ec_100%)] text-left shadow-[0_16px_30px_-22px_rgba(16,185,129,0.85)] hover:border-[#61b896] hover:bg-[linear-gradient(135deg,#f6fffb_0%,#e8fbf3_100%)]",
+          )}
           source={compact ? "store_buttons_compact" : "store_buttons"}
           trackingId="join_android_waitlist_open"
           trackingLocation={compact ? "hero_or_cta_compact" : "store_buttons"}
           dataStorePlaceholder
         >
-          <span className={cn(leftGroupClass, "opacity-70")}>
-            <PlayIcon className="h-6 w-6 grayscale" />
+          <span className={leftGroupClass}>
+            <PlayIcon className="h-6 w-6" />
             <span className={labelClass}>
-              <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#707f90]">Disponible sur</span>
-              <span className="text-sm font-semibold text-[#49586a]">Google Play</span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#3d7b66]">Disponible sur</span>
+              <span className="text-sm font-semibold text-[#214538]">Google Play</span>
             </span>
           </span>
-          <Badge className={cn(badgeClass, "border-[#b9c4d0] bg-[#dde3ea] text-[#667689]")}>Acces prioritaire</Badge>
+          <Badge className={cn(badgeClass, "border-[#84c5ad] bg-[#dcf7ec] text-[#1f6b54]")}>Cliquez ici</Badge>
         </AndroidWaitlistTrigger>
       )}
     </div>

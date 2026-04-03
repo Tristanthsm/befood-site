@@ -4,6 +4,8 @@ import { getSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 
 interface AndroidWaitlistPayload {
   email?: unknown;
+  firstName?: unknown;
+  goal?: unknown;
   source?: unknown;
   referrer?: unknown;
   fullUrl?: unknown;
@@ -26,13 +28,98 @@ function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function isMissingTableError(message: string): boolean {
+  return message.toLowerCase().includes("relation") && message.toLowerCase().includes("does not exist");
+}
+
+function isDuplicateErrorCode(code: string | undefined): boolean {
+  return code === "23505";
+}
+
+function isSameOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) {
+    return true;
+  }
+
+  try {
+    const requestUrl = new URL(request.url);
+    return new URL(origin).origin === requestUrl.origin;
+  } catch {
+    return false;
+  }
+}
+
+async function sendWaitlistNotificationEmail(input: {
+  email: string;
+  firstName: string | null;
+  goal: string | null;
+  source: string;
+  referrer: string | null;
+  fullUrl: string | null;
+}) {
+  const resendApiKey = process.env.RESEND_API_KEY?.trim();
+  if (!resendApiKey) {
+    console.error("[android-waitlist] RESEND_API_KEY is missing; notification skipped");
+    return;
+  }
+
+  const toEmail = process.env.ANDROID_WAITLIST_TO_EMAIL?.trim() || process.env.SUPPORT_TO_EMAIL?.trim() || "contact@befood.fr";
+  const fromEmail =
+    process.env.ANDROID_WAITLIST_FROM_EMAIL?.trim() ||
+    process.env.SUPPORT_FROM_EMAIL?.trim() ||
+    "BeFood <contact@befood.fr>";
+
+  const subject = "Nouvelle inscription waitlist Android BeFood";
+  const lines = [
+    "Nouvelle inscription waitlist Android",
+    "",
+    `Email: ${input.email}`,
+    `Prenom: ${input.firstName || "-"}`,
+    `Objectif: ${input.goal || "-"}`,
+    `Source: ${input.source}`,
+    `Referrer: ${input.referrer || "-"}`,
+    `URL: ${input.fullUrl || "-"}`,
+    `Date: ${new Date().toISOString()}`,
+  ];
+
+  const resendResponse = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [toEmail],
+      reply_to: input.email,
+      subject,
+      text: lines.join("\n"),
+    }),
+  });
+
+  if (!resendResponse.ok) {
+    const resendBody = await resendResponse.text();
+    console.error("[android-waitlist] resend notification failed", {
+      status: resendResponse.status,
+      body: resendBody.slice(0, 300),
+    });
+  }
+}
+
 export async function POST(request: NextRequest) {
+  if (!isSameOrigin(request)) {
+    return NextResponse.json({ message: "Requête non autorisée." }, { status: 403 });
+  }
+
   const payload = (await request.json().catch(() => ({}))) as AndroidWaitlistPayload;
 
   const emailInput = clean(payload.email, 320)?.toLowerCase() ?? "";
   if (!emailInput || !isValidEmail(emailInput)) {
     return NextResponse.json({ message: "Adresse email invalide." }, { status: 400 });
   }
+  const firstName = clean(payload.firstName, 120);
+  const goal = clean(payload.goal, 280);
 
   const source = clean(payload.source, 80) ?? "unknown";
   const httpReferrer =
@@ -44,31 +131,82 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = getSupabaseServiceRoleClient();
 
-    const { error } = await supabase
+    const { data: existing, error: existingError } = await supabase
       .from("android_waitlist_emails")
-      .upsert(
-        {
-          email: emailInput,
-          email_normalized: emailInput,
-          source,
-          http_referrer: httpReferrer,
-          user_agent: userAgent,
-          metadata: {
-            full_url: fullUrl,
-          },
-          updated_at: new Date().toISOString(),
-        },
-        {
-          onConflict: "email_normalized",
-          ignoreDuplicates: false,
-        },
-      );
+      .select("id")
+      .eq("email_normalized", emailInput)
+      .maybeSingle();
 
-    if (error) {
-      throw new Error(error.message);
+    if (existingError) {
+      if (isMissingTableError(existingError.message)) {
+        return NextResponse.json(
+          {
+            message: "Configuration waitlist incomplète. Migration Supabase à déployer.",
+          },
+          { status: 500 },
+        );
+      }
+      throw new Error(existingError.message);
     }
 
-    return NextResponse.json({ ok: true });
+    if (existing?.id) {
+      return NextResponse.json({
+        ok: true,
+        duplicate: true,
+        message: "Email déjà inscrit à la liste Android.",
+      });
+    }
+
+    const { error: insertError } = await supabase
+      .from("android_waitlist_emails")
+      .insert({
+        email: emailInput,
+        email_normalized: emailInput,
+        first_name: firstName,
+        goal,
+        source,
+        http_referrer: httpReferrer,
+        user_agent: userAgent,
+        metadata: {
+          full_url: fullUrl,
+        },
+      });
+
+    if (insertError) {
+      if (isDuplicateErrorCode(insertError.code)) {
+        return NextResponse.json({
+          ok: true,
+          duplicate: true,
+          message: "Email déjà inscrit à la liste Android.",
+        });
+      }
+
+      if (isMissingTableError(insertError.message)) {
+        return NextResponse.json(
+          {
+            message: "Configuration waitlist incomplète. Migration Supabase à déployer.",
+          },
+          { status: 500 },
+        );
+      }
+
+      throw new Error(insertError.message);
+    }
+
+    await sendWaitlistNotificationEmail({
+      email: emailInput,
+      firstName,
+      goal,
+      source,
+      referrer: httpReferrer,
+      fullUrl,
+    });
+
+    return NextResponse.json({
+      ok: true,
+      duplicate: false,
+      message: "Inscription enregistrée.",
+    });
   } catch (error) {
     console.error("[android-waitlist] unable to persist email", error);
     return NextResponse.json(

@@ -2,6 +2,8 @@ create table if not exists public.android_waitlist_emails (
     id uuid primary key default gen_random_uuid(),
     email text not null,
     email_normalized text not null,
+    first_name text,
+    goal text,
     source text,
     http_referrer text,
     user_agent text,
@@ -9,6 +11,10 @@ create table if not exists public.android_waitlist_emails (
     created_at timestamptz not null default timezone('utc', now()),
     updated_at timestamptz not null default timezone('utc', now())
 );
+
+alter table public.android_waitlist_emails
+    add column if not exists first_name text,
+    add column if not exists goal text;
 
 create unique index if not exists idx_android_waitlist_emails_email_normalized
 on public.android_waitlist_emails (email_normalized);

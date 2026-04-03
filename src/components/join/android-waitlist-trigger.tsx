@@ -17,6 +17,7 @@ type SubmitState = "idle" | "submitting" | "success";
 
 interface WaitlistResponse {
   message?: string;
+  duplicate?: boolean;
 }
 
 function isEmailLike(value: string): boolean {
@@ -33,13 +34,17 @@ export function AndroidWaitlistTrigger({
 }: AndroidWaitlistTriggerProps) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [goal, setGoal] = useState("");
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const closeModal = () => {
     setOpen(false);
     setSubmitState("idle");
     setErrorMessage(null);
+    setSuccessMessage(null);
   };
 
   useEffect(() => {
@@ -75,6 +80,7 @@ export function AndroidWaitlistTrigger({
 
     setSubmitState("submitting");
     setErrorMessage(null);
+    setSuccessMessage(null);
 
     try {
       const response = await fetch("/api/join/android-waitlist", {
@@ -84,6 +90,8 @@ export function AndroidWaitlistTrigger({
         },
         body: JSON.stringify({
           email: normalizedEmail,
+          firstName: firstName.trim() || null,
+          goal: goal.trim() || null,
           source,
           referrer: typeof document !== "undefined" ? document.referrer : null,
           fullUrl: typeof window !== "undefined" ? window.location.href : null,
@@ -99,6 +107,11 @@ export function AndroidWaitlistTrigger({
       }
 
       setSubmitState("success");
+      setSuccessMessage(
+        payload.duplicate
+          ? "Vous etes deja inscrit. On vous contactera a l'ouverture Android."
+          : "Vous etes bien sur la liste. On vous previendra des l'ouverture Android.",
+      );
     } catch {
       setErrorMessage("Impossible de vous inscrire pour le moment.");
       setSubmitState("idle");
@@ -148,7 +161,7 @@ export function AndroidWaitlistTrigger({
 
                 {submitState === "success" ? (
                   <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                    Vous etes bien sur la liste. On vous previendra des l&apos;ouverture Android.
+                    {successMessage ?? "Inscription enregistree."}
                   </div>
                 ) : (
                   <form className="mt-5 space-y-3" onSubmit={handleSubmit}>
@@ -163,6 +176,31 @@ export function AndroidWaitlistTrigger({
                         className="h-12 w-full rounded-full border border-[var(--color-border)] bg-white px-4 text-sm outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
                         placeholder="vous@exemple.com"
                         required
+                      />
+                    </label>
+
+                    <label className="block space-y-1 text-sm font-medium text-[var(--color-ink)]">
+                      Prenom (optionnel)
+                      <input
+                        type="text"
+                        name="android_waitlist_first_name"
+                        autoComplete="given-name"
+                        value={firstName}
+                        onChange={(event) => setFirstName(event.target.value)}
+                        className="h-11 w-full rounded-full border border-[var(--color-border)] bg-white px-4 text-sm outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+                        placeholder="Votre prenom"
+                      />
+                    </label>
+
+                    <label className="block space-y-1 text-sm font-medium text-[var(--color-ink)]">
+                      Objectif principal (optionnel)
+                      <input
+                        type="text"
+                        name="android_waitlist_goal"
+                        value={goal}
+                        onChange={(event) => setGoal(event.target.value)}
+                        className="h-11 w-full rounded-full border border-[var(--color-border)] bg-white px-4 text-sm outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+                        placeholder="Perdre du poids, mieux manger, suivi coach..."
                       />
                     </label>
 
