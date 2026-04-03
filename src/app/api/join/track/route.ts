@@ -14,6 +14,10 @@ interface JoinTrackPayload {
   fullUrl?: unknown;
 }
 
+interface CoachTokenResponse {
+  token?: unknown;
+}
+
 function isUuid(value: string | null | undefined): boolean {
   if (!value) {
     return false;
@@ -41,9 +45,62 @@ function parseSearchFromPayload(payload: JoinTrackPayload): URLSearchParams {
   return new URLSearchParams(normalized);
 }
 
+function resolveClientIp(request: NextRequest): string | null {
+  const rawIp =
+    toSafeString(request.headers.get("cf-connecting-ip"), 128) ??
+    toSafeString(request.headers.get("x-forwarded-for"), 256);
+  if (!rawIp) {
+    return null;
+  }
+
+  const first = rawIp.split(",")[0]?.trim();
+  return first || null;
+}
+
+async function issueCoachBridgeToken(coachCode: string, clientIp?: string | null): Promise<string | null> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? "";
+  const supabaseApiKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ??
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ??
+    "";
+
+  if (!supabaseUrl || !supabaseApiKey) {
+    return null;
+  }
+
+  try {
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/generate-coach-token?coach_code=${encodeURIComponent(coachCode)}`,
+      {
+        method: "GET",
+        headers: {
+          apikey: supabaseApiKey,
+          "Content-Type": "application/json",
+          ...(clientIp ? { "x-forwarded-for": clientIp, "cf-connecting-ip": clientIp } : {}),
+        },
+      },
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = (await response.json().catch(() => ({}))) as CoachTokenResponse;
+    const token = typeof payload.token === "string" ? payload.token.trim() : "";
+    if (!token.startsWith("BFTOKEN_")) {
+      return null;
+    }
+
+    return token;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   const payload = (await request.json().catch(() => ({}))) as JoinTrackPayload;
   const context = parseJoinContextFromSearchParams(parseSearchFromPayload(payload));
+  const clientIp = resolveClientIp(request);
 
   const existingSessionId = request.cookies.get(JOIN_SESSION_COOKIE)?.value;
   const sessionId = existingSessionId && isUuid(existingSessionId)
@@ -53,7 +110,7 @@ export async function POST(request: NextRequest) {
 
   let coachProfileUserId: string | null = null;
   let coachBusinessName: string | null = null;
-  let bridgeNonce: string | null = null;
+  let coachToken: string | null = null;
   let bridgeStatus: "none" | "issued" | "failed" = "none";
 
   try {
@@ -64,19 +121,8 @@ export async function POST(request: NextRequest) {
       if (coach) {
         coachProfileUserId = coach.userId;
         coachBusinessName = coach.businessName;
-        bridgeNonce = crypto.randomUUID();
-
-        const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
-        const { error: nonceError } = await supabase.from("coach_token_nonces").insert({
-          nonce: bridgeNonce,
-          coach_code: coach.inviteCode,
-          expires_at: expiresAt,
-        });
-
-        bridgeStatus = nonceError ? "failed" : "issued";
-        if (nonceError) {
-          bridgeNonce = null;
-        }
+        coachToken = await issueCoachBridgeToken(coach.inviteCode, clientIp);
+        bridgeStatus = coachToken ? "issued" : "failed";
       }
     }
 
@@ -103,7 +149,7 @@ export async function POST(request: NextRequest) {
       landing_path: "/join",
       query_string: context.queryString,
       app_open_attempted_at: new Date().toISOString(),
-      bridge_nonce: bridgeNonce,
+      bridge_nonce: null,
       bridge_status: bridgeStatus,
       metadata: {
         full_url: fullUrl,
@@ -127,7 +173,7 @@ export async function POST(request: NextRequest) {
   const deepLinkUrl = buildAppDeepLink(context, {
     clickId,
     sessionId,
-    bridgeNonce,
+    coachToken,
   });
 
   const appStoreRedirectUrl = `/api/join/app-store?click_id=${encodeURIComponent(clickId)}`;
@@ -136,6 +182,7 @@ export async function POST(request: NextRequest) {
     clickId,
     sessionId,
     deepLinkUrl,
+    coachToken,
     appStoreRedirectUrl,
     appStoreUrl: APP_STORE_URL,
     coach: coachBusinessName && context.coachCode

@@ -3,11 +3,14 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { Container } from "@/components/ui/container";
+import { getIsAdminForUserId } from "@/lib/admin/auth";
 import { createPageMetadata } from "@/lib/seo";
 import { getCoachAccountSummary } from "@/lib/supabase/coach-account";
+import { getCoachRequestSummary } from "@/lib/supabase/coach-requests";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export const runtime = "edge";
+const FRANCE_TIME_ZONE = "Europe/Paris";
 
 function formatDate(value: string | null | undefined): string {
   if (!value) {
@@ -20,6 +23,7 @@ function formatDate(value: string | null | undefined): string {
   }
 
   return new Intl.DateTimeFormat("fr-FR", {
+    timeZone: FRANCE_TIME_ZONE,
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -60,7 +64,12 @@ export default async function ProfilPage() {
   const providers = getProviders(user.app_metadata?.providers);
   const createdAt = formatDate(user.created_at);
   const lastSignInAt = formatDate(user.last_sign_in_at);
-  const coachAccount = await getCoachAccountSummary(user.id);
+  const [coachAccount, coachRequest, isAdmin] = await Promise.all([
+    getCoachAccountSummary(user.id),
+    getCoachRequestSummary(user.id),
+    getIsAdminForUserId(user.id),
+  ]);
+  const hasCoachSpace = Boolean(coachAccount || coachRequest);
 
   return (
     <section className="py-12 sm:py-16">
@@ -95,12 +104,20 @@ export default async function ProfilPage() {
 
           <div className="mt-6">
             <div className="flex flex-wrap gap-2">
-              {coachAccount ? (
+              {hasCoachSpace ? (
                 <Link
                   href="/espace-coach"
                   className="inline-flex items-center rounded-full border border-[var(--color-border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-panel)]"
                 >
                   Mon espace coach
+                </Link>
+              ) : null}
+              {isAdmin ? (
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center rounded-full border border-[var(--color-border)] bg-white px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-panel)]"
+                >
+                  Espace admin
                 </Link>
               ) : null}
               <form action="/auth/signout" method="post">

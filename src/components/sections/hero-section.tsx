@@ -1,4 +1,5 @@
-import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
+import Link from "next/link";
+
 import { Container } from "@/components/ui/container";
 import { StoreButtons } from "@/components/ui/store-buttons";
 import { content } from "@/content";
@@ -18,13 +19,16 @@ export function HeroSection() {
             {content.heroContent.reassurance}
           </p>
           <div className="mt-6 flex flex-col items-center gap-3">
-            <StartFreeModalTrigger
-              trackingId="start_free"
-              trackingLocation="hero"
-              className="inline-flex h-12 items-center justify-center rounded-full px-6 text-base font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-[var(--color-ink)] text-white hover:bg-black focus-visible:outline-[var(--color-ink)]"
+            <Link
+              href="/app"
+              data-cta-track="start_free"
+              data-cta-location="hero"
+              className="group relative inline-flex h-12 items-center justify-center gap-2 overflow-hidden rounded-full bg-[linear-gradient(135deg,#1ad8ab,#0ea678_56%,#0b8f68)] px-6 text-base font-bold text-white ring-1 ring-[rgba(16,185,129,0.5)] shadow-[0_18px_34px_-18px_rgba(16,185,129,1)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_26px_46px_-20px_rgba(16,185,129,1)] active:translate-y-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
             >
-              Démarrer gratuitement
-            </StartFreeModalTrigger>
+              <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_20%,rgba(255,255,255,0.3)_50%,transparent_80%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+              <span className="relative">Démarrer gratuitement</span>
+              <span aria-hidden className="relative text-lg leading-none transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+            </Link>
             <StoreButtons compact />
           </div>
         </div>

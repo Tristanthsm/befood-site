@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { CookiePreferencesButton } from "@/components/analytics/cookie-preferences-button";
+import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
 import { Container } from "@/components/ui/container";
 import { content } from "@/content";
 import { footerLinks, siteConfig, storeLinks } from "@/lib/site-config";
@@ -55,6 +56,13 @@ export function Footer() {
             ) : (
               <span className="text-sm font-semibold text-white/60">App Store (bientôt)</span>
             )}
+            <StartFreeModalTrigger
+              trackingId="start_free"
+              trackingLocation="footer_links"
+              className="inline-flex justify-start text-left text-sm font-semibold text-white/75 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+            >
+              Se connecter / Créer un compte
+            </StartFreeModalTrigger>
             <CookiePreferencesButton />
           </nav>
         </div>

@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
-import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { createPageMetadata, getBreadcrumbJsonLd, getSoftwareApplicationJsonLd } from "@/lib/seo";
 import { siteConfig, storeLinks } from "@/lib/site-config";
@@ -11,123 +8,68 @@ import { siteConfig, storeLinks } from "@/lib/site-config";
 export const metadata: Metadata = createPageMetadata({
   title: "Application nutrition photo pour comprendre ses repas",
   description:
-    "Découvrez l'application iOS BeFood: analyse de repas par photo, repères clairs, guidance personnalisée et progression des habitudes.",
+    "Installez BeFood pour analyser vos repas en photo, recevoir des recommandations coach personnalisées et progresser avec des actions concrètes.",
   path: "/app",
   keywords: [
     "application nutrition photo",
     "analyse repas iOS",
     "journal alimentaire photo",
     "coach nutrition IA",
+    "recettes nutrition personnalisées",
   ],
 });
-
-const appHighlights = [
-  {
-    title: "Analyse de repas par photo",
-    description: "Capturez un repas et obtenez une lecture claire de ses grands équilibres.",
-  },
-  {
-    title: "Interprétation utile",
-    description: "Des retours actionnables pour décider quoi ajuster au repas suivant.",
-  },
-  {
-    title: "Suivi d'habitudes",
-    description: "Visualisez votre progression dans le temps pour construire une routine durable.",
-  },
-  {
-    title: "Coach identifiable et suivi cohérent",
-    description: "Gardez un fil conducteur avec une guidance plus contextualisée et plus constante.",
-  },
-];
-
-const appFit = [
-  "Vous voulez comprendre vos repas sans passer votre journée à tout logger.",
-  "Vous cherchez un cadre plus humain et plus constant qu'un simple compteur.",
-  "Vous voulez progresser avec des actions concrètes, adaptées à votre contexte réel.",
-];
 
 export default function AppPage() {
   return (
     <>
-      <section className="py-16 sm:py-20">
-        <Container className="space-y-8">
-          <header className="max-w-4xl space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Produit BeFood</p>
-            <h1 className="font-display text-4xl leading-tight text-[var(--color-ink)] sm:text-5xl">
-              Une app iOS pour comprendre vos repas, pas juste compter
-            </h1>
-            <p className="text-base leading-7 text-[var(--color-muted)] sm:text-lg">
-              BeFood associe analyse photo, guidance et suivi des habitudes pour aider à mieux manger dans la durée,
-              sans promesse médicale.
-            </p>
-          </header>
+      <section className="relative overflow-hidden pb-16 pt-12 sm:pb-20 sm:pt-16">
+        <Container>
+          <div className="relative mt-1 overflow-hidden rounded-[2.2rem] border border-[color:rgb(9_31_40_/45%)] bg-[linear-gradient(170deg,#02060d_2%,#041229_34%,#08203a_60%,#0b2c3d_78%,#0f4339_100%)] px-6 pb-11 pt-8 text-white shadow-[0_36px_90px_-52px_rgba(2,10,20,0.98)] sm:mt-1 sm:px-10 sm:pb-[3.25rem] sm:pt-10">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.32),transparent)]" />
+            <div className="pointer-events-none absolute bottom-[-7rem] left-1/2 h-[21rem] w-[68rem] -translate-x-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.38),rgba(16,185,129,0.18)_44%,transparent_78%)]" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[11rem] bg-[linear-gradient(180deg,transparent_12%,rgba(16,185,129,0.1)_58%,rgba(16,185,129,0.23)_100%)]" />
+            <div className="relative z-10 mx-auto max-w-3xl space-y-6 text-center">
+              <p className="inline-flex rounded-full border border-white/18 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.13em] text-[var(--color-accent-soft)]">
+                Installer BeFood
+              </p>
+              <h2 className="font-display text-3xl leading-tight sm:text-5xl">
+                Téléchargez BeFood et passez du repas à l&apos;action.
+              </h2>
+              <p className="mx-auto max-w-2xl text-base leading-7 text-white/82 sm:text-lg">
+                Une seule action maintenant: Installez l&apos;app pour recevoir des recommandations après chaque repas.
+              </p>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {appHighlights.map((item) => (
-              <Card key={item.title} className="space-y-2 bg-white/95">
-                <h2 className="text-xl font-semibold text-[var(--color-ink)]">{item.title}</h2>
-                <p className="text-sm leading-6 text-[var(--color-muted)]">{item.description}</p>
-              </Card>
-            ))}
-          </div>
-
-          <section className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-panel)] p-5 sm:p-6">
-            <h2 className="font-display text-2xl text-[var(--color-ink)] sm:text-3xl">Cette app est faite pour vous si...</h2>
-            <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-[var(--color-muted)] sm:text-base">
-              {appFit.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </section>
-
-          <section className="rounded-3xl border border-[color:rgb(11_34_52_/20%)] bg-[linear-gradient(145deg,#0a1a2e,#173553)] p-6 text-white sm:p-8">
-            <h2 className="font-display text-3xl leading-tight sm:text-4xl">Télécharger BeFood</h2>
-            <p className="mt-3 max-w-3xl text-base leading-7 text-white/78 sm:text-lg">
-              Disponible sur iOS. Ouvrez aussi nos guides pour comprendre l&apos;approche avant de démarrer.
-            </p>
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              <StartFreeModalTrigger
-                trackingId="start_free"
-                trackingLocation="app_page"
-                className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-accent-strong)]"
-              >
-                Démarrer gratuitement
-              </StartFreeModalTrigger>
               {storeLinks.appStore.status === "live" ? (
                 <a
                   href={siteConfig.appStoreUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   data-cta-track="download_app_store"
-                  data-cta-location="app_page"
-                  className="inline-flex items-center rounded-full border border-white/30 px-5 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/10"
+                  data-cta-location="app_page_single_cta"
+                  className="group inline-flex min-h-14 items-center justify-center gap-2.5 rounded-2xl bg-[linear-gradient(135deg,#1ad8ab,#0ea678)] px-8 py-3.5 text-base font-bold text-white ring-1 ring-white/30 shadow-[0_20px_44px_-18px_rgba(16,185,129,0.98)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_26px_56px_-18px_rgba(16,185,129,1)]"
                 >
-                  Ouvrir l&apos;App Store
+                  <span>Télécharger sur App Store</span>
+                  <span aria-hidden className="text-lg leading-none transition-transform duration-200 group-hover:translate-x-0.5">→</span>
                 </a>
               ) : (
-                <span className="inline-flex items-center rounded-full border border-white/25 px-5 py-3 text-sm font-semibold text-white/80">
+                <span className="inline-flex min-h-14 items-center justify-center rounded-2xl border border-white/30 bg-white/10 px-8 py-3.5 text-base font-semibold text-white/80">
                   App Store bientôt
                 </span>
               )}
-              <Link
-                href="/guides"
-                className="inline-flex items-center rounded-full border border-white/30 px-5 py-3 text-sm font-semibold text-white/90 hover:bg-white/10"
-              >
-                Lire les guides
-              </Link>
+
+              <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
+                <span className="rounded-full border border-white/18 bg-white/10 px-3 py-1 text-white/90">
+                  iOS disponible
+                </span>
+                <span className="rounded-full border border-white/18 bg-white/10 px-3 py-1 text-white/80">
+                  Google Play: bientôt
+                </span>
+              </div>
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-white/80">
-              <Link href="/guide/analyser-un-repas-en-photo" className="underline-offset-4 hover:text-white hover:underline">
-                Commencer par: analyser un repas en photo
-              </Link>
-              <span aria-hidden>·</span>
-              <Link href="/guide/alternative-calorie-tracker" className="underline-offset-4 hover:text-white hover:underline">
-                Voir l&apos;alternative au calorie tracker
-              </Link>
-            </div>
-          </section>
+          </div>
         </Container>
       </section>
+
       <JsonLd data={getSoftwareApplicationJsonLd("/app")} />
       <JsonLd
         data={getBreadcrumbJsonLd([

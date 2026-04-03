@@ -2,7 +2,6 @@ import { AppShowcaseSection } from "@/components/sections/app-showcase-section";
 import { CommunitySection } from "@/components/sections/community-section";
 import { FinalCtaSection } from "@/components/sections/final-cta-section";
 import { HeroSection } from "@/components/sections/hero-section";
-import { HomeIntentLinksSection } from "@/components/sections/home-intent-links-section";
 import { HowItWorksSection } from "@/components/sections/how-it-works-section";
 import { createPageMetadata } from "@/lib/seo";
 
@@ -24,7 +23,6 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <HomeIntentLinksSection />
       <AppShowcaseSection />
       <HowItWorksSection />
       <CommunitySection />

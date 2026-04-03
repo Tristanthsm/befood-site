@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 import { Container } from "@/components/ui/container";
@@ -40,19 +41,22 @@ const howItWorksGallery = [
 
 const howItWorksHighlights = [
   {
-    title: "Comprenez ce que vos repas disent vraiment",
+    href: "/guide/analyser-un-repas-en-photo",
+    title: "Analyser un repas en photo",
     description:
-      "Prenez un repas en photo et obtenez des repères utiles, sans journal complexe.",
+      "Méthode pratique, limites à connaître, et comment interpréter un repas sans surpromesse.",
   },
   {
-    title: "Retrouvez les coachs, pros et créateurs que vous appréciez",
+    href: "/guide/alternative-calorie-tracker",
+    title: "Pas un simple calorie tracker",
     description:
-      "Suivez des profils que vous aimez déjà et avancez avec un accompagnement plus incarné, plus proche de vos objectifs.",
+      "BeFood privilégie la compréhension du repas et la guidance, plutôt qu'une logique purement chiffrée.",
   },
   {
-    title: "Progressez avec une vraie dynamique de communauté",
+    href: "/methodologie",
+    title: "Méthodologie BeFood",
     description:
-      "Restez motivé dans la durée grâce aux échanges, au partage de repas et à une communauté qui aide à garder le cap.",
+      "Ce que l'analyse fait, ce qu'elle ne fait pas, et pourquoi BeFood n'est pas un service médical.",
   },
 ];
 
@@ -70,8 +74,12 @@ export function HowItWorksSection() {
         <div className="overflow-hidden rounded-[2rem] border border-[color:rgb(11_34_52_/20%)] bg-[linear-gradient(140deg,#081122,#112744)] p-7 text-white sm:p-10">
           <header className="max-w-5xl">
             <h2 className="text-balance text-4xl font-black leading-[0.98] sm:text-5xl lg:text-6xl">
-              Comprenez votre alimentation. Construisez des habitudes qui durent.
+              Comprenez vos repas en photo. Construisez des habitudes qui durent.
             </h2>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-white/82 sm:text-lg">
+              BeFood, application nutrition iOS, vous aide à interpréter vos repas et à avancer avec des repères
+              clairs, sans surpromesse ni logique punitive.
+            </p>
           </header>
 
           <div className="mt-10 space-y-6">
@@ -100,7 +108,12 @@ export function HowItWorksSection() {
             <ol className="grid gap-3 text-sm text-white/82 sm:grid-cols-3">
               {howItWorksHighlights.map((step, index) => (
                 <li key={step.title} className="rounded-2xl border border-white/14 bg-white/8 px-4 py-3">
-                  <p className="font-semibold text-white">{index + 1}. {step.title}</p>
+                  <p className="font-semibold text-white">
+                    {index + 1}.{" "}
+                    <Link href={step.href} className="underline-offset-4 hover:underline">
+                      {step.title}
+                    </Link>
+                  </p>
                   <p className="mt-1 leading-6 text-white/75">{step.description}</p>
                 </li>
               ))}

@@ -15,7 +15,7 @@ export function buildAppDeepLink(
   options: {
     clickId: string;
     sessionId: string;
-    bridgeNonce: string | null;
+    coachToken: string | null;
   },
 ): string {
   const params = buildSearchParamsFromContext(context);
@@ -23,8 +23,8 @@ export function buildAppDeepLink(
   params.set("session_id", options.sessionId);
   params.set("source", "web_join");
 
-  if (options.bridgeNonce) {
-    params.set("bridge_nonce", options.bridgeNonce);
+  if (options.coachToken) {
+    params.set("coach_token", options.coachToken);
   }
 
   return mergeQuery(APP_DEEP_LINK_BASE, params);

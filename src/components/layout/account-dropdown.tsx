@@ -7,6 +7,7 @@ interface AccountDropdownProps {
   email: string;
   providerLabel: string;
   showCoachLink: boolean;
+  showAdminLink: boolean;
 }
 
 function UserIcon() {
@@ -17,7 +18,7 @@ function UserIcon() {
   );
 }
 
-export function AccountDropdown({ email, providerLabel, showCoachLink }: AccountDropdownProps) {
+export function AccountDropdown({ email, providerLabel, showCoachLink, showAdminLink }: AccountDropdownProps) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -90,6 +91,16 @@ export function AccountDropdown({ email, providerLabel, showCoachLink }: Account
                 className="block rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
               >
                 Mon espace coach
+              </Link>
+            ) : null}
+            {showAdminLink ? (
+              <Link
+                href="/admin"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="block rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
+              >
+                Espace admin
               </Link>
             ) : null}
           </div>

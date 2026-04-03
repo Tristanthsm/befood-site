@@ -1,10 +1,12 @@
 import Link from "next/link";
 
-import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
 import { AccountDropdown } from "@/components/layout/account-dropdown";
+import { HeaderStartFreeCta } from "@/components/layout/header-start-free-cta";
 import { HeaderShell } from "@/components/layout/header-shell";
+import { getIsAdminForUserId } from "@/lib/admin/auth";
 import { mainNavigation } from "@/lib/site-config";
 import { getCoachAccountSummary } from "@/lib/supabase/coach-account";
+import { getCoachRequestSummary } from "@/lib/supabase/coach-requests";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 function toProviderLabel(appMetadata: unknown): string {
@@ -30,7 +32,10 @@ export async function Header() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const coachAccount = user ? await getCoachAccountSummary(user.id) : null;
+  const [coachAccount, coachRequest, isAdmin] = user
+    ? await Promise.all([getCoachAccountSummary(user.id), getCoachRequestSummary(user.id), getIsAdminForUserId(user.id)])
+    : [null, null, false];
+  const hasCoachSpace = Boolean(coachAccount || coachRequest);
   const providerLabel = user ? toProviderLabel(user.app_metadata) : "Non défini";
 
   return (
@@ -69,16 +74,14 @@ export async function Header() {
             <AccountDropdown
               email={user.email ?? "Aucun e-mail"}
               providerLabel={providerLabel}
-              showCoachLink={Boolean(coachAccount)}
+              showCoachLink={hasCoachSpace}
+              showAdminLink={isAdmin}
             />
           ) : (
-            <StartFreeModalTrigger
-              trackingId="start_free"
+            <HeaderStartFreeCta
               trackingLocation="header_desktop"
-              className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_24px_-14px_rgba(16,185,129,0.95)] transition hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-            >
-              Démarrer gratuitement
-            </StartFreeModalTrigger>
+              className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-full bg-[linear-gradient(135deg,#1ad8ab,#0ea678_56%,#0b8f68)] px-4 py-2 text-sm font-bold text-white ring-1 ring-[rgba(16,185,129,0.5)] shadow-[0_16px_30px_-16px_rgba(16,185,129,0.95)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_22px_42px_-18px_rgba(16,185,129,1)] active:translate-y-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+            />
           )}
         </div>
 
@@ -105,7 +108,7 @@ export async function Header() {
                   >
                     Mon profil
                   </Link>
-                  {coachAccount ? (
+                  {hasCoachSpace ? (
                     <Link
                       href="/espace-coach"
                       className="rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
@@ -113,15 +116,20 @@ export async function Header() {
                       Mon espace coach
                     </Link>
                   ) : null}
+                  {isAdmin ? (
+                    <Link
+                      href="/admin"
+                      className="rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
+                    >
+                      Espace admin
+                    </Link>
+                  ) : null}
                 </>
               ) : (
-                <StartFreeModalTrigger
-                  trackingId="start_free"
+                <HeaderStartFreeCta
                   trackingLocation="header_mobile"
-                  className="mt-1 rounded-xl bg-[var(--color-accent)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--color-accent-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
-                >
-                  Démarrer gratuitement
-                </StartFreeModalTrigger>
+                  className="group relative mt-1 inline-flex items-center justify-center gap-1.5 overflow-hidden rounded-xl bg-[linear-gradient(135deg,#1ad8ab,#0ea678_56%,#0b8f68)] px-3 py-2 text-sm font-bold text-white ring-1 ring-[rgba(16,185,129,0.5)] shadow-[0_14px_30px_-18px_rgba(16,185,129,0.95)] transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 hover:shadow-[0_20px_36px_-18px_rgba(16,185,129,1)] active:translate-y-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+                />
               )}
             </nav>
           </div>

@@ -53,13 +53,9 @@ export const storeLinks: { appStore: StoreLink; googlePlay: StoreLink } = {
 };
 
 export const footerLinks: FooterLink[] = [
-  { label: "Application", href: "/app" },
+  { label: "Télécharger l’app", href: "/app" },
   { label: "Comment ça marche", href: "/comment-ca-marche" },
-  { label: "Guides", href: "/guides" },
   { label: "Pour les coachs", href: "/pour-les-coachs" },
-  { label: "Pour les créateurs", href: "/pour-les-createurs" },
-  { label: "Méthodologie", href: "/methodologie" },
-  { label: "À propos", href: "/a-propos" },
   { label: "Contact", href: "/contact" },
   { label: "Aide", href: "/aide" },
   { label: "Cookies", href: "/cookies" },
@@ -88,12 +84,6 @@ export const indexableStaticRoutes: SeoRouteConfig[] = [
   },
   {
     path: "/pour-les-coachs",
-    changeFrequency: "monthly",
-    priority: 0.8,
-    lastModified: defaultLastModified,
-  },
-  {
-    path: "/pour-les-createurs",
     changeFrequency: "monthly",
     priority: 0.8,
     lastModified: defaultLastModified,

@@ -24,6 +24,8 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function CoachsPage() {
   const requestAccessHref = siteConfig.coachRequestAccessUrl ?? "/candidature-coachs";
+  const coachApplicationHref = `${requestAccessHref}?profil=coach`;
+  const creatorApplicationHref = `${requestAccessHref}?profil=createur`;
 
   return (
     <>
@@ -124,24 +126,30 @@ export default function CoachsPage() {
             <p className="mt-3 max-w-3xl text-base leading-7 text-white/78 sm:text-lg">
               {content.coachPageContent.finalCta.description}
             </p>
-            <div className="mt-6">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               <LiquidMetalButtonLink
-                href={requestAccessHref}
-                label="Présenter ma candidature"
+                href={coachApplicationHref}
+                label="Je candidate comme coach"
                 trackingId="coach_application_primary"
                 trackingLocation="pour_les_coachs_final_cta"
               />
+              <Link
+                href={creatorApplicationHref}
+                className="inline-flex items-center justify-center rounded-full border border-white/30 px-5 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/10"
+              >
+                Je candidate comme créateur
+              </Link>
             </div>
             <div className="mt-6 border-t border-white/15 pt-4">
               <p className="text-sm text-white/75">
-                BeFood n&apos;est pas réservé aux coachs : créateurs, experts et profils affinitaires peuvent aussi candidater.
+                La candidature coach demande un diplôme, une certification ou une qualification cohérente.
               </p>
               <p className="mt-2 text-sm">
                 <Link
-                  href="/pour-les-coachs#coach-eligibility-title"
+                  href={creatorApplicationHref}
                   className="font-semibold text-[var(--color-accent-soft)] underline-offset-4 hover:underline"
                 >
-                  Voir les autres profils recherchés
+                  Voir le parcours candidature créateur
                 </Link>
               </p>
             </div>

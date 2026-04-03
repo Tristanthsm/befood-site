@@ -1,39 +1,39 @@
 import type { AccessCard, CoachPageContent } from "@/lib/types";
 
 export const coachPageContent: CoachPageContent = {
-  heroBadge: "Écosystème coachs & experts BeFood",
-  heroTitle: "Qu'est-ce qu'un coach BeFood ?",
+  heroBadge: "Écosystème BeFood",
+  heroTitle: "Pourquoi les profils sélectionnés rendent BeFood plus utile",
   heroDescription:
-    "Un coach BeFood est un profil sélectionné qui rend l'accompagnement plus incarné dans l'app : repères concrets, compréhension des repas et progression durable.",
-  heroUserLensTitle: "Pour les utilisateurs",
+    "BeFood n'est pas qu'une app d'analyse repas: c'est un écosystème avec repères concrets, progression durable et profils utiles intégrés à l'expérience.",
+  heroUserLensTitle: "Ce que l'utilisateur gagne",
   heroUserLensDescription:
-    "Retrouvez des profils que vous appréciez, gardez un cadre vivant entre deux séances et avancez avec plus de continuité.",
-  heroProfileLensTitle: "Pour les coachs, créateurs et experts",
+    "Des retours plus crédibles, des actions concrètes et une progression plus engageante dans la durée.",
+  heroProfileLensTitle: "Ce que BeFood intègre",
   heroProfileLensDescription:
-    "BeFood ouvre une place réelle dans l'expérience produit aux profils retenus, avec une intégration pensée pour le quotidien utilisateur.",
+    "Coachs, experts, créateurs et profils affinitaires sont intégrés au produit, pas ajoutés en périphérie.",
   ecosystemTitle: "Pourquoi cela change l'expérience BeFood",
   ecosystemDescription:
-    "BeFood n'ajoute pas des coachs en périphérie. Les profils sélectionnés font partie du produit pour aider les utilisateurs à mieux comprendre leurs habitudes et rester engagés dans le temps.",
+    "Les profils sélectionnés rendent BeFood plus crédible, plus incarné et plus utile à chaque repas.",
   ecosystemItems: [
     {
-      title: "Un accompagnement plus incarné",
+      title: "Des décisions repas plus claires, plus vite",
       description:
-        "L'utilisateur peut s'appuyer sur des profils reconnus plutôt que sur un parcours anonyme et impersonnel.",
+        "L'analyse photo devient plus exploitable: vous savez quoi ajuster dès le repas suivant.",
     },
     {
-      title: "Des repères qui restent concrets",
+      title: "Des conseils actionnables dans la vraie vie",
       description:
-        "Conseils, interprétation et actions du quotidien restent alignés, même entre deux points de suivi.",
+        "Les recommandations restent réalistes, applicables au quotidien et alignées avec vos objectifs.",
     },
     {
-      title: "Une continuité de progression",
+      title: "Une progression plus engageante et durable",
       description:
-        "Moins de ruptures, plus de régularité: la progression devient plus lisible et plus durable.",
+        "Contenu, accompagnement et communauté aident à tenir le cap sans logique punitive.",
     },
   ],
-  eligibilityTitle: "Qui peut rejoindre BeFood ?",
+  eligibilityTitle: "Qui peut candidater ?",
   eligibilityDescription:
-    "L'intégration n'est jamais automatique. BeFood sélectionne les profils selon leur cohérence, leur qualité d'accompagnement et la valeur apportée à l'expérience utilisateur.",
+    "L'intégration n'est jamais automatique. BeFood sélectionne les profils selon leur cohérence et la valeur apportée à l'utilisateur.",
   eligibilityItems: [
     {
       title: "Coachs et praticiens",
@@ -43,19 +43,19 @@ export const coachPageContent: CoachPageContent = {
     {
       title: "Experts spécialisés",
       description:
-        "Vous avez un diplôme reconnu, une spécialisation claire ou une expertise solide dans votre domaine.",
+        "Vous avez une spécialisation claire, une expertise reconnue et des repères fiables à transmettre.",
     },
     {
-      title: "Créateurs avec audience engagée",
+      title: "Créateurs et profils affinitaires",
       description:
-        "Vous produisez des contenus utiles et fédérez une audience qualifiée autour de la nutrition et du bien-être.",
+        "Vous créez du contenu utile, fédérez une audience engagée et renforcez l'écosystème BeFood.",
     },
   ],
   finalCta: {
     title: "Présentez votre profil à BeFood",
     description:
-      "Vous avez une expertise, une pratique d'accompagnement ou une audience engagée ? BeFood étudie chaque candidature avec attention pour intégrer des profils cohérents avec son expérience utilisateur.",
-    note: "Chaque candidature est étudiée avec attention avant validation. Si votre profil est retenu, l'équipe BeFood vous guide dans la bonne intégration.",
+      "Vous avez une expertise, une pratique d'accompagnement ou une audience engagée ? BeFood étudie chaque candidature pour intégrer des profils réellement utiles à l'expérience.",
+    note: "Chaque candidature est étudiée avec attention.",
   },
 };
 

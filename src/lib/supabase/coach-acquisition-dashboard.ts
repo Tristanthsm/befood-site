@@ -154,7 +154,7 @@ export async function getCoachAcquisitionDashboard(days = 30): Promise<CoachAcqu
     return EMPTY_DASHBOARD;
   }
 
-  const safeDays = days === 7 ? 7 : 30;
+  const safeDays = days === 7 || days === 14 || days === 31 || days === 90 ? days : 14;
   const to = new Date();
   const from = new Date(to);
   from.setUTCDate(from.getUTCDate() - safeDays);

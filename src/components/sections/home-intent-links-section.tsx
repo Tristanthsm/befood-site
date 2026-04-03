@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 
@@ -58,13 +57,14 @@ export function HomeIntentLinksSection() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <StartFreeModalTrigger
-              trackingId="start_free"
-              trackingLocation="home_intent_links"
+            <Link
+              href="/app"
+              data-cta-track="start_free"
+              data-cta-location="home_intent_links"
               className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-accent-strong)]"
             >
               Démarrer gratuitement
-            </StartFreeModalTrigger>
+            </Link>
             <Link
               href="/app"
               className="inline-flex items-center rounded-full border border-[var(--color-border)] bg-white px-5 py-3 text-sm font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-surface)]"

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -25,6 +24,24 @@ const startGuides = [
   "analyser-un-repas-en-photo",
   "comprendre-ce-que-je-mange",
   "alternative-calorie-tracker",
+];
+
+const guideJourneys = [
+  {
+    title: "Je veux analyser un repas rapidement",
+    guideSlug: "analyser-un-repas-en-photo",
+    description: "Commencez par la méthode photo et les limites à connaître pour éviter les mauvaises conclusions.",
+  },
+  {
+    title: "Je veux sortir du tout-calories",
+    guideSlug: "alternative-calorie-tracker",
+    description: "Comprenez ce qu'une alternative crédible doit apporter pour tenir dans la durée.",
+  },
+  {
+    title: "Je veux une routine qui dure",
+    guideSlug: "ameliorer-ses-habitudes-alimentaires",
+    description: "Passez à un plan simple en niveaux progressifs, adapté à votre rythme réel.",
+  },
 ];
 
 export default function GuidesPage() {
@@ -74,6 +91,26 @@ export default function GuidesPage() {
             </div>
           </section>
 
+          <section aria-labelledby="guides-journey-title" className="space-y-4 rounded-3xl border border-[var(--color-border)] bg-white/95 p-5 sm:p-6">
+            <h2 id="guides-journey-title" className="font-display text-3xl text-[var(--color-ink)] sm:text-4xl">
+              Choisir un guide selon votre objectif
+            </h2>
+            <div className="grid gap-3 md:grid-cols-3">
+              {guideJourneys.map((journey) => (
+                <Card key={journey.title} className="space-y-3 bg-[var(--color-panel)]">
+                  <h3 className="text-xl font-semibold leading-tight text-[var(--color-ink)]">{journey.title}</h3>
+                  <p className="text-sm leading-6 text-[var(--color-muted)]">{journey.description}</p>
+                  <Link
+                    href={`/guide/${journey.guideSlug}`}
+                    className="inline-flex text-sm font-semibold text-[var(--color-accent-strong)] underline-offset-4 hover:underline"
+                  >
+                    Ouvrir ce guide
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          </section>
+
           <div className="grid gap-4 md:grid-cols-2">
             {remainingGuides.map((guide) => (
               <Card key={guide.slug} className="space-y-3 bg-white/95">
@@ -95,13 +132,14 @@ export default function GuidesPage() {
               Utilisez BeFood pour appliquer ces repères sur vos repas réels, avec une guidance plus cohérente.
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-3">
-              <StartFreeModalTrigger
-                trackingId="start_free"
-                trackingLocation="guides_page"
+              <Link
+                href="/app"
+                data-cta-track="start_free"
+                data-cta-location="guides_page"
                 className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-accent-strong)]"
               >
                 Démarrer gratuitement
-              </StartFreeModalTrigger>
+              </Link>
               <Link
                 href="/app"
                 className="inline-flex items-center rounded-full border border-white/30 px-5 py-3 text-sm font-semibold text-white/90 hover:bg-white/10"

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { StartFreeModalTrigger } from "@/components/auth/start-free-modal-trigger";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Card } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
@@ -80,13 +79,14 @@ export default function MethodologyPage() {
               Appliquez ces principes sur vos repas réels dans l&apos;app, puis approfondissez avec les guides.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-3">
-              <StartFreeModalTrigger
-                trackingId="start_free"
-                trackingLocation="methodologie_page"
+              <Link
+                href="/app"
+                data-cta-track="start_free"
+                data-cta-location="methodologie_page"
                 className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-accent-strong)]"
               >
                 Démarrer gratuitement
-              </StartFreeModalTrigger>
+              </Link>
               <Link
                 href="/guides"
                 className="inline-flex items-center rounded-full border border-[var(--color-border)] bg-white px-5 py-3 text-sm font-semibold text-[var(--color-ink)] transition hover:bg-[var(--color-surface)]"

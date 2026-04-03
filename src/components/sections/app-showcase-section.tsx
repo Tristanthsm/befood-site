@@ -22,6 +22,7 @@ const appScreens = [
   },
   {
     src: "/images/app/showcase/progress-mascot-original-v3.png",
+    mobileSrc: "/images/app/showcase/progress-mascot-final.png",
     alt: "Écran BeFood des progrès avec mascotte intégrée",
   },
 ];
@@ -49,7 +50,28 @@ export function AppShowcaseSection() {
   return (
     <section className="bg-[var(--color-background)] pb-12 pt-10 sm:pb-16 sm:pt-14">
       <Container>
-        <div className="overflow-x-auto overflow-y-visible pb-3 lg:overflow-visible">
+        <div className="overflow-x-auto overflow-y-visible pb-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:hidden">
+          <div className="flex min-w-max snap-x snap-mandatory items-end gap-4 px-4">
+            {appScreens.map((screen, index) => {
+              const mobileSrc = index === 4 ? (screen.mobileSrc ?? screen.src) : screen.src;
+
+              return (
+                <figure key={`${screen.src}-mobile`} className="relative w-[72vw] max-w-[280px] shrink-0 snap-center overflow-visible">
+                  <Image
+                    src={mobileSrc}
+                    alt={screen.alt}
+                    width={1419}
+                    height={2796}
+                    className="relative z-10 h-auto w-full object-contain"
+                    priority
+                  />
+                </figure>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="overflow-x-auto overflow-y-visible pb-3 max-lg:hidden lg:overflow-visible">
           <div
             style={{ transform: `translate(${screensRowOffsetXPx}px, ${screensRowOffsetYPx}px)` }}
             className="flex min-w-max items-end gap-11 sm:gap-12"
@@ -61,20 +83,20 @@ export function AppShowcaseSection() {
                 : undefined;
               const fifthImageStyle: CSSProperties | undefined = isFifth
                 ? {
-                  transform: `translate(${fifthScreenTuning.offsetXPx}px, ${fifthScreenTuning.offsetYPx}px) scale(${fifthScreenTuning.scale})`,
-                  transformOrigin: "bottom right",
-                }
+                    transform: `translate(${fifthScreenTuning.offsetXPx}px, ${fifthScreenTuning.offsetYPx}px) scale(${fifthScreenTuning.scale})`,
+                    transformOrigin: "bottom right",
+                  }
                 : undefined;
               const regularImageStyle: CSSProperties | undefined = !isFifth
                 ? {
-                  transform: `scale(${regularScreenScale})`,
-                  transformOrigin: "bottom center",
-                }
+                    transform: `scale(${regularScreenScale})`,
+                    transformOrigin: "bottom center",
+                  }
                 : undefined;
               const regularFigureStyle: CSSProperties | undefined = !isFifth && firstFourScreensOffsetXPx !== 0
                 ? {
-                  transform: `translateX(${firstFourScreensOffsetXPx}px)`,
-                }
+                    transform: `translateX(${firstFourScreensOffsetXPx}px)`,
+                  }
                 : undefined;
 
               return (

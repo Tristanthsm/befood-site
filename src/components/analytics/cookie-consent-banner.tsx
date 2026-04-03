@@ -123,7 +123,9 @@ export function CookieConsentBanner() {
                     <p className="mt-0.5 text-sm text-[var(--color-muted)]">
                       Mesure d&apos;audience pour comprendre la fréquentation du site, analyser les parcours et améliorer les pages et CTA via Google Analytics 4.
                     </p>
-                    <p className="mt-1 text-xs font-medium text-[var(--color-muted)]">Activé uniquement avec votre consentement.</p>
+                    <p className="mt-1 text-xs font-medium text-[var(--color-muted)]">
+                      Activé uniquement avec votre consentement. Par défaut, cette option reste désactivée tant que vous ne l&apos;activez pas.
+                    </p>
                   </div>
                   <input
                     type="checkbox"

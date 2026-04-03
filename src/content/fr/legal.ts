@@ -371,8 +371,7 @@ export const cookiesContent: LegalDocument = {
     {
       heading: "5. Outils réellement utilisés par BeFood",
       paragraphs: [
-        "À ce jour, BeFood utilise les outils suivants sur le site :",
-        "Dans l’implémentation actuelle, la préférence “Mesure d’audience” pilote l’activation de Google Analytics 4.",
+        "À ce jour, BeFood utilise notamment les outils suivants sur le site :",
       ],
       bullets: [
         "Google Analytics 4 : mesure d’audience et analyse des parcours (uniquement après consentement) ;",
@@ -407,6 +406,7 @@ export const cookiesContent: LegalDocument = {
       paragraphs: [
         "Vous pouvez accepter, refuser ou personnaliser la catégorie “Mesure d’audience” depuis la modale cookies.",
         "Vous pouvez modifier votre choix à tout moment via le lien “Préférences cookies” présent dans le footer.",
+        "Google Analytics 4 n’est activé que si vous acceptez la catégorie “Mesure d’audience”.",
         "Le retrait du consentement n’affecte pas la licéité des traitements effectués avant ce retrait.",
       ],
     },

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type FormEvent, useMemo, useState } from "react";
 
 type CoachApplicationFormState = {
@@ -8,6 +10,7 @@ type CoachApplicationFormState = {
   email: string;
   phone: string;
   profileType: string;
+  legalStatus: string;
   activity: string;
   expertise: string;
   audience: string;
@@ -18,6 +21,7 @@ type SubmissionState = "idle" | "submitting" | "success" | "error";
 
 interface CoachApplicationFormProps {
   destinationEmail: string;
+  initialProfileType?: "coach" | "createur";
 }
 
 const initialState: CoachApplicationFormState = {
@@ -26,16 +30,23 @@ const initialState: CoachApplicationFormState = {
   email: "",
   phone: "",
   profileType: "",
+  legalStatus: "",
   activity: "",
   expertise: "",
   audience: "",
   motivation: "",
 };
 
-export function CoachApplicationForm({ destinationEmail }: CoachApplicationFormProps) {
-  const [formState, setFormState] = useState<CoachApplicationFormState>(initialState);
+export function CoachApplicationForm({ destinationEmail, initialProfileType }: CoachApplicationFormProps) {
+  const router = useRouter();
+  const [formState, setFormState] = useState<CoachApplicationFormState>({
+    ...initialState,
+    profileType: initialProfileType ?? "",
+  });
   const [submissionState, setSubmissionState] = useState<SubmissionState>("idle");
   const [submissionMessage, setSubmissionMessage] = useState<string>("");
+  const [coachSpaceEnabled, setCoachSpaceEnabled] = useState(false);
+  const isCoachProfile = formState.profileType === "coach";
 
   const canSubmit = useMemo(() => {
     return (
@@ -43,10 +54,12 @@ export function CoachApplicationForm({ destinationEmail }: CoachApplicationFormP
       && formState.lastName.trim().length > 0
       && formState.email.trim().length > 0
       && formState.profileType.trim().length > 0
+      && formState.legalStatus.trim().length > 0
       && formState.activity.trim().length > 0
+      && (!isCoachProfile || formState.expertise.trim().length > 0)
       && formState.motivation.trim().length > 0
     );
-  }, [formState]);
+  }, [formState, isCoachProfile]);
 
   function setField<K extends keyof CoachApplicationFormState>(key: K, value: CoachApplicationFormState[K]) {
     setFormState((previous) => ({ ...previous, [key]: value }));
@@ -61,6 +74,7 @@ export function CoachApplicationForm({ destinationEmail }: CoachApplicationFormP
 
     setSubmissionState("submitting");
     setSubmissionMessage("");
+    setCoachSpaceEnabled(false);
 
     try {
       const response = await fetch("/api/coach-application", {
@@ -71,15 +85,37 @@ export function CoachApplicationForm({ destinationEmail }: CoachApplicationFormP
         body: JSON.stringify(formState),
       });
 
-      const payload = await response.json().catch(() => null) as { message?: string } | null;
+      const payload = await response.json().catch(() => null) as { message?: string; coachSpaceEnabled?: boolean } | null;
+      const responseMessage = payload?.message?.trim() ?? "";
+
+      if (
+        response.status === 409
+        && (responseMessage.includes("déjà envoyé") || responseMessage.includes("déjà validée"))
+      ) {
+        router.replace("/espace-coach/candidature");
+        return;
+      }
 
       if (!response.ok) {
-        throw new Error(payload?.message || "Envoi impossible pour le moment.");
+        throw new Error(responseMessage || "Envoi impossible pour le moment.");
       }
 
       setSubmissionState("success");
-      setSubmissionMessage("Candidature envoyée. L'équipe BeFood vous recontactera après étude du profil.");
-      setFormState(initialState);
+      const canOpenCoachSpace = payload?.coachSpaceEnabled === true;
+      setCoachSpaceEnabled(canOpenCoachSpace);
+      const successMessage = responseMessage
+        || (canOpenCoachSpace
+          ? "Candidature envoyée."
+          : "Candidature envoyée. L'équipe BeFood vous recontactera après étude du profil.");
+      setSubmissionMessage(successMessage);
+      if (canOpenCoachSpace) {
+        router.replace("/espace-coach/candidature");
+        return;
+      }
+      setFormState({
+        ...initialState,
+        profileType: initialProfileType ?? "",
+      });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Envoi impossible pour le moment.";
       setSubmissionState("error");
@@ -153,10 +189,31 @@ export function CoachApplicationForm({ destinationEmail }: CoachApplicationFormP
         >
           <option value="">Sélectionner</option>
           <option value="coach">Coach</option>
-          <option value="expert">Expert / praticien</option>
           <option value="createur">Créateur de contenu</option>
-          <option value="autre">Autre profil</option>
         </select>
+      </label>
+
+      {isCoachProfile ? (
+        <p className="text-xs text-[var(--color-muted)]">
+          Pour le parcours coach, un diplôme, une certification ou une qualification professionnelle cohérente est requis.
+        </p>
+      ) : null}
+
+      <p className="text-xs text-[var(--color-muted)]">
+        Ces informations serviront à préparer automatiquement votre contrat BeFood.
+      </p>
+
+      <label className="space-y-2 text-sm font-medium text-[var(--color-ink)]">
+        Statut juridique (contrat)
+        <input
+          type="text"
+          name="legalStatus"
+          required
+          placeholder="Ex: professionnel indépendant"
+          value={formState.legalStatus}
+          onChange={(event) => setField("legalStatus", event.target.value)}
+          className="h-11 w-full rounded-xl border border-[var(--color-border)] bg-white px-3 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
+        />
       </label>
 
       <label className="space-y-2 text-sm font-medium text-[var(--color-ink)]">
@@ -174,11 +231,16 @@ export function CoachApplicationForm({ destinationEmail }: CoachApplicationFormP
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-2 text-sm font-medium text-[var(--color-ink)]">
-          Diplôme / expertise (optionnel)
+          {isCoachProfile ? "Diplôme / certification" : "Diplôme / expertise (optionnel)"}
           <input
             type="text"
             name="expertise"
-            placeholder="Ex: diététique, nutrition sportive, coaching..."
+            required={isCoachProfile}
+            placeholder={
+              isCoachProfile
+                ? "Ex: BTS diététique, DE, certification reconnue..."
+                : "Ex: thématiques, expérience, expertise..."
+            }
             value={formState.expertise}
             onChange={(event) => setField("expertise", event.target.value)}
             className="h-11 w-full rounded-xl border border-[var(--color-border)] bg-white px-3 text-sm text-[var(--color-ink)] outline-none transition focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]/20"
@@ -233,6 +295,20 @@ export function CoachApplicationForm({ destinationEmail }: CoachApplicationFormP
         >
           {submissionMessage}
         </p>
+      ) : null}
+
+      {submissionState === "success" && coachSpaceEnabled ? (
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] p-3">
+          <p className="text-sm text-[var(--color-ink)]">Vous pouvez suivre votre avancement dans votre espace coach.</p>
+          <div className="mt-2">
+            <Link
+              href="/espace-coach?tab=dossier"
+              className="inline-flex items-center rounded-full bg-[var(--color-ink)] px-4 py-2 text-sm font-semibold text-white hover:bg-black"
+            >
+              Ouvrir mon espace coach
+            </Link>
+          </div>
+        </div>
       ) : null}
     </form>
   );
