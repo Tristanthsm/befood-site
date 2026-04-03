@@ -16,6 +16,8 @@ interface LiquidMetalButtonLinkProps {
   href?: string | null;
   onClick?: () => void;
   viewMode?: ViewMode;
+  trackingId?: string;
+  trackingLocation?: string;
 }
 
 function SparklesIcon() {
@@ -38,6 +40,8 @@ export function LiquidMetalButtonLink({
   href,
   onClick,
   viewMode = "text",
+  trackingId,
+  trackingLocation,
 }: LiquidMetalButtonLinkProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
@@ -338,6 +342,8 @@ export function LiquidMetalButtonLink({
               borderRadius: "100px",
             }}
             aria-label={label}
+            data-cta-track={trackingId}
+            data-cta-location={trackingLocation}
             type="button"
           >
             {ripples.map((ripple) => (

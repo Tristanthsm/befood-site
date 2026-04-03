@@ -1,10 +1,21 @@
-import Link from "next/link";
+"use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { CookiePreferencesButton } from "@/components/analytics/cookie-preferences-button";
 import { Container } from "@/components/ui/container";
 import { content } from "@/content";
 import { footerLinks, siteConfig, storeLinks } from "@/lib/site-config";
 
 export function Footer() {
+  const pathname = usePathname();
+  const isCoachSpace = pathname?.startsWith("/espace-coach") ?? false;
+
+  if (isCoachSpace) {
+    return null;
+  }
+
   const currentYear = new Date().getFullYear();
 
   return (
@@ -44,6 +55,7 @@ export function Footer() {
             ) : (
               <span className="text-sm font-semibold text-white/60">App Store (bientôt)</span>
             )}
+            <CookiePreferencesButton />
           </nav>
         </div>
 

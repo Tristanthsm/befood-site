@@ -34,7 +34,7 @@ export const siteConfig: SiteConfig = {
 
 export const mainNavigation: NavItem[] = [
   { label: "Comment ça marche", href: "/comment-ca-marche" },
-  { label: "Guides", href: "/guides" },
+  { label: "Pour les coachs", href: "/pour-les-coachs" },
 ];
 
 const appStoreConfigured = siteConfig.appStoreUrl !== APP_STORE_URL_PLACEHOLDER;
@@ -62,6 +62,7 @@ export const footerLinks: FooterLink[] = [
   { label: "À propos", href: "/a-propos" },
   { label: "Contact", href: "/contact" },
   { label: "Aide", href: "/aide" },
+  { label: "Cookies", href: "/cookies" },
   { label: "Confidentialité", href: siteConfig.privacyPath },
   { label: "Conditions d'utilisation", href: siteConfig.termsPath },
 ];
@@ -125,6 +126,12 @@ export const indexableStaticRoutes: SeoRouteConfig[] = [
     path: "/aide",
     changeFrequency: "monthly",
     priority: 0.6,
+    lastModified: defaultLastModified,
+  },
+  {
+    path: "/cookies",
+    changeFrequency: "yearly",
+    priority: 0.3,
     lastModified: defaultLastModified,
   },
   {

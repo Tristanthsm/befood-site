@@ -2,21 +2,24 @@ import type { LegalDocument as LegalDocumentType } from "@/lib/types";
 
 interface LegalDocumentProps {
   document: LegalDocumentType;
+  hideHeader?: boolean;
 }
 
-export function LegalDocument({ document }: LegalDocumentProps) {
+export function LegalDocument({ document, hideHeader = false }: LegalDocumentProps) {
   return (
-    <article className="mx-auto w-full max-w-4xl space-y-12">
-      <header className="space-y-4">
-        <h1 className="font-display text-4xl font-semibold leading-tight text-[var(--color-ink)] sm:text-6xl">{document.title}</h1>
-        <p className="max-w-3xl text-base leading-8 text-[color:rgb(33_53_66_/88%)]">{document.intro}</p>
-        <p className="text-sm font-medium text-[var(--color-muted)]">Dernière mise à jour: {document.updatedAt}</p>
-        {document.replacementNotice ? (
-          <p className="rounded-xl border border-dashed border-[var(--color-border-strong)] bg-white px-4 py-3 text-sm font-medium text-[var(--color-accent-strong)]">
-            {document.replacementNotice}
-          </p>
-        ) : null}
-      </header>
+    <article className={`mx-auto w-full max-w-4xl ${hideHeader ? "space-y-8" : "space-y-12"}`}>
+      {!hideHeader ? (
+        <header className="space-y-4">
+          <h1 className="font-display text-4xl font-semibold leading-tight text-[var(--color-ink)] sm:text-6xl">{document.title}</h1>
+          <p className="max-w-3xl text-base leading-8 text-[color:rgb(33_53_66_/88%)]">{document.intro}</p>
+          <p className="text-sm font-medium text-[var(--color-muted)]">Dernière mise à jour: {document.updatedAt}</p>
+          {document.replacementNotice ? (
+            <p className="rounded-xl border border-dashed border-[var(--color-border-strong)] bg-white px-4 py-3 text-sm font-medium text-[var(--color-accent-strong)]">
+              {document.replacementNotice}
+            </p>
+          ) : null}
+        </header>
+      ) : null}
 
       <div className="space-y-8">
         {document.sections.map((section) => (

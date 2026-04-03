@@ -327,3 +327,108 @@ export const privacyContent: LegalDocument = {
     },
   ],
 };
+
+export const cookiesContent: LegalDocument = {
+  title: "Politique cookies – BeFood",
+  intro:
+    "Cette politique explique de manière claire comment BeFood utilise les cookies et technologies similaires sur le site web, pour le fonctionnement du service, la sécurité et la mesure d’audience.",
+  updatedAt: "03/04/2026",
+  sections: [
+    {
+      heading: "1. Utilité de cette politique cookies",
+      paragraphs: [
+        "Cette politique vous permet de comprendre quels cookies sont utilisés, pourquoi ils sont utilisés et comment vous pouvez gérer vos choix.",
+        "Elle complète la politique de confidentialité, qui décrit plus largement le traitement des données personnelles.",
+      ],
+    },
+    {
+      heading: "2. Qu’est-ce qu’un cookie ?",
+      paragraphs: [
+        "Un cookie est un petit fichier stocké sur votre terminal (ordinateur, mobile, tablette) lors de la consultation d’un site.",
+        "Il peut être utilisé pour reconnaître votre navigateur, maintenir une session active, mémoriser un choix ou mesurer l’usage du site.",
+      ],
+    },
+    {
+      heading: "3. Cookies nécessaires",
+      paragraphs: [
+        "Ces cookies sont indispensables au fonctionnement technique du site, à la sécurité et à la mémorisation de vos préférences de consentement.",
+        "Ils ne peuvent pas être désactivés depuis la modale de préférences.",
+      ],
+      bullets: [
+        "Connexion/session utilisateur (authentification) ;",
+        "Sécurité et continuité de session ;",
+        "Mémorisation du choix de consentement cookies ;",
+        "Cookies techniques du parcours /join (attribution interne du lien vers l’app).",
+      ],
+    },
+    {
+      heading: "4. Cookies de mesure d’audience",
+      paragraphs: [
+        "Ces cookies et technologies similaires de mesure d’audience permettent d’analyser la fréquentation du site et d’améliorer les parcours, les pages et les CTA.",
+        "Ils sont activés uniquement si vous acceptez la catégorie “Mesure d’audience”.",
+      ],
+    },
+    {
+      heading: "5. Outils réellement utilisés par BeFood",
+      paragraphs: [
+        "À ce jour, BeFood utilise les outils suivants sur le site :",
+        "Dans l’implémentation actuelle, la préférence “Mesure d’audience” pilote l’activation de Google Analytics 4.",
+      ],
+      bullets: [
+        "Google Analytics 4 : mesure d’audience et analyse des parcours (uniquement après consentement) ;",
+        "Cookies et session du site : fonctionnement, sécurité et connexion ;",
+        "Cookie de consentement : mémorisation de votre choix de préférences ;",
+        "Vercel Analytics : mesure de trafic et pages vues du site ;",
+        "Vercel Speed Insights : mesure de performance web (vitesse et qualité de chargement).",
+      ],
+    },
+    {
+      heading: "6. Données traitées",
+      paragraphs: [
+        "Selon l’outil et la catégorie activée, les données traitées peuvent inclure : pages visitées, événements de navigation, provenance de visite (UTM/referrer), type d’appareil et données techniques de navigation.",
+        "BeFood ne déploie pas, à ce stade, de stack publicitaire lourde de reciblage multi-partenaires sur le site.",
+      ],
+    },
+    {
+      heading: "7. Durée de conservation",
+      paragraphs: [
+        "Les durées dépendent de la nature du cookie ou de l’outil concerné.",
+        "Pour les cookies gérés directement par BeFood sur le site :",
+      ],
+      bullets: [
+        "Choix de consentement cookies : 6 mois ;",
+        "Session /join (bf_join_sid) : 30 jours ;",
+        "Clic /join (bf_join_cid) : 7 jours.",
+        "Les autres durées (ex. analytics) dépendent des paramètres de conservation configurés dans les outils concernés.",
+      ],
+    },
+    {
+      heading: "8. Gestion et retrait du consentement",
+      paragraphs: [
+        "Vous pouvez accepter, refuser ou personnaliser la catégorie “Mesure d’audience” depuis la modale cookies.",
+        "Vous pouvez modifier votre choix à tout moment via le lien “Préférences cookies” présent dans le footer.",
+        "Le retrait du consentement n’affecte pas la licéité des traitements effectués avant ce retrait.",
+      ],
+    },
+    {
+      heading: "9. Droits des utilisateurs",
+      paragraphs: [
+        "Conformément à la réglementation applicable (notamment RGPD), vous disposez de droits d’accès, rectification, effacement, opposition, limitation et portabilité, selon les cas.",
+        "Vous disposez également du droit de retirer votre consentement à la mesure d’audience à tout moment.",
+      ],
+    },
+    {
+      heading: "10. Contact",
+      paragraphs: [
+        "Pour toute question relative aux cookies ou à vos données personnelles, vous pouvez nous contacter : contact@befood.fr.",
+      ],
+    },
+    {
+      heading: "11. Mise à jour de la politique",
+      paragraphs: [
+        "Cette politique peut évoluer pour refléter les changements techniques, légaux ou organisationnels de BeFood.",
+        "La date de mise à jour en haut de page indique la version en vigueur.",
+      ],
+    },
+  ],
+};

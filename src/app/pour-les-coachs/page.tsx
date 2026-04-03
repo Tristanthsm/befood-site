@@ -9,13 +9,14 @@ import { createPageMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Coachs & experts dans l'expérience BeFood",
+  title: "Profils pros dans l'écosystème BeFood",
   description:
-    "Découvrez le rôle des coachs, créateurs et experts dans l'expérience BeFood, puis candidatez si votre profil est aligné.",
+    "Découvrez comment coachs, experts, créateurs et profils affinitaires renforcent l'expérience BeFood avec des repères concrets et une progression durable.",
   path: "/pour-les-coachs",
   keywords: [
     "candidature coach nutrition",
     "coachs experts créateurs BeFood",
+    "profils affinitaires nutrition",
     "rejoindre ecosysteme BeFood",
     "accompagnement nutritionnel quotidien",
   ],
@@ -26,7 +27,7 @@ export default function CoachsPage() {
 
   return (
     <>
-      <section className="py-16 sm:py-20">
+      <section className="pb-10 pt-16 sm:pb-12 sm:pt-20">
         <Container className="space-y-12">
           <div className="overflow-hidden rounded-[2rem] border border-[color:rgb(11_34_52_/20%)] bg-[linear-gradient(145deg,#081122,#132b45)] p-7 text-white sm:p-10">
             <div className="grid gap-7 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
@@ -82,9 +83,26 @@ export default function CoachsPage() {
           </section>
 
           <section aria-labelledby="coach-eligibility-title" className="space-y-5">
-            <h2 id="coach-eligibility-title" className="font-display text-3xl text-[var(--color-ink)] sm:text-4xl">
-              {content.coachPageContent.eligibilityTitle}
-            </h2>
+            <div className="space-y-4">
+              <p className="inline-flex rounded-full border border-[var(--color-border)] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-accent-strong)]">
+                Profils recherchés
+              </p>
+              <h2 id="coach-eligibility-title" className="font-display text-3xl text-[var(--color-ink)] sm:text-4xl">
+                <span className="inline-flex items-center gap-3">
+                  <span
+                    aria-hidden
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-accent)]/45 bg-[color:rgb(16_185_129_/12%)]"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-accent-strong)]" />
+                  </span>
+                  {content.coachPageContent.eligibilityTitle}
+                </span>
+                <span
+                  aria-hidden
+                  className="mt-2 block h-[2px] w-24 rounded-full bg-[linear-gradient(90deg,var(--color-accent),transparent)]"
+                />
+              </h2>
+            </div>
             <p className="max-w-4xl text-base leading-7 text-[var(--color-muted)] sm:text-lg">
               {content.coachPageContent.eligibilityDescription}
             </p>
@@ -106,17 +124,27 @@ export default function CoachsPage() {
             <p className="mt-3 max-w-3xl text-base leading-7 text-white/78 sm:text-lg">
               {content.coachPageContent.finalCta.description}
             </p>
-            <p className="mt-3 text-sm text-white/70">{content.coachPageContent.finalCta.note}</p>
-            <div className="mt-5">
-              <LiquidMetalButtonLink href={requestAccessHref} label="Candidater pour BeFood" />
+            <div className="mt-6">
+              <LiquidMetalButtonLink
+                href={requestAccessHref}
+                label="Présenter ma candidature"
+                trackingId="coach_application_primary"
+                trackingLocation="pour_les_coachs_final_cta"
+              />
             </div>
-            <p className="mt-4 text-sm text-white/75">
-              Vous créez du contenu ?{" "}
-              <Link href="/pour-les-createurs" className="font-semibold text-[var(--color-accent-soft)] underline-offset-4 hover:underline">
-                Voir la page créateurs
-              </Link>
-              .
-            </p>
+            <div className="mt-6 border-t border-white/15 pt-4">
+              <p className="text-sm text-white/75">
+                BeFood n&apos;est pas réservé aux coachs : créateurs, experts et profils affinitaires peuvent aussi candidater.
+              </p>
+              <p className="mt-2 text-sm">
+                <Link
+                  href="/pour-les-coachs#coach-eligibility-title"
+                  className="font-semibold text-[var(--color-accent-soft)] underline-offset-4 hover:underline"
+                >
+                  Voir les autres profils recherchés
+                </Link>
+              </p>
+            </div>
           </section>
         </Container>
       </section>
