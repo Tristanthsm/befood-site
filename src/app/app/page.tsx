@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AndroidWaitlistTrigger } from "@/components/join/android-waitlist-trigger";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Container } from "@/components/ui/container";
 import { createPageMetadata, getBreadcrumbJsonLd, getSoftwareApplicationJsonLd } from "@/lib/seo";
@@ -61,9 +62,14 @@ export default function AppPage() {
                 <span className="rounded-full border border-white/18 bg-white/10 px-3 py-1 text-white/90">
                   iOS disponible
                 </span>
-                <span className="rounded-full border border-white/18 bg-white/10 px-3 py-1 text-white/80">
-                  Google Play: bientôt
-                </span>
+                <AndroidWaitlistTrigger
+                  className="rounded-full border border-white/18 bg-white/10 px-3 py-1 text-white/80 transition hover:bg-white/20"
+                  source="app_page_badge"
+                  trackingId="join_android_waitlist_open"
+                  trackingLocation="app_page_platform_badges"
+                >
+                  Google Play: acces prioritaire
+                </AndroidWaitlistTrigger>
               </div>
             </div>
           </div>

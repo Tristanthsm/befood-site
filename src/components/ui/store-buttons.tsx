@@ -1,5 +1,6 @@
 import { ButtonLink } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { AndroidWaitlistTrigger } from "@/components/join/android-waitlist-trigger";
 import { storeLinks } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
@@ -110,9 +111,12 @@ export function StoreButtons({ className, compact = false }: StoreButtonsProps) 
           <Badge className={badgeClass}>Disponible</Badge>
         </ButtonLink>
       ) : (
-        <div
-          data-store-placeholder
-          className={cn("inline-flex", baseTileClass, "border-[#c7d0da] bg-[#e3e8ee]")}
+        <AndroidWaitlistTrigger
+          className={cn("inline-flex", baseTileClass, "border-[#c7d0da] bg-[#e3e8ee] text-left")}
+          source={compact ? "store_buttons_compact" : "store_buttons"}
+          trackingId="join_android_waitlist_open"
+          trackingLocation={compact ? "hero_or_cta_compact" : "store_buttons"}
+          dataStorePlaceholder
         >
           <span className={cn(leftGroupClass, "opacity-70")}>
             <PlayIcon className="h-6 w-6 grayscale" />
@@ -121,8 +125,8 @@ export function StoreButtons({ className, compact = false }: StoreButtonsProps) 
               <span className="text-sm font-semibold text-[#49586a]">Google Play</span>
             </span>
           </span>
-          <Badge className={cn(badgeClass, "border-[#b9c4d0] bg-[#dde3ea] text-[#667689]")}>Bientôt</Badge>
-        </div>
+          <Badge className={cn(badgeClass, "border-[#b9c4d0] bg-[#dde3ea] text-[#667689]")}>Acces prioritaire</Badge>
+        </AndroidWaitlistTrigger>
       )}
     </div>
   );
