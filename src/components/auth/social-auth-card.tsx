@@ -101,6 +101,31 @@ export function SocialAuthCard({ mode, onSwitchMode, onNavigate }: SocialAuthCar
   }, []);
 
   useEffect(() => {
+    if (callbackError !== "oauth_callback_failed") {
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const supabase = getSupabaseBrowserClient();
+        const { data } = await supabase.auth.getSession();
+
+        if (!cancelled && data.session) {
+          window.location.assign("/");
+        }
+      } catch {
+        // Keep default error handling if we cannot verify session state.
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [callbackError]);
+
+  useEffect(() => {
     if (callbackErrorMessage) {
       setErrorMessage(callbackErrorMessage);
       setSuccessMessage(null);

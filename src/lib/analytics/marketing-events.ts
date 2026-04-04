@@ -1,3 +1,5 @@
+import { sendGaFallbackEvent } from "@/lib/analytics/fallback";
+
 declare global {
   interface Window {
     dataLayer?: unknown[];
@@ -51,6 +53,7 @@ export function trackMarketingEvent(eventName: MarketingEventName, params: Event
     return;
   }
 
+  sendGaFallbackEvent(eventName, payload);
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(["event", eventName, payload]);
 }
@@ -87,6 +90,7 @@ export function trackGaPageView(pathname: string, pageType: string | null) {
     return;
   }
 
+  sendGaFallbackEvent("page_view", payload);
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(["event", "page_view", payload]);
 }

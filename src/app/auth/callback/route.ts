@@ -12,6 +12,10 @@ function getSafeNextPath(candidate: string | null): string {
   return candidate;
 }
 
+function redirectWithError(requestUrl: URL, code: string) {
+  return NextResponse.redirect(new URL(`/connexion?error=${code}`, requestUrl.origin));
+}
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
@@ -21,8 +25,7 @@ export async function GET(request: Request) {
   const nextPath = getSafeNextPath(requestUrl.searchParams.get("next"));
 
   if (providerError) {
-    const redirectUrl = new URL("/connexion?error=oauth_provider_error", requestUrl.origin);
-    return NextResponse.redirect(redirectUrl);
+    return redirectWithError(requestUrl, "oauth_provider_error");
   }
 
   try {
@@ -32,8 +35,12 @@ export async function GET(request: Request) {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
-        const redirectUrl = new URL("/connexion?error=oauth_callback_failed", requestUrl.origin);
-        return NextResponse.redirect(redirectUrl);
+        const { data: existingSession } = await supabase.auth.getSession();
+        if (existingSession.session) {
+          return NextResponse.redirect(new URL(nextPath, requestUrl.origin));
+        }
+
+        return redirectWithError(requestUrl, "oauth_callback_failed");
       }
     } else if (accessToken && refreshToken) {
       const { error } = await supabase.auth.setSession({
@@ -42,16 +49,18 @@ export async function GET(request: Request) {
       });
 
       if (error) {
-        const redirectUrl = new URL("/connexion?error=oauth_callback_failed", requestUrl.origin);
-        return NextResponse.redirect(redirectUrl);
+        const { data: existingSession } = await supabase.auth.getSession();
+        if (existingSession.session) {
+          return NextResponse.redirect(new URL(nextPath, requestUrl.origin));
+        }
+
+        return redirectWithError(requestUrl, "oauth_callback_failed");
       }
     } else {
-      const redirectUrl = new URL("/connexion?error=missing_code", requestUrl.origin);
-      return NextResponse.redirect(redirectUrl);
+      return redirectWithError(requestUrl, "missing_code");
     }
   } catch {
-    const redirectUrl = new URL("/connexion?error=oauth_callback_failed", requestUrl.origin);
-    return NextResponse.redirect(redirectUrl);
+    return redirectWithError(requestUrl, "oauth_callback_failed");
   }
 
   return NextResponse.redirect(new URL(nextPath, requestUrl.origin));
