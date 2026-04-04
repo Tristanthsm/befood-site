@@ -46,11 +46,6 @@ function mapCallbackError(rawError: string | null): string | null {
 }
 
 function getCanonicalOrigin(): string {
-  const explicitOrigin = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (explicitOrigin && /^https?:\/\//.test(explicitOrigin)) {
-    return explicitOrigin.replace(/\/+$/, "");
-  }
-
   const currentOrigin = window.location.origin;
   if (window.location.hostname === "befood.fr") {
     return currentOrigin.replace("://befood.fr", "://www.befood.fr");
