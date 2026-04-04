@@ -31,8 +31,13 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
-      const existingConsent = readCookieConsent();
-      setConsent(existingConsent);
+      try {
+        const existingConsent = readCookieConsent();
+        setConsent(existingConsent);
+      } catch {
+        // If storage APIs are blocked, keep consent null so the banner can still be shown.
+        setConsent(null);
+      }
       setIsReady(true);
     });
 

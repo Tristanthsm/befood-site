@@ -63,10 +63,14 @@ export function readCookieConsent(): CookieConsentState | null {
     return null;
   }
 
-  const stored = window.localStorage.getItem(COOKIE_CONSENT_KEY);
-  const localConsent = parseConsent(stored);
-  if (localConsent) {
-    return localConsent;
+  try {
+    const stored = window.localStorage.getItem(COOKIE_CONSENT_KEY);
+    const localConsent = parseConsent(stored);
+    if (localConsent) {
+      return localConsent;
+    }
+  } catch {
+    // localStorage can be blocked in strict privacy modes.
   }
 
   const cookieValue = parseCookie(document.cookie);
@@ -79,8 +83,18 @@ export function persistCookieConsent(consent: CookieConsentState) {
   }
 
   const serialized = serializeConsent(consent);
-  window.localStorage.setItem(COOKIE_CONSENT_KEY, decodeURIComponent(serialized));
-  document.cookie = `${COOKIE_CONSENT_KEY}=${serialized}; path=/; max-age=${60 * 60 * 24 * 180}; samesite=lax`;
+
+  try {
+    window.localStorage.setItem(COOKIE_CONSENT_KEY, decodeURIComponent(serialized));
+  } catch {
+    // Ignore storage failures and keep cookie fallback.
+  }
+
+  try {
+    document.cookie = `${COOKIE_CONSENT_KEY}=${serialized}; path=/; max-age=${60 * 60 * 24 * 180}; samesite=lax`;
+  } catch {
+    // Some contexts can block cookie writes; consent still stays in-memory for the current session.
+  }
 }
 
 function expireCookie(name: string, domain?: string) {
