@@ -61,6 +61,10 @@ export function initializePosthogIfNeeded(): boolean {
 }
 
 export function setPosthogCaptureEnabled(enabled: boolean) {
+  if (enabled && !initialized && !initializePosthogIfNeeded()) {
+    return;
+  }
+
   if (!initialized) {
     return;
   }
@@ -74,7 +78,11 @@ export function setPosthogCaptureEnabled(enabled: boolean) {
 }
 
 export function capturePosthogEvent(eventName: string, properties: PosthogProperties = {}) {
-  if (!initialized || posthog.has_opted_out_capturing()) {
+  if (!initialized && !initializePosthogIfNeeded()) {
+    return;
+  }
+
+  if (posthog.has_opted_out_capturing()) {
     return;
   }
 
@@ -82,7 +90,11 @@ export function capturePosthogEvent(eventName: string, properties: PosthogProper
 }
 
 export function identifyPosthogUser(userId: string, properties: PosthogProperties = {}) {
-  if (!initialized || posthog.has_opted_out_capturing()) {
+  if (!initialized && !initializePosthogIfNeeded()) {
+    return;
+  }
+
+  if (posthog.has_opted_out_capturing()) {
     return;
   }
 
