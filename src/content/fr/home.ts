@@ -15,9 +15,8 @@ export const heroContent: HeroContent = {
   badge: "",
   title: "Comprenez vos repas. Construisez de meilleures habitudes.",
   description:
-    "Dans l'app iOS BeFood: une photo, des repères clairs, puis une guidance contextualisée pour mieux manger dans la durée.",
-  reassurance:
-    "Approche nutrition & bien-être, non médicale. BeFood n'est pas un service de diagnostic.",
+    "Photo du repas, conseils de coach, plan d’action clair: vous progressez durablement sans vous restreindre.",
+  reassurance: "",
 };
 
 export const trustTitle = "Comprendre. Être accompagné. Progresser.";

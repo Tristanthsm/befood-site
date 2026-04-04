@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 
-import { AndroidWaitlistTrigger } from "@/components/join/android-waitlist-trigger";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Container } from "@/components/ui/container";
+import { StoreButtons } from "@/components/ui/store-buttons";
 import { createPageMetadata, getBreadcrumbJsonLd, getSoftwareApplicationJsonLd } from "@/lib/seo";
-import { siteConfig, storeLinks } from "@/lib/site-config";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Application nutrition photo pour comprendre ses repas",
@@ -33,46 +32,14 @@ export default function AppPage() {
               <p className="inline-flex rounded-full border border-white/18 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.13em] text-[var(--color-accent-soft)]">
                 Installer BeFood
               </p>
-              <h2 className="font-display text-3xl leading-tight sm:text-5xl">
+              <h1 className="font-display text-3xl leading-tight sm:text-5xl">
                 Téléchargez BeFood et passez du repas à l&apos;action.
-              </h2>
+              </h1>
               <p className="mx-auto max-w-2xl text-base leading-7 text-white/82 sm:text-lg">
                 Une seule action maintenant: Installez l&apos;app pour recevoir des recommandations après chaque repas.
               </p>
 
-              {storeLinks.appStore.status === "live" ? (
-                <a
-                  href={siteConfig.appStoreUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-cta-track="download_app_store"
-                  data-cta-location="app_page_single_cta"
-                  className="group inline-flex min-h-14 items-center justify-center gap-2.5 rounded-2xl bg-[linear-gradient(135deg,#1ad8ab,#0ea678)] px-8 py-3.5 text-base font-bold text-white ring-1 ring-white/30 shadow-[0_20px_44px_-18px_rgba(16,185,129,0.98)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_26px_56px_-18px_rgba(16,185,129,1)]"
-                >
-                  <span>Télécharger sur App Store</span>
-                  <span aria-hidden className="text-lg leading-none transition-transform duration-200 group-hover:translate-x-0.5">→</span>
-                </a>
-              ) : (
-                <span className="inline-flex min-h-14 items-center justify-center rounded-2xl border border-white/30 bg-white/10 px-8 py-3.5 text-base font-semibold text-white/80">
-                  App Store bientôt
-                </span>
-              )}
-
-              <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
-                <span className="rounded-full border border-white/18 bg-white/10 px-3 py-1 text-white/90">
-                  iOS disponible
-                </span>
-                <AndroidWaitlistTrigger
-                  className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full border border-emerald-200/75 bg-white/95 px-4 py-1.5 text-[13px] font-semibold text-emerald-900 shadow-[0_10px_22px_-16px_rgba(16,185,129,0.95)] transition duration-200 hover:-translate-y-0.5 hover:border-emerald-300 hover:bg-white hover:text-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-200"
-                  source="app_page_badge"
-                  trackingId="join_android_waitlist_open"
-                  trackingLocation="app_page_platform_badges"
-                >
-                  <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  Android: rejoindre la liste d&apos;attente
-                  <span aria-hidden className="text-sm leading-none">→</span>
-                </AndroidWaitlistTrigger>
-              </div>
+              <StoreButtons className="pt-1" />
             </div>
           </div>
         </Container>

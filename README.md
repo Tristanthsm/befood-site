@@ -34,6 +34,7 @@ Utiliser les mêmes valeurs que l'application mobile pour partager les utilisate
 npm run lint
 npm run build
 npm run start
+npm run seo:prod-audit
 ```
 
 ## Déploiement
@@ -94,4 +95,4 @@ public/
 - Auth web complète (guard server + parcours complet connexion)
 - CMS / blog engine
 - Dashboard admin
-- Analytics actives
+- Data warehouse / BI avancée (au-delà de GA4 + Vercel Analytics)

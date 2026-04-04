@@ -40,10 +40,10 @@ export async function Header() {
 
   return (
     <HeaderShell>
-      <div className="mx-auto grid max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-4 py-2">
+      <div className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-4 py-2">
         <Link
           href="/"
-          className="inline-flex items-center rounded-lg px-1 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
+          className="inline-flex items-center justify-self-start rounded-lg px-1 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
         >
           <span className="font-display text-[1.85rem] font-extrabold leading-none tracking-[-0.025em]">
             <span className="text-[var(--color-ink)]">Be</span>
@@ -53,7 +53,7 @@ export async function Header() {
 
         <nav
           aria-label="Navigation principale"
-          className="hidden items-center justify-self-center gap-2 md:flex md:-translate-x-5 lg:-translate-x-7"
+          className="hidden items-center justify-self-center gap-2 md:flex md:-translate-x-7 lg:-translate-x-9"
         >
           {mainNavigation.map((item) => (
             <Link

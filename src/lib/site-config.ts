@@ -2,7 +2,7 @@ import type { FooterLink, NavItem, SeoRouteConfig, SiteConfig, StoreLink } from 
 
 export const APP_STORE_URL_PLACEHOLDER = "https://apps.apple.com/app/id0000000000";
 
-const defaultLastModified = "2026-03-31";
+const defaultLastModified = new Date().toISOString().slice(0, 10);
 
 export const siteConfig: SiteConfig = {
   name: "BeFood",

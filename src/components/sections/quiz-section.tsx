@@ -66,7 +66,7 @@ export function QuizSection() {
         <div className="section-shell p-6 sm:p-8">
           <header className="max-w-3xl space-y-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-accent-strong)]">{badge}</p>
-            <h2 className="text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">{title}</h2>
+            <h1 className="text-3xl font-extrabold leading-tight text-[var(--color-ink)] sm:text-4xl">{title}</h1>
             <p className="text-base leading-7 text-[var(--color-muted)] sm:text-lg">{description}</p>
           </header>
 

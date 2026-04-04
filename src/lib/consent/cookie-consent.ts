@@ -82,3 +82,46 @@ export function persistCookieConsent(consent: CookieConsentState) {
   window.localStorage.setItem(COOKIE_CONSENT_KEY, decodeURIComponent(serialized));
   document.cookie = `${COOKIE_CONSENT_KEY}=${serialized}; path=/; max-age=${60 * 60 * 24 * 180}; samesite=lax`;
 }
+
+function expireCookie(name: string, domain?: string) {
+  const domainPart = domain ? ` domain=${domain};` : "";
+  document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; max-age=0;${domainPart} samesite=lax`;
+}
+
+function getCookieDomains(hostname: string): string[] {
+  const segments = hostname.split(".").filter(Boolean);
+  if (segments.length < 2) {
+    return [];
+  }
+
+  const domains: string[] = [];
+  for (let index = 0; index <= segments.length - 2; index += 1) {
+    domains.push(`.${segments.slice(index).join(".")}`);
+  }
+
+  return domains;
+}
+
+export function clearGaCookies() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const cookieNames = document.cookie
+    .split(";")
+    .map((entry) => entry.trim().split("=")[0])
+    .filter((name) => name === "_ga" || name.startsWith("_ga_"));
+
+  if (cookieNames.length === 0) {
+    return;
+  }
+
+  const hostname = window.location.hostname;
+  const domains = getCookieDomains(hostname);
+
+  cookieNames.forEach((name) => {
+    expireCookie(name);
+    expireCookie(name, hostname);
+    domains.forEach((domain) => expireCookie(name, domain));
+  });
+}

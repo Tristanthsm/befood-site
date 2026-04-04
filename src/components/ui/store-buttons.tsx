@@ -43,7 +43,7 @@ export function StoreButtons({ className, compact = false }: StoreButtonsProps) 
   const bottomTextClass = "text-sm font-semibold text-[#0b1118]";
 
   return (
-    <div className={cn("flex flex-wrap items-center gap-4", className)}>
+    <div className={cn("flex w-full flex-wrap items-center justify-center gap-4", className)}>
       {storeLinks.appStore.status === "live" ? (
         <ButtonLink
           href={storeLinks.appStore.url}

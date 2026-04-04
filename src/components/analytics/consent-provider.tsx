@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import { buildConsent, persistCookieConsent, readCookieConsent, type CookieConsentState } from "@/lib/consent/cookie-consent";
+import { buildConsent, clearGaCookies, persistCookieConsent, readCookieConsent, type CookieConsentState } from "@/lib/consent/cookie-consent";
 
 interface ConsentContextValue {
   isReady: boolean;
@@ -18,6 +18,11 @@ interface ConsentContextValue {
 }
 
 const ConsentContext = createContext<ConsentContextValue | null>(null);
+const GA4_CONSENT_PAYLOAD = {
+  ad_storage: "denied",
+  ad_user_data: "denied",
+  ad_personalization: "denied",
+} as const;
 
 export function ConsentProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
@@ -37,6 +42,17 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const savePreferences = (analytics: boolean) => {
+    if (typeof window.gtag === "function") {
+      window.gtag("consent", "update", {
+        ...GA4_CONSENT_PAYLOAD,
+        analytics_storage: analytics ? "granted" : "denied",
+      });
+    }
+
+    if (!analytics) {
+      clearGaCookies();
+    }
+
     const nextConsent = buildConsent(analytics);
     persistCookieConsent(nextConsent);
     setConsent(nextConsent);

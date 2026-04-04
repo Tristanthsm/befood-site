@@ -15,9 +15,11 @@ export function HeroSection() {
           <p className="mx-auto mt-5 max-w-3xl text-base leading-7 text-[color:rgb(54_79_95)] sm:text-lg">
             {content.heroContent.description}
           </p>
-          <p className="mx-auto mt-3 max-w-3xl text-sm leading-6 text-[var(--color-muted)]">
-            {content.heroContent.reassurance}
-          </p>
+          {content.heroContent.reassurance ? (
+            <p className="mx-auto mt-3 max-w-3xl text-sm leading-6 text-[var(--color-muted)]">
+              {content.heroContent.reassurance}
+            </p>
+          ) : null}
           <div className="mt-6 flex flex-col items-center gap-3">
             <Link
               href="/app"

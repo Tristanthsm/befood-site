@@ -5,8 +5,6 @@ import { Container } from "@/components/ui/container";
 import { content } from "@/content";
 import { createPageMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 
-export const runtime = "edge";
-
 export const metadata: Metadata = createPageMetadata({
   title: "Conditions d'utilisation",
   description: "Consultez les conditions d'utilisation de BeFood: accès au service, abonnements, responsabilités et droit applicable.",

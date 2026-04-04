@@ -5,8 +5,6 @@ import { Container } from "@/components/ui/container";
 import { content } from "@/content";
 import { createPageMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 
-export const runtime = "edge";
-
 export const metadata: Metadata = createPageMetadata({
   title: "Politique de confidentialité",
   description: "Consultez la politique de confidentialité BeFood: données collectées, finalités, sécurité et droits des utilisateurs.",

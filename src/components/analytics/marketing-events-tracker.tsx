@@ -2,9 +2,16 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { useReportWebVitals } from "next/web-vitals";
 
 import { useConsent } from "@/components/analytics/consent-provider";
-import { getMarketingPageType, normalizePath, trackMarketingEvent } from "@/lib/analytics/marketing-events";
+import {
+  getMarketingPageType,
+  normalizePath,
+  toGaWebVitalValue,
+  trackGaPageView,
+  trackMarketingEvent,
+} from "@/lib/analytics/marketing-events";
 
 const SCROLL_THRESHOLDS = [50, 75] as const;
 const SCROLL_TRACKED_PATHS = new Set(["/", "/comment-ca-marche", "/pour-les-coachs"]);
@@ -18,13 +25,52 @@ export function MarketingEventsTracker() {
   const pathname = useMemo(() => normalizePath(pathnameRaw), [pathnameRaw]);
   const { analyticsAllowed } = useConsent();
   const sentScrollMilestonesRef = useRef<Set<string>>(new Set());
+  const lastTrackedRouteRef = useRef<string | null>(null);
+  const analyticsAllowedRef = useRef<boolean>(analyticsAllowed);
+  const pathnameRef = useRef<string>(pathname);
+
+  useEffect(() => {
+    analyticsAllowedRef.current = analyticsAllowed;
+  }, [analyticsAllowed]);
+
+  useEffect(() => {
+    pathnameRef.current = pathname;
+  }, [pathname]);
+
+  useReportWebVitals((metric) => {
+    if (!analyticsAllowedRef.current) {
+      return;
+    }
+
+    trackMarketingEvent("bf_web_vital", {
+      page_path: pathnameRef.current,
+      metric_name: metric.name,
+      metric_rating: metric.rating ?? null,
+      metric_value: toGaWebVitalValue(metric.name, metric.value),
+      metric_delta: toGaWebVitalValue(metric.name, metric.delta),
+      navigation_type: metric.navigationType ?? null,
+    });
+  });
+
+  useEffect(() => {
+    if (!analyticsAllowed) {
+      lastTrackedRouteRef.current = null;
+    }
+  }, [analyticsAllowed]);
 
   useEffect(() => {
     if (!analyticsAllowed) {
       return;
     }
 
+    if (lastTrackedRouteRef.current === pathname) {
+      return;
+    }
+    lastTrackedRouteRef.current = pathname;
+
     const pageType = getMarketingPageType(pathname);
+    trackGaPageView(pathname, pageType);
+
     if (!pageType) {
       return;
     }

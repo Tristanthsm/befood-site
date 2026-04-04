@@ -77,6 +77,14 @@ export function getOrganizationJsonLd() {
     url: siteConfig.siteUrl,
     logo: createCanonicalUrl(brandAssets.logo),
     email: siteConfig.contactEmail,
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        email: siteConfig.contactEmail,
+        contactType: "customer support",
+        availableLanguage: ["fr"],
+      },
+    ],
   };
 }
 
@@ -88,6 +96,11 @@ export function getWebsiteJsonLd() {
     alternateName: siteConfig.alternateName,
     url: siteConfig.siteUrl,
     inLanguage: "fr-FR",
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      url: siteConfig.siteUrl,
+    },
   };
 }
 
@@ -106,6 +119,12 @@ export function getSoftwareApplicationJsonLd(path = "/app") {
     },
     downloadUrl: siteConfig.appStoreUrl,
     description: siteConfig.defaultDescription,
+    inLanguage: "fr-FR",
+    publisher: {
+      "@type": "Organization",
+      name: siteConfig.name,
+      url: siteConfig.siteUrl,
+    },
   };
 }
 
@@ -159,6 +178,7 @@ export function getArticleJsonLd({
     datePublished,
     dateModified,
     mainEntityOfPage: canonical,
+    url: canonical,
     author: {
       "@type": "Organization",
       name: siteConfig.name,

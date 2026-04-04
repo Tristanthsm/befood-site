@@ -10,7 +10,8 @@ export type MarketingEventName =
   | "bf_cta_click"
   | "bf_app_store_cta_click"
   | "bf_scroll_depth"
-  | "bf_join_flow_started";
+  | "bf_join_flow_started"
+  | "bf_web_vital";
 
 interface EventParams {
   [key: string]: string | number | boolean | null | undefined;
@@ -52,4 +53,40 @@ export function trackMarketingEvent(eventName: MarketingEventName, params: Event
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(["event", eventName, payload]);
+}
+
+export function toGaWebVitalValue(metricName: string, rawValue: number): number {
+  if (!Number.isFinite(rawValue)) {
+    return 0;
+  }
+
+  if (metricName === "CLS") {
+    return Math.round(rawValue * 1000);
+  }
+
+  return Math.round(rawValue);
+}
+
+export function trackGaPageView(pathname: string, pageType: string | null) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const search = window.location.search || "";
+  const pageLocation = `${window.location.origin}${window.location.pathname}${window.location.search}`;
+  const payload: EventParams = {
+    page_title: document.title,
+    page_location: pageLocation,
+    page_path: pathname,
+    page_query_string: search ? search.slice(1) : undefined,
+    page_type: pageType,
+  };
+
+  if (typeof window.gtag === "function") {
+    window.gtag("event", "page_view", payload);
+    return;
+  }
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(["event", "page_view", payload]);
 }
