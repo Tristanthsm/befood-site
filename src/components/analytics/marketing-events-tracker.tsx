@@ -12,6 +12,7 @@ import {
   trackGaPageView,
   trackMarketingEvent,
 } from "@/lib/analytics/marketing-events";
+import { capturePosthogEvent } from "@/lib/analytics/posthog";
 
 const SCROLL_THRESHOLDS = [50, 75] as const;
 const SCROLL_TRACKED_PATHS = new Set(["/", "/comment-ca-marche", "/pour-les-coachs"]);
@@ -80,6 +81,15 @@ export function MarketingEventsTracker() {
       page_type: pageType,
     });
 
+    // Send bf_marketing_page_view to PostHog only on /join (conversion page).
+    // Other marketing pages stay GA4-only.
+    if (pathname === "/join") {
+      capturePosthogEvent("bf_marketing_page_view", {
+        page_path: pathname,
+        page_type: pageType,
+      });
+    }
+
     if (pathname === "/join") {
       trackMarketingEvent("bf_join_flow_started", {
         source: "join_page_view",
@@ -128,6 +138,8 @@ export function MarketingEventsTracker() {
           cta_id: ctaId,
           cta_location: ctaLocation,
           page_path: pathname,
+          // attribution props (click_id, session_id, source, coach_code) are
+          // merged automatically via mergeWithAttribution() inside trackMarketingEvent
         });
       }
     };

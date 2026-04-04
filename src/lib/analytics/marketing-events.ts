@@ -17,6 +17,16 @@ export type MarketingEventName =
   | "bf_join_flow_started"
   | "bf_web_vital";
 
+/**
+ * Events forwarded to PostHog web.
+ * GA4 receives ALL events. PostHog receives only these conversion-critical ones.
+ * bf_marketing_page_view is handled separately — only on /join (see trackGaPageView).
+ */
+const POSTHOG_CONVERSION_EVENTS = new Set<MarketingEventName>([
+  "bf_join_flow_started",
+  "bf_app_store_cta_click",
+]);
+
 interface EventParams {
   [key: string]: string | number | boolean | null | undefined;
 }
@@ -71,7 +81,9 @@ export function trackMarketingEvent(eventName: MarketingEventName, params: Event
     window.dataLayer.push(["event", eventName, payload]);
   }
 
-  capturePosthogEvent(eventName, payload);
+  if (POSTHOG_CONVERSION_EVENTS.has(eventName)) {
+    capturePosthogEvent(eventName, payload);
+  }
 }
 
 export function toGaWebVitalValue(metricName: string, rawValue: number): number {
@@ -109,5 +121,5 @@ export function trackGaPageView(pathname: string, pageType: string | null) {
     window.dataLayer.push(["event", "page_view", payload]);
   }
 
-  capturePosthogEvent("page_view", payload);
+  // page_view goes to GA4 only — not forwarded to PostHog.
 }
