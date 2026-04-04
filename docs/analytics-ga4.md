@@ -1,18 +1,23 @@
-# GA4 - Implementation and Validation Guide
+# Analytics - GA4 + PostHog Guide
 
 ## Scope
 
 This project uses:
 - Vercel Analytics + Vercel Speed Insights for product performance monitoring.
 - Google Analytics 4 for consent-gated audience measurement and marketing events.
+- PostHog for product funnel continuity (website -> signup) and identity stitching.
 
 ## Runtime Behavior
 
 - GA4 script loads only when user enables analytics consent.
+- PostHog loads only when user enables analytics consent.
 - Consent updates are propagated to GA4 (`granted` / `denied`).
 - GA cookies are cleared when analytics consent is revoked.
 - `page_view` is sent on every route change.
 - Additional marketing events are sent from `MarketingEventsTracker`.
+- Marketing events are mirrored to PostHog.
+- Join attribution context is persisted (`click_id`, `session_id`, `source`, `coach_code`, `utm_*`) and attached to analytics events when available.
+- Auth bridge calls PostHog `identify()` on signed-in users and emits `signup_completed` when signup intent is detected.
 
 ## Event Taxonomy
 
@@ -63,9 +68,14 @@ Optional depending on funnel strategy:
 ## File Map
 
 - `src/components/analytics/ga4-loader.tsx`
+- `src/components/analytics/posthog-loader.tsx`
+- `src/components/analytics/posthog-auth-bridge.tsx`
 - `src/components/analytics/marketing-events-tracker.tsx`
 - `src/components/analytics/consent-provider.tsx`
 - `src/lib/analytics/marketing-events.ts`
+- `src/lib/analytics/posthog.ts`
+- `src/lib/analytics/auth-intent.ts`
+- `src/lib/analytics/attribution-context.ts`
 - `src/lib/consent/cookie-consent.ts`
 
 ## Production Measurement Loop

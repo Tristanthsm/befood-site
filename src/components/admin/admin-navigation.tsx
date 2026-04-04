@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-type AdminNavKey = "dashboard" | "requests" | "contracts";
+type AdminNavKey = "dashboard" | "requests" | "contracts" | "conversion";
 
 interface AdminNavigationProps {
   active: AdminNavKey;
@@ -24,6 +24,9 @@ export function AdminNavigation({ active }: AdminNavigationProps) {
       </Link>
       <Link href="/admin/contrats" className={buttonClass(active === "contracts")}>
         Contrats coachs
+      </Link>
+      <Link href="/admin/conversion" className={buttonClass(active === "conversion")}>
+        Conversion
       </Link>
     </div>
   );

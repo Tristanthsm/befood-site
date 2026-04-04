@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { clearAuthIntent, saveAuthIntent } from "@/lib/analytics/auth-intent";
 
 type PendingAction = "google" | "password" | null;
 
@@ -138,6 +139,7 @@ export function SocialAuthCard({ mode, onSwitchMode, onNavigate }: SocialAuthCar
     setPendingAction("google");
 
     try {
+      saveAuthIntent(isSignup ? "signup" : "signin", "google_oauth");
       const supabase = getSupabaseBrowserClient();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -147,9 +149,11 @@ export function SocialAuthCard({ mode, onSwitchMode, onNavigate }: SocialAuthCar
       });
 
       if (error) {
+        clearAuthIntent();
         setErrorMessage(error.message);
       }
     } catch (error) {
+      clearAuthIntent();
       setErrorMessage(error instanceof Error ? error.message : "Erreur de connexion.");
     } finally {
       setPendingAction(null);
@@ -163,6 +167,7 @@ export function SocialAuthCard({ mode, onSwitchMode, onNavigate }: SocialAuthCar
     setPendingAction("password");
 
     try {
+      saveAuthIntent("signin", "password");
       const resolvedEmail = await resolveEmailForLogin(loginIdentifier);
       const supabase = getSupabaseBrowserClient();
       const { error } = await supabase.auth.signInWithPassword({
@@ -171,12 +176,14 @@ export function SocialAuthCard({ mode, onSwitchMode, onNavigate }: SocialAuthCar
       });
 
       if (error) {
+        clearAuthIntent();
         setErrorMessage(error.message);
         return;
       }
 
       window.location.assign("/");
     } catch {
+      clearAuthIntent();
       setErrorMessage("Configuration Supabase manquante côté site.");
     } finally {
       setPendingAction(null);

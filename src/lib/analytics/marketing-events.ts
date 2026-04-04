@@ -1,4 +1,6 @@
 import { sendGaFallbackEvent } from "@/lib/analytics/fallback";
+import { getAttributionEventProperties } from "@/lib/analytics/attribution-context";
+import { capturePosthogEvent } from "@/lib/analytics/posthog";
 
 declare global {
   interface Window {
@@ -17,6 +19,21 @@ export type MarketingEventName =
 
 interface EventParams {
   [key: string]: string | number | boolean | null | undefined;
+}
+
+type AnalyticsPayload = Record<string, string | number | boolean | null>;
+
+function mergeWithAttribution(params: EventParams): EventParams {
+  return {
+    ...getAttributionEventProperties(),
+    ...params,
+  };
+}
+
+function sanitizePayload(params: EventParams): AnalyticsPayload {
+  return Object.fromEntries(
+    Object.entries(params).filter(([, value]) => value !== undefined),
+  ) as AnalyticsPayload;
 }
 
 export const MARKETING_PAGE_TYPES: Record<string, string> = {
@@ -44,18 +61,17 @@ export function trackMarketingEvent(eventName: MarketingEventName, params: Event
     return;
   }
 
-  const payload = Object.fromEntries(
-    Object.entries(params).filter(([, value]) => value !== undefined),
-  );
+  const payload = sanitizePayload(mergeWithAttribution(params));
 
   if (typeof window.gtag === "function") {
     window.gtag("event", eventName, payload);
-    return;
+  } else {
+    sendGaFallbackEvent(eventName, payload);
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(["event", eventName, payload]);
   }
 
-  sendGaFallbackEvent(eventName, payload);
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push(["event", eventName, payload]);
+  capturePosthogEvent(eventName, payload);
 }
 
 export function toGaWebVitalValue(metricName: string, rawValue: number): number {
@@ -77,20 +93,21 @@ export function trackGaPageView(pathname: string, pageType: string | null) {
 
   const search = window.location.search || "";
   const pageLocation = `${window.location.origin}${window.location.pathname}${window.location.search}`;
-  const payload: EventParams = {
+  const payload = sanitizePayload(mergeWithAttribution({
     page_title: document.title,
     page_location: pageLocation,
     page_path: pathname,
     page_query_string: search ? search.slice(1) : undefined,
     page_type: pageType,
-  };
+  }));
 
   if (typeof window.gtag === "function") {
     window.gtag("event", "page_view", payload);
-    return;
+  } else {
+    sendGaFallbackEvent("page_view", payload);
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(["event", "page_view", payload]);
   }
 
-  sendGaFallbackEvent("page_view", payload);
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push(["event", "page_view", payload]);
+  capturePosthogEvent("page_view", payload);
 }

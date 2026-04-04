@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 
 import { APP_STORE_URL } from "@/lib/join/constants";
 import { buildSearchParamsFromContext, type JoinQueryContext } from "@/lib/join/params";
+import { persistAttributionContext } from "@/lib/analytics/attribution-context";
 
 interface JoinPageClientProps {
   initialContext: JoinQueryContext;
@@ -131,6 +132,15 @@ export function JoinPageClient({ initialContext, initialCoach }: JoinPageClientP
         return;
       }
 
+      persistAttributionContext({
+        clickId: payload.clickId,
+        sessionId: payload.sessionId,
+        source: "web_join",
+        coachCode: initialContext.coachCode,
+        utmSource: initialContext.utmSource,
+        utmMedium: initialContext.utmMedium,
+        utmCampaign: initialContext.utmCampaign,
+      });
       setTracking(payload);
 
       if (isMobileDevice() && payload.deepLinkUrl) {
@@ -143,7 +153,13 @@ export function JoinPageClient({ initialContext, initialCoach }: JoinPageClientP
     return () => {
       cancelled = true;
     };
-  }, [querySearch]);
+  }, [
+    initialContext.coachCode,
+    initialContext.utmCampaign,
+    initialContext.utmMedium,
+    initialContext.utmSource,
+    querySearch,
+  ]);
 
   const coach = tracking?.coach ?? initialCoach;
   const coachLabel = coach?.businessName ?? "votre coach";
@@ -170,6 +186,15 @@ export function JoinPageClient({ initialContext, initialCoach }: JoinPageClientP
     if (!resolvedTracking) {
       resolvedTracking = await fetchJoinTrackingPayload(querySearch);
       if (resolvedTracking && isMountedRef.current) {
+        persistAttributionContext({
+          clickId: resolvedTracking.clickId,
+          sessionId: resolvedTracking.sessionId,
+          source: "web_join",
+          coachCode: initialContext.coachCode,
+          utmSource: initialContext.utmSource,
+          utmMedium: initialContext.utmMedium,
+          utmCampaign: initialContext.utmCampaign,
+        });
         setTracking(resolvedTracking);
       }
     }

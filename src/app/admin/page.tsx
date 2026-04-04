@@ -138,9 +138,17 @@ export default async function AdminDashboardPage() {
               </div>
 
               <div className="rounded-3xl border border-[var(--color-border)] bg-white p-5">
-                <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">
-                  Signaux application (7 jours)
-                </h2>
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">
+                    Signaux application (7 jours)
+                  </h2>
+                  <Link
+                    href="/admin/conversion"
+                    className="inline-flex rounded-full border border-[var(--color-border)] px-3 py-1.5 text-xs font-semibold text-[var(--color-ink)] hover:bg-[var(--color-panel)]"
+                  >
+                    Ouvrir conversion
+                  </Link>
+                </div>
                 <div className="mt-3 grid gap-2">
                   <div className="flex items-center justify-between rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-2">
                     <p className="text-sm text-[var(--color-ink)]">Sessions web join</p>

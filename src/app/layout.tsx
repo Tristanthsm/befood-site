@@ -7,6 +7,8 @@ import { ConsentProvider } from "@/components/analytics/consent-provider";
 import { CookieConsentBanner } from "@/components/analytics/cookie-consent-banner";
 import { Ga4Loader } from "@/components/analytics/ga4-loader";
 import { MarketingEventsTracker } from "@/components/analytics/marketing-events-tracker";
+import { PosthogAuthBridge } from "@/components/analytics/posthog-auth-bridge";
+import { PosthogLoader } from "@/components/analytics/posthog-loader";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -97,6 +99,8 @@ export default function RootLayout({
           <Analytics />
           <SpeedInsights />
           <Ga4Loader />
+          <PosthogLoader />
+          <PosthogAuthBridge />
           <MarketingEventsTracker />
           <CookieConsentBanner />
         </ConsentProvider>
