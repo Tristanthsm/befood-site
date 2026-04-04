@@ -140,6 +140,7 @@ export default async function AdminConversionPage({
 
   const ga4PageViews = dashboard.ga4.trackedEvents.find((event) => event.eventName === "page_view")?.eventCount ?? 0;
   const ga4JoinStarts = dashboard.ga4.trackedEvents.find((event) => event.eventName === "bf_join_flow_started")?.eventCount ?? 0;
+  const posthogWebTotals = dashboard.posthog.webTotals;
 
   const signupCount = dashboard.postInstall.totals.signupCompleted;
   const onboardingCount = dashboard.postInstall.totals.onboardingCompleted;
@@ -293,6 +294,32 @@ export default async function AdminConversionPage({
                 <p className="text-sm font-semibold text-[var(--color-ink)]">{formatRate(dashboard.postInstall.rates.onboardingToActivation)}</p>
               </div>
             </div>
+            <div className="mt-3 rounded-2xl border border-[var(--color-border)] px-3 py-3">
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Web events PostHog</h3>
+                <span className={`inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold ${qualityClassName(dashboard.quality.posthogWebStatus)}`}>
+                  {qualityLabel(dashboard.quality.posthogWebStatus)}
+                </span>
+              </div>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-2">
+                  <p className="text-xs text-[var(--color-muted)]">page_view / $pageview</p>
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">{posthogWebTotals.pageView}</p>
+                </div>
+                <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-2">
+                  <p className="text-xs text-[var(--color-muted)]">bf_marketing_page_view</p>
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">{posthogWebTotals.marketingPageView}</p>
+                </div>
+                <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-2">
+                  <p className="text-xs text-[var(--color-muted)]">bf_join_flow_started</p>
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">{posthogWebTotals.joinFlowStarted}</p>
+                </div>
+                <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-2">
+                  <p className="text-xs text-[var(--color-muted)]">bf_app_store_cta_click</p>
+                  <p className="text-sm font-semibold text-[var(--color-ink)]">{posthogWebTotals.appStoreCtaClick}</p>
+                </div>
+              </div>
+            </div>
             {!dashboard.posthog.available && dashboard.posthog.error ? (
               <p className="mt-3 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
                 {dashboard.posthog.error}
@@ -340,7 +367,7 @@ export default async function AdminConversionPage({
 
         <article className="rounded-3xl border border-[var(--color-border)] bg-white p-5">
           <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-muted)]">Qualité des données</h2>
-          <div className="mt-3 grid gap-2 sm:grid-cols-4">
+          <div className="mt-3 grid gap-2 sm:grid-cols-5">
             <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-2">
               <p className="text-xs text-[var(--color-muted)]">Delta join BF vs GA4</p>
               <p className="text-lg font-semibold text-[var(--color-ink)]">{formatDelta(dashboard.comparison.joinStartsDelta)}</p>
@@ -365,6 +392,13 @@ export default async function AdminConversionPage({
               <p className="text-lg font-semibold text-[var(--color-ink)]">{dashboard.posthog.available ? "OK" : "N/A"}</p>
               <span className={`mt-1 inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold ${qualityClassName(dashboard.quality.posthogStatus)}`}>
                 {qualityLabel(dashboard.quality.posthogStatus)}
+              </span>
+            </div>
+            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-panel)] px-3 py-2">
+              <p className="text-xs text-[var(--color-muted)]">Santé PostHog web</p>
+              <p className="text-lg font-semibold text-[var(--color-ink)]">{dashboard.posthog.available ? "OK" : "N/A"}</p>
+              <span className={`mt-1 inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold ${qualityClassName(dashboard.quality.posthogWebStatus)}`}>
+                {qualityLabel(dashboard.quality.posthogWebStatus)}
               </span>
             </div>
           </div>

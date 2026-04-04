@@ -136,10 +136,13 @@ export function JoinPageClient({ initialContext, initialCoach }: JoinPageClientP
         clickId: payload.clickId,
         sessionId: payload.sessionId,
         source: "web_join",
+        ref: initialContext.ref,
         coachCode: initialContext.coachCode,
         utmSource: initialContext.utmSource,
         utmMedium: initialContext.utmMedium,
         utmCampaign: initialContext.utmCampaign,
+        utmTerm: initialContext.utmTerm,
+        utmContent: initialContext.utmContent,
       });
       setTracking(payload);
 
@@ -154,10 +157,13 @@ export function JoinPageClient({ initialContext, initialCoach }: JoinPageClientP
       cancelled = true;
     };
   }, [
+    initialContext.ref,
     initialContext.coachCode,
     initialContext.utmCampaign,
+    initialContext.utmContent,
     initialContext.utmMedium,
     initialContext.utmSource,
+    initialContext.utmTerm,
     querySearch,
   ]);
 
@@ -190,10 +196,13 @@ export function JoinPageClient({ initialContext, initialCoach }: JoinPageClientP
           clickId: resolvedTracking.clickId,
           sessionId: resolvedTracking.sessionId,
           source: "web_join",
+          ref: initialContext.ref,
           coachCode: initialContext.coachCode,
           utmSource: initialContext.utmSource,
           utmMedium: initialContext.utmMedium,
           utmCampaign: initialContext.utmCampaign,
+          utmTerm: initialContext.utmTerm,
+          utmContent: initialContext.utmContent,
         });
         setTracking(resolvedTracking);
       }

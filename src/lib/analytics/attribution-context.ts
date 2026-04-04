@@ -4,10 +4,13 @@ export interface AttributionContext {
   clickId: string | null;
   sessionId: string | null;
   source: string | null;
+  ref: string | null;
   coachCode: string | null;
   utmSource: string | null;
   utmMedium: string | null;
   utmCampaign: string | null;
+  utmTerm: string | null;
+  utmContent: string | null;
   updatedAt: string;
 }
 
@@ -46,10 +49,13 @@ function parseContext(raw: string | null): AttributionContext | null {
       clickId: toNullableString(parsed.clickId),
       sessionId: toNullableString(parsed.sessionId),
       source: toNullableString(parsed.source),
+      ref: toNullableString(parsed.ref),
       coachCode: toNullableString(parsed.coachCode),
       utmSource: toNullableString(parsed.utmSource),
       utmMedium: toNullableString(parsed.utmMedium),
       utmCampaign: toNullableString(parsed.utmCampaign),
+      utmTerm: toNullableString(parsed.utmTerm),
+      utmContent: toNullableString(parsed.utmContent),
       updatedAt: parsed.updatedAt,
     };
   } catch {
@@ -78,10 +84,13 @@ export function persistAttributionContext(input: Omit<AttributionContext, "updat
     clickId: toNullableString(input.clickId),
     sessionId: toNullableString(input.sessionId),
     source: toNullableString(input.source),
+    ref: toNullableString(input.ref),
     coachCode: toNullableString(input.coachCode),
     utmSource: toNullableString(input.utmSource),
     utmMedium: toNullableString(input.utmMedium),
     utmCampaign: toNullableString(input.utmCampaign),
+    utmTerm: toNullableString(input.utmTerm),
+    utmContent: toNullableString(input.utmContent),
     updatedAt: new Date().toISOString(),
   };
 
@@ -102,9 +111,12 @@ export function getAttributionEventProperties(): Record<string, AttributionPrimi
     click_id: context.clickId,
     session_id: context.sessionId,
     source: context.source,
+    ref: context.ref,
     coach_code: context.coachCode,
     utm_source: context.utmSource,
     utm_medium: context.utmMedium,
     utm_campaign: context.utmCampaign,
+    utm_term: context.utmTerm,
+    utm_content: context.utmContent,
   };
 }

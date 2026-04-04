@@ -11,7 +11,33 @@ const TRACKED_GA4_EVENTS = [
   "bf_app_store_cta_click",
 ] as const;
 
-const TRACKED_POSTHOG_EVENTS = ["signup_completed", "onboarding_completed", "activation_completed"] as const;
+const TRACKED_POSTHOG_SIGNUP_EVENTS = ["signup_completed"] as const;
+const TRACKED_POSTHOG_ONBOARDING_EVENTS = ["onboarding_completed"] as const;
+const TRACKED_POSTHOG_ACTIVATION_EVENTS = ["activation_completed", "activation_complete"] as const;
+const TRACKED_POSTHOG_WEB_EVENTS = [
+  "page_view",
+  "$pageview",
+  "bf_marketing_page_view",
+  "bf_join_flow_started",
+  "bf_app_store_cta_click",
+] as const;
+const TRACKED_POSTHOG_DIAGNOSTIC_EVENTS = [
+  "deep_link_processed",
+  "acquisition_sync_triggered",
+  "acquisition_sync_result",
+] as const;
+const TRACKED_POSTHOG_PRODUCT_EVENTS = [
+  ...TRACKED_POSTHOG_SIGNUP_EVENTS,
+  ...TRACKED_POSTHOG_ONBOARDING_EVENTS,
+  ...TRACKED_POSTHOG_ACTIVATION_EVENTS,
+] as const;
+const TRACKED_POSTHOG_EVENTS = Array.from(
+  new Set([
+    ...TRACKED_POSTHOG_PRODUCT_EVENTS,
+    ...TRACKED_POSTHOG_WEB_EVENTS,
+    ...TRACKED_POSTHOG_DIAGNOSTIC_EVENTS,
+  ]),
+);
 
 type SupportedPeriod = 7 | 14 | 30 | 90;
 type ActorProfileType = "coach" | "createur";
@@ -72,6 +98,17 @@ export interface AdminConversionDashboardData {
       onboardingCompleted: number;
       activationCompleted: number;
     };
+    webTotals: {
+      pageView: number;
+      marketingPageView: number;
+      joinFlowStarted: number;
+      appStoreCtaClick: number;
+    };
+    diagnostics: {
+      deepLinkProcessed: number;
+      acquisitionSyncTriggered: number;
+      acquisitionSyncResult: number;
+    };
     error: string | null;
   };
   postInstall: {
@@ -103,6 +140,7 @@ export interface AdminConversionDashboardData {
     joinDeltaStatus: QualityStatus;
     storeDeltaStatus: QualityStatus;
     posthogStatus: QualityStatus;
+    posthogWebStatus: QualityStatus;
     attributionCoverage: number | null;
   };
   notes: string[];
@@ -194,6 +232,27 @@ function computeDeltaStatus(delta: number | null, reference: number): QualitySta
     return "aligne";
   }
   if (ratio <= 0.35) {
+    return "surveiller";
+  }
+  return "investiguer";
+}
+
+function computeCoverageStatus(posthogCount: number, referenceCount: number, available: boolean): QualityStatus {
+  if (!available) {
+    return "indisponible";
+  }
+  if (referenceCount <= 0) {
+    return posthogCount > 0 ? "aligne" : "surveiller";
+  }
+  if (posthogCount <= 0) {
+    return "investiguer";
+  }
+
+  const ratio = posthogCount / referenceCount;
+  if (ratio >= 0.35) {
+    return "aligne";
+  }
+  if (ratio >= 0.15) {
     return "surveiller";
   }
   return "investiguer";
@@ -364,6 +423,19 @@ function normalizePosthogPrivateHost(rawHost: string): string {
   return normalized;
 }
 
+function validatePosthogServerConfig(host: string, projectId: string): string | null {
+  if (!host || !projectId) {
+    return "PostHog API non configurée (POSTHOG_HOST, POSTHOG_PROJECT_ID, POSTHOG_PERSONAL_API_KEY).";
+  }
+  if (!/^https:\/\//i.test(host)) {
+    return "POSTHOG_HOST invalide: utiliser une URL HTTPS complète.";
+  }
+  if (!/^\d+$/.test(projectId)) {
+    return "POSTHOG_PROJECT_ID invalide: valeur numérique attendue.";
+  }
+  return null;
+}
+
 function queryRows(response: PosthogQueryResponse): Array<Record<string, unknown>> {
   if (!Array.isArray(response.results)) {
     return [];
@@ -423,7 +495,8 @@ async function fetchPosthogSummary(fromIso: string, toIso: string, dayKeys: stri
     process.env.POSTHOG_HOST?.trim() ?? process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() ?? "",
   );
 
-  if (!personalApiKey || !projectId || !host) {
+  const configError = validatePosthogServerConfig(host, projectId);
+  if (!personalApiKey || configError) {
     return {
       available: false,
       source: "unavailable" as const,
@@ -432,14 +505,29 @@ async function fetchPosthogSummary(fromIso: string, toIso: string, dayKeys: stri
         onboardingCompleted: 0,
         activationCompleted: 0,
       },
+      webTotals: {
+        pageView: 0,
+        marketingPageView: 0,
+        joinFlowStarted: 0,
+        appStoreCtaClick: 0,
+      },
+      diagnostics: {
+        deepLinkProcessed: 0,
+        acquisitionSyncTriggered: 0,
+        acquisitionSyncResult: 0,
+      },
       daily: new Map<string, { signupCompleted: number; onboardingCompleted: number; activationCompleted: number }>(),
-      error: "PostHog API non configurée (POSTHOG_HOST, POSTHOG_PROJECT_ID, POSTHOG_PERSONAL_API_KEY).",
+      error: configError ?? "PostHog API non configurée (POSTHOG_PERSONAL_API_KEY manquante).",
     };
   }
 
   const fromEscaped = escapeSqlLiteral(fromIso);
   const toEscaped = escapeSqlLiteral(toIso);
   const eventsFilter = TRACKED_POSTHOG_EVENTS.map((eventName) => `'${eventName}'`).join(", ");
+  const dailyEventsFilter = TRACKED_POSTHOG_PRODUCT_EVENTS.map((eventName) => `'${eventName}'`).join(", ");
+  const signupEvents = new Set<string>(TRACKED_POSTHOG_SIGNUP_EVENTS);
+  const onboardingEvents = new Set<string>(TRACKED_POSTHOG_ONBOARDING_EVENTS);
+  const activationEvents = new Set<string>(TRACKED_POSTHOG_ACTIVATION_EVENTS);
 
   const totalsSql = `
     SELECT event, count() AS event_count
@@ -456,7 +544,7 @@ async function fetchPosthogSummary(fromIso: string, toIso: string, dayKeys: stri
     FROM events
     WHERE timestamp >= toDateTime('${fromEscaped}')
       AND timestamp < toDateTime('${toEscaped}')
-      AND event IN (${eventsFilter})
+      AND event IN (${dailyEventsFilter})
     GROUP BY day, event
     ORDER BY day ASC, event ASC
     LIMIT 5000
@@ -476,16 +564,44 @@ async function fetchPosthogSummary(fromIso: string, toIso: string, dayKeys: stri
       onboardingCompleted: 0,
       activationCompleted: 0,
     };
+    const webTotals = {
+      pageView: 0,
+      marketingPageView: 0,
+      joinFlowStarted: 0,
+      appStoreCtaClick: 0,
+    };
+    const diagnostics = {
+      deepLinkProcessed: 0,
+      acquisitionSyncTriggered: 0,
+      acquisitionSyncResult: 0,
+    };
 
     for (const row of totalsRows) {
       const eventName = toNullableString(row.event);
       const count = toInteger(row.event_count);
-      if (eventName === "signup_completed") {
-        totals.signupCompleted = count;
-      } else if (eventName === "onboarding_completed") {
-        totals.onboardingCompleted = count;
-      } else if (eventName === "activation_completed") {
-        totals.activationCompleted = count;
+      if (!eventName) {
+        continue;
+      }
+      if (signupEvents.has(eventName)) {
+        totals.signupCompleted += count;
+      } else if (onboardingEvents.has(eventName)) {
+        totals.onboardingCompleted += count;
+      } else if (activationEvents.has(eventName)) {
+        totals.activationCompleted += count;
+      } else if (eventName === "page_view" || eventName === "$pageview") {
+        webTotals.pageView += count;
+      } else if (eventName === "bf_marketing_page_view") {
+        webTotals.marketingPageView += count;
+      } else if (eventName === "bf_join_flow_started") {
+        webTotals.joinFlowStarted += count;
+      } else if (eventName === "bf_app_store_cta_click") {
+        webTotals.appStoreCtaClick += count;
+      } else if (eventName === "deep_link_processed") {
+        diagnostics.deepLinkProcessed += count;
+      } else if (eventName === "acquisition_sync_triggered") {
+        diagnostics.acquisitionSyncTriggered += count;
+      } else if (eventName === "acquisition_sync_result") {
+        diagnostics.acquisitionSyncResult += count;
       }
     }
 
@@ -507,12 +623,12 @@ async function fetchPosthogSummary(fromIso: string, toIso: string, dayKeys: stri
       }
 
       const count = toInteger(row.event_count);
-      if (eventName === "signup_completed") {
-        current.signupCompleted = count;
-      } else if (eventName === "onboarding_completed") {
-        current.onboardingCompleted = count;
-      } else if (eventName === "activation_completed") {
-        current.activationCompleted = count;
+      if (signupEvents.has(eventName)) {
+        current.signupCompleted += count;
+      } else if (onboardingEvents.has(eventName)) {
+        current.onboardingCompleted += count;
+      } else if (activationEvents.has(eventName)) {
+        current.activationCompleted += count;
       }
     }
 
@@ -520,6 +636,8 @@ async function fetchPosthogSummary(fromIso: string, toIso: string, dayKeys: stri
       available: true,
       source: "api" as const,
       totals,
+      webTotals,
+      diagnostics,
       daily,
       error: null,
     };
@@ -531,6 +649,17 @@ async function fetchPosthogSummary(fromIso: string, toIso: string, dayKeys: stri
         signupCompleted: 0,
         onboardingCompleted: 0,
         activationCompleted: 0,
+      },
+      webTotals: {
+        pageView: 0,
+        marketingPageView: 0,
+        joinFlowStarted: 0,
+        appStoreCtaClick: 0,
+      },
+      diagnostics: {
+        deepLinkProcessed: 0,
+        acquisitionSyncTriggered: 0,
+        acquisitionSyncResult: 0,
       },
       daily: new Map<string, { signupCompleted: number; onboardingCompleted: number; activationCompleted: number }>(),
       error: error instanceof Error ? error.message : "PostHog unavailable.",
@@ -699,6 +828,8 @@ export async function getAdminConversionDashboard(daysInput: string | null | und
     }),
   ]);
 
+  const ga4PageViews = ga4.trackedEvents.find((event) => event.eventName === "page_view")?.eventCount ?? 0;
+  const ga4MarketingPageViews = ga4.trackedEvents.find((event) => event.eventName === "bf_marketing_page_view")?.eventCount ?? 0;
   const ga4JoinStarted = ga4.trackedEvents.find((event) => event.eventName === "bf_join_flow_started")?.eventCount ?? 0;
   const ga4StoreClicks = ga4.trackedEvents.find((event) => event.eventName === "bf_app_store_cta_click")?.eventCount ?? 0;
 
@@ -735,9 +866,65 @@ export async function getAdminConversionDashboard(daysInput: string | null | und
     onboardingCompleted: posthog.totals.onboardingCompleted,
     activationCompleted: posthog.totals.activationCompleted,
   };
+  const posthogWebTotals = {
+    pageView: posthog.webTotals.pageView,
+    marketingPageView: posthog.webTotals.marketingPageView,
+    joinFlowStarted: posthog.webTotals.joinFlowStarted,
+    appStoreCtaClick: posthog.webTotals.appStoreCtaClick,
+  };
+
+  const attributionCoverage = computeRate(bfTotals.attributedSessions, bfTotals.joinSessions);
+  if (attributionCoverage !== null && attributionCoverage < 5 && bfTotals.joinSessions > 0) {
+    notes.push("Couverture attribution BF très faible (<5%). Vérifier la mise à jour de reconciliation_status et la jointure click/session côté app.");
+  }
+
+  const posthogActivationDelta = posthog.available
+    ? bfTotals.acquisitionsBackend - postInstallTotals.activationCompleted
+    : null;
+  const posthogActivationReference = Math.max(
+    bfTotals.acquisitionsBackend,
+    postInstallTotals.activationCompleted,
+  );
+  const posthogStatus = posthog.available
+    ? computeDeltaStatus(posthogActivationDelta, posthogActivationReference)
+    : "indisponible";
+  if (posthog.available && posthogActivationDelta !== null && posthogStatus === "investiguer") {
+    notes.push(
+      "Écart important entre activation_completed (PostHog) et acquisitions backend BF. Vérifier l’instrumentation app (activation_completed) et la logique de déduplication.",
+    );
+  }
+  if (posthog.available && bfTotals.joinSessions > 0 && postInstallTotals.signupCompleted > 0 && bfTotals.attributedSessions === 0) {
+    notes.push("Signups détectés mais attribution BF nulle. Vérifier la propagation click_id/session_id entre web join, app et backend.");
+  }
+  if (posthog.available && ga4PageViews > 0 && posthogWebTotals.pageView === 0) {
+    notes.push("GA4 reçoit page_view mais PostHog page_view/$pageview est à 0. Vérifier CSP connect-src et NEXT_PUBLIC_POSTHOG_HOST en production.");
+  }
+  if (posthog.available && ga4MarketingPageViews > 0 && posthogWebTotals.marketingPageView === 0) {
+    notes.push("bf_marketing_page_view remonte en GA4 mais pas en PostHog. Vérifier le loader PostHog et le consentement analytics.");
+  }
+  if (posthog.available && ga4JoinStarted > 0 && posthogWebTotals.joinFlowStarted === 0) {
+    notes.push("bf_join_flow_started absent dans PostHog alors qu’il existe en GA4. Vérifier le bridge d’événements marketing vers PostHog.");
+  }
+  if (posthog.available && ga4StoreClicks > 0 && posthogWebTotals.appStoreCtaClick === 0) {
+    notes.push("bf_app_store_cta_click absent dans PostHog alors qu’il existe en GA4. Vérifier la capture PostHog sur le CTA /join.");
+  }
+  if (posthog.available && postInstallTotals.onboardingCompleted > 0 && postInstallTotals.activationCompleted === 0) {
+    if (posthog.diagnostics.deepLinkProcessed === 0 && posthog.diagnostics.acquisitionSyncTriggered === 0) {
+      notes.push("onboarding_completed présent mais aucun deep_link_processed/acquisition_sync_triggered. Cause probable: flux deep link non reçu côté app avant activation.");
+    } else if (posthog.diagnostics.acquisitionSyncTriggered > 0 && posthog.diagnostics.acquisitionSyncResult > 0) {
+      notes.push("acquisition_sync_result présent mais activation_completed absent. Vérifier un éventuel alias de nommage (activation_complete) ou un skip capture côté app.");
+    }
+  }
 
   const appStoreClicksDelta = ga4.available ? bfTotals.appStoreClicks - ga4StoreClicks : null;
   const joinStartsDelta = ga4.available ? bfTotals.joinSessions - ga4JoinStarted : null;
+  const posthogWebReference = ga4PageViews + ga4MarketingPageViews + ga4JoinStarted + ga4StoreClicks;
+  const posthogWebObserved =
+    posthogWebTotals.pageView
+    + posthogWebTotals.marketingPageView
+    + posthogWebTotals.joinFlowStarted
+    + posthogWebTotals.appStoreCtaClick;
+  const posthogWebStatus = computeCoverageStatus(posthogWebObserved, posthogWebReference, posthog.available);
 
   return {
     range: {
@@ -760,6 +947,8 @@ export async function getAdminConversionDashboard(daysInput: string | null | und
       available: posthog.available,
       source: posthog.source,
       totals: postInstallTotals,
+      webTotals: posthogWebTotals,
+      diagnostics: posthog.diagnostics,
       error: posthog.error,
     },
     postInstall: {
@@ -780,8 +969,9 @@ export async function getAdminConversionDashboard(daysInput: string | null | und
     quality: {
       joinDeltaStatus: computeDeltaStatus(joinStartsDelta, bfTotals.joinSessions),
       storeDeltaStatus: computeDeltaStatus(appStoreClicksDelta, bfTotals.appStoreClicks),
-      posthogStatus: posthog.available ? "aligne" : "indisponible",
-      attributionCoverage: computeRate(bfTotals.attributedSessions, bfTotals.joinSessions),
+      posthogStatus,
+      posthogWebStatus,
+      attributionCoverage,
     },
     notes,
   };

@@ -1,28 +1,75 @@
 import type { NextConfig } from "next";
 
-function buildContentSecurityPolicy() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? "";
-  let supabaseOrigin = "";
+function normalizeUrlOrigin(rawValue: string): string | null {
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    return null;
+  }
 
-  if (supabaseUrl) {
-    try {
-      supabaseOrigin = new URL(supabaseUrl).origin;
-    } catch {
-      supabaseOrigin = "";
+  const withProtocol = /^https?:\/\//.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    return new URL(withProtocol).origin;
+  } catch {
+    return null;
+  }
+}
+
+function buildPosthogConnectOrigins(): string[] {
+  const hostOrigin = normalizeUrlOrigin(process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() ?? "");
+  if (!hostOrigin) {
+    return [];
+  }
+
+  const origins = new Set<string>([hostOrigin]);
+
+  if (hostOrigin.includes("://us.i.posthog.com")) {
+    origins.add(hostOrigin.replace("://us.i.posthog.com", "://us.posthog.com"));
+  } else if (hostOrigin.includes("://eu.i.posthog.com")) {
+    origins.add(hostOrigin.replace("://eu.i.posthog.com", "://eu.posthog.com"));
+  } else if (hostOrigin.includes("://us.posthog.com")) {
+    origins.add(hostOrigin.replace("://us.posthog.com", "://us.i.posthog.com"));
+  } else if (hostOrigin.includes("://eu.posthog.com")) {
+    origins.add(hostOrigin.replace("://eu.posthog.com", "://eu.i.posthog.com"));
+  } else if (hostOrigin.includes("://i.posthog.com")) {
+    origins.add(hostOrigin.replace("://i.posthog.com", "://us.i.posthog.com"));
+    origins.add(hostOrigin.replace("://i.posthog.com", "://us.posthog.com"));
+  }
+
+  for (const origin of Array.from(origins)) {
+    if (origin.includes("://us.i.posthog.com") || origin.includes("://us.posthog.com") || origin.includes("://i.posthog.com")) {
+      origins.add("https://us-assets.i.posthog.com");
+    }
+    if (origin.includes("://eu.i.posthog.com") || origin.includes("://eu.posthog.com")) {
+      origins.add("https://eu-assets.i.posthog.com");
     }
   }
 
-  const connectSources = [
+  return Array.from(origins);
+}
+
+function buildContentSecurityPolicy() {
+  const supabaseOrigin = normalizeUrlOrigin(process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ?? "");
+  const posthogOrigins = buildPosthogConnectOrigins();
+  const connectSources = new Set([
     "'self'",
     "https://www.googletagmanager.com",
     "https://*.google-analytics.com",
     "https://vitals.vercel-insights.com",
     "https://*.supabase.co",
     "wss://*.supabase.co",
-  ];
+  ]);
+  const scriptSources = new Set([
+    "'self'",
+    "'unsafe-inline'",
+    "https://www.googletagmanager.com",
+  ]);
 
   if (supabaseOrigin) {
-    connectSources.push(supabaseOrigin);
+    connectSources.add(supabaseOrigin);
+  }
+  for (const origin of posthogOrigins) {
+    connectSources.add(origin);
+    scriptSources.add(origin);
   }
 
   const directives = [
@@ -31,11 +78,11 @@ function buildContentSecurityPolicy() {
     "frame-ancestors 'none'",
     "object-src 'none'",
     "form-action 'self'",
-    "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
+    `script-src ${Array.from(scriptSources).join(" ")}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
-    `connect-src ${connectSources.join(" ")}`,
+    `connect-src ${Array.from(connectSources).join(" ")}`,
     "frame-src 'none'",
     "manifest-src 'self'",
     "worker-src 'self' blob:",

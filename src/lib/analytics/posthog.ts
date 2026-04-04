@@ -14,11 +14,14 @@ function normalizeHost(host: string): string {
   }
 
   const withoutTrailingSlash = host.replace(/\/+$/, "");
-  if (withoutTrailingSlash.startsWith("http://") || withoutTrailingSlash.startsWith("https://")) {
-    return withoutTrailingSlash;
-  }
-
-  return `https://${withoutTrailingSlash}`;
+  const withProtocol =
+    withoutTrailingSlash.startsWith("http://") || withoutTrailingSlash.startsWith("https://")
+      ? withoutTrailingSlash
+      : `https://${withoutTrailingSlash}`;
+  return withProtocol
+    .replace("://us.posthog.com", "://us.i.posthog.com")
+    .replace("://eu.posthog.com", "://eu.i.posthog.com")
+    .replace("://i.posthog.com", "://us.i.posthog.com");
 }
 
 function sanitizeProperties(properties: PosthogProperties): PosthogProperties {

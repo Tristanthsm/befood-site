@@ -12,9 +12,11 @@ This project uses:
 
 - GA4 script loads only when user enables analytics consent.
 - PostHog loads only when user enables analytics consent.
+- CSP `script-src` and `connect-src` must include PostHog ingestion/assets origins derived from `NEXT_PUBLIC_POSTHOG_HOST`.
 - Consent updates are propagated to GA4 (`granted` / `denied`).
 - GA cookies are cleared when analytics consent is revoked.
 - `page_view` is sent on every route change.
+- For compatibility, admin diagnostics also monitor PostHog `$pageview` when present.
 - Additional marketing events are sent from `MarketingEventsTracker`.
 - Marketing events are mirrored to PostHog.
 - Join attribution context is persisted (`click_id`, `session_id`, `source`, `coach_code`, `utm_*`) and attached to analytics events when available.
@@ -26,13 +28,22 @@ This project uses:
 Standard GA4:
 - `page_view`
 
-Custom events:
+Custom web events (GA4 + mirrored PostHog):
 - `bf_marketing_page_view`
 - `bf_cta_click`
 - `bf_app_store_cta_click`
 - `bf_scroll_depth`
 - `bf_join_flow_started`
 - `bf_web_vital`
+
+Product events (PostHog, app/site identity bridge):
+- `signup_completed`
+- `onboarding_completed`
+- `activation_completed`
+
+Compatibility aliases (dashboard only, backward-compatible reads):
+- `activation_complete` is aggregated with `activation_completed` in admin analytics.
+- `$pageview` is aggregated with `page_view` for PostHog web diagnostics.
 
 `bf_web_vital` params:
 - `metric_name` (`LCP`, `INP`, `CLS`, `FCP`, `TTFB`)
@@ -59,6 +70,8 @@ Optional depending on funnel strategy:
 3. After clicking `Accepter`:
 - `gtag/js` request appears.
 - `page_view` is visible in GA4 DebugView.
+- no CSP error blocks requests to the configured PostHog host.
+- `page_view` (or `$pageview`) and `bf_marketing_page_view` appear in PostHog Live Events.
 4. Route navigation sends additional `page_view`.
 5. Clicking tracked CTA sends `bf_cta_click`.
 6. Clicking primary funnel CTA sends `bf_join_flow_started`.
