@@ -1,6 +1,6 @@
 import "server-only";
 
-import { listConversionEvents, listEventsLast30Days, runRealtimeReport } from "@/lib/analytics/ga4-api";
+import { listConversionEvents, listEventsByDateRange, runRealtimeReport } from "@/lib/analytics/ga4-api";
 import { getSupabaseServiceRoleClient } from "@/lib/supabase/service-role";
 
 const TRACKED_GA4_EVENTS = [
@@ -11,8 +11,11 @@ const TRACKED_GA4_EVENTS = [
   "bf_app_store_cta_click",
 ] as const;
 
+const TRACKED_POSTHOG_EVENTS = ["signup_completed", "onboarding_completed", "activation_completed"] as const;
+
 type SupportedPeriod = 7 | 14 | 30 | 90;
 type ActorProfileType = "coach" | "createur";
+export type QualityStatus = "aligne" | "surveiller" | "investiguer" | "indisponible";
 
 export interface AdminConversionActor {
   userId: string;
@@ -61,9 +64,46 @@ export interface AdminConversionDashboardData {
     }>;
     error: string | null;
   };
+  posthog: {
+    available: boolean;
+    source: "api" | "unavailable";
+    totals: {
+      signupCompleted: number;
+      onboardingCompleted: number;
+      activationCompleted: number;
+    };
+    error: string | null;
+  };
+  postInstall: {
+    totals: {
+      signupCompleted: number;
+      onboardingCompleted: number;
+      activationCompleted: number;
+    };
+    rates: {
+      storeToSignup: number | null;
+      signupToOnboarding: number | null;
+      onboardingToActivation: number | null;
+    };
+  };
+  timeline: {
+    days: Array<{
+      day: string;
+      joinStarted: number;
+      storeClicks: number;
+      signupCompleted: number;
+      activationCompleted: number;
+    }>;
+  };
   comparison: {
     appStoreClicksDelta: number | null;
     joinStartsDelta: number | null;
+  };
+  quality: {
+    joinDeltaStatus: QualityStatus;
+    storeDeltaStatus: QualityStatus;
+    posthogStatus: QualityStatus;
+    attributionCoverage: number | null;
   };
   notes: string[];
 }
@@ -95,6 +135,11 @@ interface BfRpcPayload {
     acquisitions_backend?: unknown;
   };
   actors?: BfRpcActorRaw[];
+}
+
+interface PosthogQueryResponse {
+  results?: unknown[];
+  columns?: unknown[];
 }
 
 function normalizePeriod(value: string | null | undefined): SupportedPeriod {
@@ -135,6 +180,46 @@ function computeRate(numerator: number, denominator: number): number | null {
     return null;
   }
   return Math.max(0, Math.min(100, Math.round((numerator / denominator) * 1000) / 10));
+}
+
+function computeDeltaStatus(delta: number | null, reference: number): QualityStatus {
+  if (delta === null) {
+    return "indisponible";
+  }
+
+  const base = Math.max(1, reference);
+  const ratio = Math.abs(delta) / base;
+
+  if (ratio <= 0.15) {
+    return "aligne";
+  }
+  if (ratio <= 0.35) {
+    return "surveiller";
+  }
+  return "investiguer";
+}
+
+function escapeSqlLiteral(value: string): string {
+  return value.replace(/'/g, "''");
+}
+
+function buildDayKeys(fromIso: string, toIso: string): string[] {
+  const from = new Date(fromIso);
+  const to = new Date(toIso);
+  if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) {
+    return [];
+  }
+
+  const days: string[] = [];
+  const cursor = new Date(Date.UTC(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate()));
+  const end = new Date(Date.UTC(to.getUTCFullYear(), to.getUTCMonth(), to.getUTCDate()));
+
+  while (cursor < end) {
+    days.push(cursor.toISOString().slice(0, 10));
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+
+  return days;
 }
 
 function isRpcFunctionMissing(error: unknown) {
@@ -263,10 +348,273 @@ async function fetchBfDashboardFallback(fromIso: string, toIso: string) {
   };
 }
 
-async function fetchGa4Summary() {
+function normalizePosthogPrivateHost(rawHost: string): string {
+  const trimmed = rawHost.trim();
+  if (!trimmed) {
+    return "";
+  }
+
+  const withProtocol = /^https?:\/\//.test(trimmed) ? trimmed : `https://${trimmed}`;
+  const normalized = withProtocol
+    .replace("://us.i.posthog.com", "://us.posthog.com")
+    .replace("://eu.i.posthog.com", "://eu.posthog.com")
+    .replace("://i.posthog.com", "://us.posthog.com")
+    .replace(/\/+$/, "");
+
+  return normalized;
+}
+
+function queryRows(response: PosthogQueryResponse): Array<Record<string, unknown>> {
+  if (!Array.isArray(response.results)) {
+    return [];
+  }
+
+  const columns = Array.isArray(response.columns)
+    ? response.columns.map((column) => toNullableString(column) ?? "")
+    : [];
+
+  return response.results.map((row) => {
+    if (row && typeof row === "object" && !Array.isArray(row)) {
+      return row as Record<string, unknown>;
+    }
+
+    if (Array.isArray(row) && columns.length > 0) {
+      return columns.reduce<Record<string, unknown>>((acc, columnName, index) => {
+        if (columnName) {
+          acc[columnName] = row[index];
+        }
+        return acc;
+      }, {});
+    }
+
+    return {};
+  });
+}
+
+async function runPosthogQuery(host: string, projectId: string, apiKey: string, sql: string, name: string) {
+  const response = await fetch(`${host}/api/projects/${projectId}/query/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      query: {
+        kind: "HogQLQuery",
+        query: sql,
+      },
+      name,
+    }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(`PostHog query failed (${response.status}): ${body.slice(0, 280)}`);
+  }
+
+  return (await response.json()) as PosthogQueryResponse;
+}
+
+async function fetchPosthogSummary(fromIso: string, toIso: string, dayKeys: string[]) {
+  const personalApiKey = process.env.POSTHOG_PERSONAL_API_KEY?.trim() ?? "";
+  const projectId = process.env.POSTHOG_PROJECT_ID?.trim() ?? "";
+  const host = normalizePosthogPrivateHost(
+    process.env.POSTHOG_HOST?.trim() ?? process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() ?? "",
+  );
+
+  if (!personalApiKey || !projectId || !host) {
+    return {
+      available: false,
+      source: "unavailable" as const,
+      totals: {
+        signupCompleted: 0,
+        onboardingCompleted: 0,
+        activationCompleted: 0,
+      },
+      daily: new Map<string, { signupCompleted: number; onboardingCompleted: number; activationCompleted: number }>(),
+      error: "PostHog API non configurée (POSTHOG_HOST, POSTHOG_PROJECT_ID, POSTHOG_PERSONAL_API_KEY).",
+    };
+  }
+
+  const fromEscaped = escapeSqlLiteral(fromIso);
+  const toEscaped = escapeSqlLiteral(toIso);
+  const eventsFilter = TRACKED_POSTHOG_EVENTS.map((eventName) => `'${eventName}'`).join(", ");
+
+  const totalsSql = `
+    SELECT event, count() AS event_count
+    FROM events
+    WHERE timestamp >= toDateTime('${fromEscaped}')
+      AND timestamp < toDateTime('${toEscaped}')
+      AND event IN (${eventsFilter})
+    GROUP BY event
+    ORDER BY event ASC
+  `;
+
+  const dailySql = `
+    SELECT toString(toDate(timestamp)) AS day, event, count() AS event_count
+    FROM events
+    WHERE timestamp >= toDateTime('${fromEscaped}')
+      AND timestamp < toDateTime('${toEscaped}')
+      AND event IN (${eventsFilter})
+    GROUP BY day, event
+    ORDER BY day ASC, event ASC
+    LIMIT 5000
+  `;
+
+  try {
+    const [totalsRaw, dailyRaw] = await Promise.all([
+      runPosthogQuery(host, projectId, personalApiKey, totalsSql, "admin_conversion_posthog_totals"),
+      runPosthogQuery(host, projectId, personalApiKey, dailySql, "admin_conversion_posthog_daily"),
+    ]);
+
+    const totalsRows = queryRows(totalsRaw);
+    const dailyRows = queryRows(dailyRaw);
+
+    const totals = {
+      signupCompleted: 0,
+      onboardingCompleted: 0,
+      activationCompleted: 0,
+    };
+
+    for (const row of totalsRows) {
+      const eventName = toNullableString(row.event);
+      const count = toInteger(row.event_count);
+      if (eventName === "signup_completed") {
+        totals.signupCompleted = count;
+      } else if (eventName === "onboarding_completed") {
+        totals.onboardingCompleted = count;
+      } else if (eventName === "activation_completed") {
+        totals.activationCompleted = count;
+      }
+    }
+
+    const daily = new Map<string, { signupCompleted: number; onboardingCompleted: number; activationCompleted: number }>();
+    for (const day of dayKeys) {
+      daily.set(day, { signupCompleted: 0, onboardingCompleted: 0, activationCompleted: 0 });
+    }
+
+    for (const row of dailyRows) {
+      const day = toNullableString(row.day);
+      const eventName = toNullableString(row.event);
+      if (!day || !eventName || !daily.has(day)) {
+        continue;
+      }
+
+      const current = daily.get(day);
+      if (!current) {
+        continue;
+      }
+
+      const count = toInteger(row.event_count);
+      if (eventName === "signup_completed") {
+        current.signupCompleted = count;
+      } else if (eventName === "onboarding_completed") {
+        current.onboardingCompleted = count;
+      } else if (eventName === "activation_completed") {
+        current.activationCompleted = count;
+      }
+    }
+
+    return {
+      available: true,
+      source: "api" as const,
+      totals,
+      daily,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      available: false,
+      source: "unavailable" as const,
+      totals: {
+        signupCompleted: 0,
+        onboardingCompleted: 0,
+        activationCompleted: 0,
+      },
+      daily: new Map<string, { signupCompleted: number; onboardingCompleted: number; activationCompleted: number }>(),
+      error: error instanceof Error ? error.message : "PostHog unavailable.",
+    };
+  }
+}
+
+async function fetchBfDailySeries(fromIso: string, toIso: string, dayKeys: string[]) {
+  const serviceRole = getSupabaseServiceRoleClient();
+  const [joinRows, storeRows, activationRows] = await Promise.all([
+    serviceRole
+      .from("web_join_sessions")
+      .select("arrived_at")
+      .gte("arrived_at", fromIso)
+      .lt("arrived_at", toIso),
+    serviceRole
+      .from("web_join_sessions")
+      .select("app_store_clicked_at")
+      .not("app_store_clicked_at", "is", null)
+      .gte("app_store_clicked_at", fromIso)
+      .lt("app_store_clicked_at", toIso),
+    serviceRole
+      .from("user_acquisitions")
+      .select("created_at")
+      .eq("acquisition_type", "coach")
+      .gte("created_at", fromIso)
+      .lt("created_at", toIso),
+  ]);
+
+  if (joinRows.error) {
+    throw joinRows.error;
+  }
+  if (storeRows.error) {
+    throw storeRows.error;
+  }
+  if (activationRows.error) {
+    throw activationRows.error;
+  }
+
+  const byDay = new Map<string, { joinStarted: number; storeClicks: number; activations: number }>();
+  for (const day of dayKeys) {
+    byDay.set(day, { joinStarted: 0, storeClicks: 0, activations: 0 });
+  }
+
+  for (const row of joinRows.data ?? []) {
+    const day = toNullableString((row as { arrived_at?: unknown }).arrived_at)?.slice(0, 10);
+    if (!day) {
+      continue;
+    }
+    const current = byDay.get(day);
+    if (current) {
+      current.joinStarted += 1;
+    }
+  }
+
+  for (const row of storeRows.data ?? []) {
+    const day = toNullableString((row as { app_store_clicked_at?: unknown }).app_store_clicked_at)?.slice(0, 10);
+    if (!day) {
+      continue;
+    }
+    const current = byDay.get(day);
+    if (current) {
+      current.storeClicks += 1;
+    }
+  }
+
+  for (const row of activationRows.data ?? []) {
+    const day = toNullableString((row as { created_at?: unknown }).created_at)?.slice(0, 10);
+    if (!day) {
+      continue;
+    }
+    const current = byDay.get(day);
+    if (current) {
+      current.activations += 1;
+    }
+  }
+
+  return byDay;
+}
+
+async function fetchGa4Summary(fromIso: string, toIso: string) {
   try {
     const [eventsReport, conversionEvents, realtimeReport] = await Promise.all([
-      listEventsLast30Days(),
+      listEventsByDateRange(fromIso.slice(0, 10), toIso.slice(0, 10)),
       listConversionEvents(),
       runRealtimeReport(),
     ]);
@@ -323,6 +671,7 @@ export async function getAdminConversionDashboard(daysInput: string | null | und
 
   const fromIso = from.toISOString();
   const toIso = to.toISOString();
+  const dayKeys = buildDayKeys(fromIso, toIso);
 
   const notes: string[] = [];
 
@@ -341,7 +690,15 @@ export async function getAdminConversionDashboard(daysInput: string | null | und
     }
   }
 
-  const ga4 = await fetchGa4Summary();
+  const [ga4, posthog, bfDaily] = await Promise.all([
+    fetchGa4Summary(fromIso, toIso),
+    fetchPosthogSummary(fromIso, toIso, dayKeys),
+    fetchBfDailySeries(fromIso, toIso, dayKeys).catch((error) => {
+      notes.push(`Série temporelle BF indisponible: ${error instanceof Error ? error.message : "erreur inconnue"}.`);
+      return new Map<string, { joinStarted: number; storeClicks: number; activations: number }>();
+    }),
+  ]);
+
   const ga4JoinStarted = ga4.trackedEvents.find((event) => event.eventName === "bf_join_flow_started")?.eventCount ?? 0;
   const ga4StoreClicks = ga4.trackedEvents.find((event) => event.eventName === "bf_app_store_cta_click")?.eventCount ?? 0;
 
@@ -352,6 +709,35 @@ export async function getAdminConversionDashboard(daysInput: string | null | und
   if (!ga4.available) {
     notes.push("GA4 indisponible sur cette requête. Vérifier credentials et accès Admin/Data API.");
   }
+  if (!posthog.available && posthog.error) {
+    notes.push(`PostHog indisponible: ${posthog.error}`);
+  }
+
+  const timelineDays = dayKeys.map((day) => {
+    const bfEntry = bfDaily.get(day) ?? { joinStarted: 0, storeClicks: 0, activations: 0 };
+    const posthogEntry = posthog.daily.get(day) ?? {
+      signupCompleted: 0,
+      onboardingCompleted: 0,
+      activationCompleted: 0,
+    };
+
+    return {
+      day,
+      joinStarted: bfEntry.joinStarted,
+      storeClicks: bfEntry.storeClicks,
+      signupCompleted: posthogEntry.signupCompleted,
+      activationCompleted: Math.max(bfEntry.activations, posthogEntry.activationCompleted),
+    };
+  });
+
+  const postInstallTotals = {
+    signupCompleted: posthog.totals.signupCompleted,
+    onboardingCompleted: posthog.totals.onboardingCompleted,
+    activationCompleted: posthog.totals.activationCompleted,
+  };
+
+  const appStoreClicksDelta = ga4.available ? bfTotals.appStoreClicks - ga4StoreClicks : null;
+  const joinStartsDelta = ga4.available ? bfTotals.joinSessions - ga4JoinStarted : null;
 
   return {
     range: {
@@ -370,9 +756,32 @@ export async function getAdminConversionDashboard(daysInput: string | null | und
       actors: bfData.actors,
     },
     ga4,
+    posthog: {
+      available: posthog.available,
+      source: posthog.source,
+      totals: postInstallTotals,
+      error: posthog.error,
+    },
+    postInstall: {
+      totals: postInstallTotals,
+      rates: {
+        storeToSignup: computeRate(postInstallTotals.signupCompleted, bfTotals.appStoreClicks),
+        signupToOnboarding: computeRate(postInstallTotals.onboardingCompleted, postInstallTotals.signupCompleted),
+        onboardingToActivation: computeRate(postInstallTotals.activationCompleted, postInstallTotals.onboardingCompleted),
+      },
+    },
+    timeline: {
+      days: timelineDays,
+    },
     comparison: {
-      appStoreClicksDelta: ga4.available ? bfTotals.appStoreClicks - ga4StoreClicks : null,
-      joinStartsDelta: ga4.available ? bfTotals.joinSessions - ga4JoinStarted : null,
+      appStoreClicksDelta,
+      joinStartsDelta,
+    },
+    quality: {
+      joinDeltaStatus: computeDeltaStatus(joinStartsDelta, bfTotals.joinSessions),
+      storeDeltaStatus: computeDeltaStatus(appStoreClicksDelta, bfTotals.appStoreClicks),
+      posthogStatus: posthog.available ? "aligne" : "indisponible",
+      attributionCoverage: computeRate(bfTotals.attributedSessions, bfTotals.joinSessions),
     },
     notes,
   };

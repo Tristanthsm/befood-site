@@ -108,11 +108,15 @@ export async function runRealtimeReport() {
 }
 
 export async function listEventsLast30Days() {
+  return listEventsByDateRange("30daysAgo", "today");
+}
+
+export async function listEventsByDateRange(startDate: string, endDate: string) {
   const client = getGa4DataClient();
   const property = getPropertyResourceName();
   const [response] = await client.runReport({
     property,
-    dateRanges: [{ startDate: "30daysAgo", endDate: "today" }],
+    dateRanges: [{ startDate, endDate }],
     dimensions: [{ name: "eventName" }],
     metrics: [{ name: "eventCount" }],
     orderBys: [{ metric: { metricName: "eventCount" }, desc: true }],

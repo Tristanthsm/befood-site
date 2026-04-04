@@ -6,6 +6,7 @@ This project uses:
 - Vercel Analytics + Vercel Speed Insights for product performance monitoring.
 - Google Analytics 4 for consent-gated audience measurement and marketing events.
 - PostHog for product funnel continuity (website -> signup) and identity stitching.
+- PostHog Query API for admin post-install analytics (`signup_completed`, `onboarding_completed`, `activation_completed`).
 
 ## Runtime Behavior
 
@@ -18,6 +19,7 @@ This project uses:
 - Marketing events are mirrored to PostHog.
 - Join attribution context is persisted (`click_id`, `session_id`, `source`, `coach_code`, `utm_*`) and attached to analytics events when available.
 - Auth bridge calls PostHog `identify()` on signed-in users and emits `signup_completed` when signup intent is detected.
+- Admin conversion dashboard reads PostHog via private API when `POSTHOG_HOST`, `POSTHOG_PROJECT_ID`, and `POSTHOG_PERSONAL_API_KEY` are configured.
 
 ## Event Taxonomy
 
