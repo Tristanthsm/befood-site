@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { checkRateLimit } from "@/lib/security/rate-limit";
+
 export const runtime = "edge";
 
 type SupportContactPayload = {
@@ -36,6 +38,27 @@ function hasInvalidLength(values: string[]): boolean {
 }
 
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit(request, {
+    keyPrefix: "support-contact",
+    windowMs: 10 * 60 * 1000,
+    maxRequests: 6,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { message: "Trop de tentatives. Merci de réessayer dans quelques minutes." },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfterSeconds),
+          "X-RateLimit-Limit": String(rateLimit.limit),
+          "X-RateLimit-Remaining": String(rateLimit.remaining),
+          "X-RateLimit-Reset": String(rateLimit.resetAt),
+        },
+      },
+    );
+  }
+
   if (!isSameOrigin(request)) {
     return NextResponse.json({ message: "Requête non autorisée." }, { status: 403 });
   }

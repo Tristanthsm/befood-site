@@ -1,10 +1,25 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+import { checkRateLimit } from "@/lib/security/rate-limit";
+
 export const runtime = "edge";
 
 interface ResolveLoginBody {
   identifier?: unknown;
+}
+
+function isSameOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) {
+    return true;
+  }
+
+  try {
+    return new URL(origin).origin === new URL(request.url).origin;
+  } catch {
+    return false;
+  }
 }
 
 function getServiceRoleSupabaseClient() {
@@ -27,6 +42,33 @@ function getServiceRoleSupabaseClient() {
 }
 
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit(request, {
+    keyPrefix: "resolve-login",
+    windowMs: 5 * 60 * 1000,
+    maxRequests: 40,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      {
+        message: "Trop de tentatives. Merci de réessayer dans quelques minutes.",
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfterSeconds),
+          "X-RateLimit-Limit": String(rateLimit.limit),
+          "X-RateLimit-Remaining": String(rateLimit.remaining),
+          "X-RateLimit-Reset": String(rateLimit.resetAt),
+        },
+      },
+    );
+  }
+
+  if (!isSameOrigin(request)) {
+    return NextResponse.json({ message: "Requête non autorisée." }, { status: 403 });
+  }
+
   const client = getServiceRoleSupabaseClient();
   if (!client) {
     return NextResponse.json(
