@@ -13,7 +13,15 @@ function normalizeHost(host: string): string {
     return "";
   }
 
-  const withoutTrailingSlash = host.replace(/\/+$/, "");
+  const trimmed = host.trim();
+  if (trimmed.startsWith("/")) {
+    if (typeof window !== "undefined") {
+      return `${window.location.origin}${trimmed}`;
+    }
+    return trimmed;
+  }
+
+  const withoutTrailingSlash = trimmed.replace(/\/+$/, "");
   const withProtocol =
     withoutTrailingSlash.startsWith("http://") || withoutTrailingSlash.startsWith("https://")
       ? withoutTrailingSlash
