@@ -36,6 +36,8 @@ export function StoreButtons({ className, compact = false }: StoreButtonsProps) 
     "h-15 w-[18.25rem] items-center justify-between rounded-full border border-[#d9e0e8] bg-white px-5 text-left shadow-none";
   const badgeClass =
     "h-7 shrink-0 rounded-full border border-[var(--color-border)] bg-transparent px-3 text-[11px] font-semibold text-[var(--color-muted)]";
+  const arrowBadgeClass =
+    "h-10 w-10 px-0 flex items-center justify-center border-[#0ea875] bg-[#dcf7ec] shadow-[0_8px_18px_-12px_rgba(16,185,129,0.85)]";
   const leftGroupClass = "flex items-center gap-3.5";
   const leftGroupEdgeClass = "flex items-center gap-3.5 -ml-1.5";
   const labelClass = "flex flex-col items-start leading-tight";
@@ -68,7 +70,7 @@ export function StoreButtons({ className, compact = false }: StoreButtonsProps) 
             <Badge
               className={cn(
                 badgeClass,
-                "h-10 w-10 px-0 flex items-center justify-center border-[#0ea875] bg-[#dcf7ec] shadow-[0_8px_18px_-12px_rgba(16,185,129,0.85)]",
+                arrowBadgeClass,
               )}
             >
               <span aria-hidden className="text-xl font-bold leading-none text-[#0f7f5a]">
@@ -101,14 +103,20 @@ export function StoreButtons({ className, compact = false }: StoreButtonsProps) 
           className={cn(baseTileClass, "hover:bg-[#f4f7fa]")}
           ariaLabel="Télécharger BeFood sur Google Play"
         >
-          <span className={leftGroupClass}>
+          <span className={leftGroupEdgeClass}>
             <PlayIcon className="text-[#0b1118]" />
             <span className={labelClass}>
               <span className={topTextClass}>Disponible sur</span>
               <span className={bottomTextClass}>Google Play</span>
             </span>
           </span>
-          <Badge className={badgeClass}>Disponible</Badge>
+          <span className="ml-auto mr-[-6px]">
+            <Badge className={cn(badgeClass, arrowBadgeClass)}>
+              <span aria-hidden className="text-xl font-bold leading-none text-[#0f7f5a]">
+                ↗
+              </span>
+            </Badge>
+          </span>
         </ButtonLink>
       ) : (
         <AndroidWaitlistTrigger
@@ -122,14 +130,20 @@ export function StoreButtons({ className, compact = false }: StoreButtonsProps) 
           trackingLocation={compact ? "hero_or_cta_compact" : "store_buttons"}
           dataStorePlaceholder
         >
-          <span className={leftGroupClass}>
+          <span className={leftGroupEdgeClass}>
             <PlayIcon className="h-6 w-6" />
             <span className={labelClass}>
               <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#3d7b66]">Disponible sur</span>
               <span className="text-sm font-semibold text-[#214538]">Google Play</span>
             </span>
           </span>
-          <Badge className={cn(badgeClass, "border-[#84c5ad] bg-[#dcf7ec] text-[#1f6b54]")}>Cliquez ici</Badge>
+          <span className="ml-auto mr-[-6px]">
+            <Badge className={cn(badgeClass, arrowBadgeClass, "text-[#1f6b54]")}>
+              <span aria-hidden className="text-xl font-bold leading-none text-[#0f7f5a]">
+                ↗
+              </span>
+            </Badge>
+          </span>
         </AndroidWaitlistTrigger>
       )}
     </div>

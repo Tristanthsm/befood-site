@@ -94,14 +94,24 @@ export function AccountDropdown({ email, providerLabel, showCoachLink, showAdmin
               </Link>
             ) : null}
             {showAdminLink ? (
-              <Link
-                href="/admin"
-                role="menuitem"
-                onClick={() => setOpen(false)}
-                className="block rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
-              >
-                Espace admin
-              </Link>
+              <>
+                <Link
+                  href="/admin"
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                  className="block rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
+                >
+                  Espace admin
+                </Link>
+                <Link
+                  href="/admin/conversion"
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                  className="block rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
+                >
+                  Conversion
+                </Link>
+              </>
             ) : null}
           </div>
         </div>

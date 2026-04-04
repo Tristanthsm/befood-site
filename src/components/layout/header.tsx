@@ -117,12 +117,20 @@ export async function Header() {
                     </Link>
                   ) : null}
                   {isAdmin ? (
-                    <Link
-                      href="/admin"
-                      className="rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
-                    >
-                      Espace admin
-                    </Link>
+                    <>
+                      <Link
+                        href="/admin"
+                        className="rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
+                      >
+                        Espace admin
+                      </Link>
+                      <Link
+                        href="/admin/conversion"
+                        className="rounded-xl border border-[var(--color-border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--color-ink)] hover:bg-[var(--color-surface)]"
+                      >
+                        Conversion
+                      </Link>
+                    </>
                   ) : null}
                 </>
               ) : (
