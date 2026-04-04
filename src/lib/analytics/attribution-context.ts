@@ -120,3 +120,49 @@ export function getAttributionEventProperties(): Record<string, AttributionPrimi
     utm_content: context.utmContent,
   };
 }
+
+/**
+ * Capture UTM params, ref, source, and coach_code from the current URL
+ * and persist them into the attribution context.
+ *
+ * Does NOT overwrite click_id/session_id if they already exist (those are
+ * set by the /join tracking flow only).
+ *
+ * Safe to call on any page load — only writes if the URL contains at least
+ * one attribution parameter.
+ */
+export function captureAttributionFromUrl() {
+  if (!isBrowser()) {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const utmSource = toNullableString(params.get("utm_source"));
+  const utmMedium = toNullableString(params.get("utm_medium"));
+  const utmCampaign = toNullableString(params.get("utm_campaign"));
+  const utmTerm = toNullableString(params.get("utm_term"));
+  const utmContent = toNullableString(params.get("utm_content"));
+  const ref = toNullableString(params.get("ref"));
+  const source = toNullableString(params.get("source"));
+  const coachCode = toNullableString(params.get("coach_code"));
+
+  const hasAnyParam = utmSource || utmMedium || utmCampaign || utmTerm || utmContent || ref || source || coachCode;
+  if (!hasAnyParam) {
+    return;
+  }
+
+  const existing = readAttributionContext();
+
+  persistAttributionContext({
+    clickId: existing?.clickId ?? null,
+    sessionId: existing?.sessionId ?? null,
+    source: source ?? existing?.source ?? null,
+    ref: ref ?? existing?.ref ?? null,
+    coachCode: coachCode ?? existing?.coachCode ?? null,
+    utmSource: utmSource ?? existing?.utmSource ?? null,
+    utmMedium: utmMedium ?? existing?.utmMedium ?? null,
+    utmCampaign: utmCampaign ?? existing?.utmCampaign ?? null,
+    utmTerm: utmTerm ?? existing?.utmTerm ?? null,
+    utmContent: utmContent ?? existing?.utmContent ?? null,
+  });
+}

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useReportWebVitals } from "next/web-vitals";
 
 import { useConsent } from "@/components/analytics/consent-provider";
+import { captureAttributionFromUrl } from "@/lib/analytics/attribution-context";
 import {
   getMarketingPageType,
   normalizePath,
@@ -29,6 +30,13 @@ export function MarketingEventsTracker() {
   const lastTrackedRouteRef = useRef<string | null>(null);
   const analyticsAllowedRef = useRef<boolean>(analyticsAllowed);
   const pathnameRef = useRef<string>(pathname);
+
+  // Capture UTM/ref/source/coach_code from URL params into localStorage
+  // on first page load. Runs once, before any analytics event fires.
+  // This only writes to localStorage — no data leaves the browser.
+  useEffect(() => {
+    captureAttributionFromUrl();
+  }, []);
 
   useEffect(() => {
     analyticsAllowedRef.current = analyticsAllowed;
